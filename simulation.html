@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시뮬레이션 실습실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<style>
+:root{
+  --accent:#3f8f3a; --accent-strong:#2c6e28; --accent-soft:#eef7e8; --accent-line:#c7e3bd;
+  --ink:#1f2330; --ink-2:#4a5063; --ink-3:#7a8094; --line:#e4e6ee; --bg:#f6f7fb; --card:#ffffff;
+  --ok:#1f8a4c; --ok-soft:#e5f5ec; --bad:#c62f3a; --bad-soft:#fdeaec; --warn:#a66a00; --warn-soft:#fff4dc;
+  --s1:#c9579a; --s2:#7fa83a; --s3:#3f7fd1; --s4:#8b62c9;
+  --code-bg:#fbfbfd; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;font-size:17px;word-break:keep-all}
+code,pre,.mono{font-family:'Nanum Gothic Coding',ui-monospace,monospace}
+a{color:var(--accent-strong)}
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 20px;min-height:57px}
+.topbar .unit{background:var(--accent);color:#fff;font-weight:700;border-radius:999px;padding:3px 12px;font-size:14px;white-space:nowrap}
+.topbar h1{font-size:19px;margin:0;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .grow{flex:1}
+.topbar .gs{font-size:14px;color:var(--ink-2);white-space:nowrap}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1400px;margin:0 auto}
+nav.side{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow:auto;padding:18px 12px 30px 18px}
+nav.side .navlabel{font-size:12px;font-weight:700;color:var(--ink-3);letter-spacing:.06em;margin:16px 8px 6px}
+nav.side a{display:flex;gap:10px;align-items:flex-start;text-decoration:none;color:var(--ink-2);padding:9px 10px;border-radius:10px;font-size:15px;line-height:1.4}
+nav.side a .n{flex:none;width:24px;height:24px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink-3)}
+nav.side a:hover{background:#fff}
+nav.side a.active{background:#fff;color:var(--ink);font-weight:700;box-shadow:0 1px 0 var(--line),0 0 0 1px var(--accent-line)}
+nav.side a.active .n{background:var(--accent);border-color:var(--accent);color:#fff}
+main{padding:26px 34px 80px;min-width:0}
+.step{display:none;max-width:1000px}
+.step.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.step-head{margin-bottom:18px}
+.step-head .kicker{color:var(--accent-strong);font-weight:700;font-size:14px;letter-spacing:.04em}
+.step-head h2{font-size:30px;line-height:1.3;margin:4px 0 6px;font-weight:900}
+.step-head p{margin:0;color:var(--ink-2)}
+h3{font-size:21px;margin:30px 0 10px;font-weight:800}
+h4{font-size:17px;margin:18px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:14px 0}
+.card.soft{background:var(--accent-soft);border-color:var(--accent-line)}
+.tag{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:1px 10px;background:var(--accent-soft);color:var(--accent-strong);margin-right:6px}
+.muted{color:var(--ink-3);font-size:15px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+ul.tight{margin:6px 0;padding-left:20px} ul.tight li{margin:3px 0}
+table.plain{border-collapse:collapse;width:100%;font-size:15px;background:#fff}
+table.plain th,table.plain td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.plain th{background:#f1f2f7;font-weight:700}
+table.plain input{width:100%;font:inherit;font-size:15px;border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+kbd{font-family:'Nanum Gothic Coding',monospace;background:#f1f2f7;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;font-size:.9em}
+code.inl{background:#f1f2f7;border-radius:6px;padding:1px 6px;font-size:.92em}
+.timeline{display:grid;gap:10px}
+.timeline .row{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.timeline .when{font-weight:800;color:var(--accent-strong)}
+.stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:12px 0}
+.stage{border-radius:14px;padding:14px;color:#fff;cursor:pointer;position:relative;min-height:120px;border:0;text-align:left;font:inherit}
+.stage .no{font-size:13px;font-weight:700;opacity:.9}
+.stage .nm{font-size:20px;font-weight:900;margin:2px 0 6px}
+.stage .dt{font-size:14px;line-height:1.5;display:none}
+.stage.open .dt{display:block}
+.stage .hint{font-size:12px;opacity:.85}
+.stage.open .hint{display:none}
+.st1{background:var(--s1)} .st2{background:var(--s2)} .st3{background:var(--s3)} .st4{background:var(--s4)}
+.quiz{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:14px 0}
+.quiz .qh{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.quiz .qh .badge{background:var(--ink);color:#fff;font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px}
+.quiz .q{font-weight:700;margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opts button{font:inherit;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;color:var(--ink)}
+.opts button:hover{border-color:var(--accent-line);background:#fbfef9}
+.opts button.right{border-color:var(--ok);background:var(--ok-soft)}
+.opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opts.code button{font-family:'Nanum Gothic Coding',monospace;font-size:15px}
+.fb{margin-top:10px;font-size:15px;border-radius:10px;padding:10px 14px;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--ok-soft);color:#14593a}
+.fb.no{background:var(--bad-soft);color:#8a1f28}
+.sorter .items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sorter .item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fafbfd;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px}
+.sorter .item.right{border-color:var(--ok);background:var(--ok-soft)}
+.sorter .item.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.sorter select{font:inherit;font-size:15px;border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:#fff;max-width:56%}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--accent);color:#fff}
+.btn:hover{background:var(--accent-strong)}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent-line)}
+.btn.small{padding:5px 12px;font-size:14px}
+.btn.stop{background:#c62f3a}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+details.answer{margin-top:10px;background:var(--warn-soft);border-radius:10px;padding:8px 14px}
+details.answer summary{cursor:pointer;font-weight:700;color:var(--warn)}
+details.answer[open] summary{margin-bottom:6px}
+details.answer pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow:auto;font-size:14px;line-height:1.5;margin:6px 0}
+/* ---------- VPython 셀 ---------- */
+.vp{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin:16px 0;overflow:hidden}
+.vp-head{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);background:#fafbfd;flex-wrap:wrap}
+.vp-head .lbl{font-weight:800;font-size:14px;color:var(--accent-strong)}
+.vp-head .ttl{font-size:14px;color:var(--ink-2);flex:1;min-width:120px}
+.vp-body{display:grid;grid-template-columns:1fr}
+.vp .CodeMirror{height:auto;font-family:'Nanum Gothic Coding',monospace;font-size:15px;line-height:1.55;background:var(--code-bg)}
+.vp .CodeMirror-scroll{min-height:60px;max-height:640px}
+.vp .CodeMirror-gutters{background:#f3f4f8;border-right:1px solid var(--line)}
+.vp-out{border-top:1px solid var(--line);background:#f7f8fb;min-height:160px;display:flex;flex-direction:column;overflow-x:auto}
+.vp-out .placeholder{margin:auto;color:var(--ink-3);font-size:15px;text-align:center;padding:20px}
+.vp-out iframe{width:100%;border:0;display:block;background:#fff;min-height:240px}
+.vp-err{background:var(--bad-soft);color:#7d1a23;padding:10px 14px;font-size:15px;display:none;border-top:1px solid #f3c5ca}
+.vp-err.show{display:block}
+.vp-inputs{display:none;padding:10px 12px;border-bottom:1px solid var(--line);background:#fffbea;gap:8px 16px;flex-wrap:wrap;align-items:center}
+.vp-inputs.show{display:flex}
+.vp-inputs .t{font-weight:800;font-size:14px;color:var(--warn);width:100%}
+.vp-inputs label{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:var(--ink-2);flex:1;min-width:220px}
+.vp-inputs input{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:8px;padding:5px 10px;background:#fff}
+.vp-inputs input.need{border-color:var(--bad);background:var(--bad-soft)}
+.vp-err .hint{margin-top:4px;color:#5a1c22}
+.cm-errline{background:#fde2e5!important}
+.explain{display:grid;grid-template-columns:34px 1fr;gap:10px;margin:22px 0 6px;align-items:start}
+.explain .num{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:900;display:grid;place-items:center}
+.explain h4{margin:4px 0 2px}
+.explain p{margin:2px 0;color:var(--ink-2)}
+.think{background:#f4f6ff;border:1px dashed #b9c3ea;border-radius:12px;padding:10px 14px;margin:8px 0 18px;font-size:15.5px}
+.think b{color:#3446a0}
+.mission{border:2px solid var(--accent);border-radius:16px;padding:18px 20px;background:#fff;margin:20px 0}
+.mission .mt{display:flex;gap:10px;align-items:center;font-weight:900;font-size:20px}
+.mission .mt .m{background:var(--accent);color:#fff;border-radius:8px;padding:2px 10px;font-size:15px}
+textarea.note{width:100%;min-height:80px;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical;background:#fff}
+textarea.note:focus{outline:none;border-color:var(--accent)}
+.navbtns{display:flex;justify-content:space-between;margin-top:40px;gap:10px}
+.callout{border-left:5px solid var(--accent);background:#fff;padding:12px 16px;border-radius:0 12px 12px 0;margin:14px 0}
+.checklist label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+.checklist input{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
+.model{display:grid;grid-template-columns:120px 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;margin:12px 0}
+.model > div{padding:10px 14px;border-bottom:1px solid var(--line)}
+.model > div:nth-last-child(-n+2){border-bottom:0}
+.model .k{background:var(--accent-soft);font-weight:800;color:var(--accent-strong)}
+.coord{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:center}
+.lines{width:100%;border-collapse:collapse;font-size:15px;background:#fff}
+.lines td{border-bottom:1px solid var(--line);padding:7px 10px;vertical-align:top}
+.lines td:first-child{font-family:'Nanum Gothic Coding',monospace;white-space:pre;background:#fafbfd;width:52%;font-size:14px}
+@media (max-width:900px){
+  body{font-size:16px}
+  .layout{grid-template-columns:1fr}
+  nav.side{position:sticky;top:57px;height:auto;z-index:10;background:var(--bg);display:flex;overflow-x:auto;gap:4px;padding:8px 12px;border-bottom:1px solid var(--line)}
+  nav.side .navlabel{display:none}
+  nav.side a{white-space:nowrap;padding:6px 10px}
+  main{padding:18px 16px 60px}
+  .grid2,.grid3,.stages,.sorter .items,.coord{grid-template-columns:1fr}
+  .step-head h2{font-size:24px}
+  .topbar h1{font-size:16px}
+  .topbar .gs{display:none}
+  .timeline .row,.model{grid-template-columns:1fr}
+  .lines td:first-child{white-space:pre-wrap}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="unit">Ⅳ 단원</span>
+  <h1>시뮬레이션 실습실 · 수행평가 대비 연습</h1>
+  <span class="grow"></span>
+  <span class="gs">Web VPython 3.2 내장</span>
+</header>
+
+<div class="layout">
+<nav class="side" id="sidenav"></nav>
+<main>
+
+<!-- ===================== 0. 시작 ===================== -->
+<section class="step" id="start" data-nav="시작하기" data-group="안내">
+  <div class="step-head">
+    <div class="kicker">수행평가 대비 연습 · 2차시</div>
+    <h2>현실을 본뜬 모델을 코드로 만들고 실험하기</h2>
+    <p>교과서 Ⅳ단원의 시뮬레이션 개념과 제작 과정을 복습하고, 브이파이썬(VPython) 코드를 직접 고쳐 가며 실험합니다.</p>
+  </div>
+
+  <div class="card soft">
+    <b>이 페이지에서 바로 VPython이 실행돼요.</b> glowscript.org에 로그인하지 않아도 교과서와 똑같은 코드를 <kbd>▶ 실행</kbd>할 수 있습니다.
+    코드를 고친 뒤 다시 실행하면 처음부터 새로 시작합니다. 화면을 마우스로 <b>오른쪽 드래그하면 회전</b>, <b>휠로 확대·축소</b>할 수 있어요.
+  </div>
+
+  <h3>오늘의 목표</h3>
+  <div class="grid3">
+    <div class="card"><span class="tag">이론</span><h4>시뮬레이션의 이해</h4><p class="muted">시뮬레이션의 개념과 필요성, 역할을 설명할 수 있다.</p></div>
+    <div class="card"><span class="tag">과정</span><h4>제작 4단계</h4><p class="muted">문제 정의 → 모델 설계 → 모델 구현 → 모델 평가 과정을 적용할 수 있다.</p></div>
+    <div class="card"><span class="tag">코드</span><h4>모델 수정과 실험</h4><p class="muted">VPython 코드의 변수와 규칙을 바꾸어 실험하고 결과를 해석할 수 있다.</p></div>
+  </div>
+
+  <h3>진행 순서</h3>
+  <div class="timeline">
+    <div class="row"><div class="when">1차시 · 15분</div><div><b>이론 복습</b> — 시뮬레이션의 개념·역할, 제작 4단계, 모델 구성 요소</div></div>
+    <div class="row"><div class="when">1차시 · 35분</div><div><b>VPython 기초 + 중력 공 튀기기</b> — 객체·좌표·rate·반복문, 중력 값과 반발 정도를 바꾸며 실험</div></div>
+    <div class="row"><div class="when">2차시 · 30분</div><div><b>입자 운동 · 횡단보도 프로젝트</b> — 무작위 이동, 입력값에 따라 달라지는 결과 확인</div></div>
+    <div class="row"><div class="when">2차시 · 20분</div><div><b>정리</b> — 나만의 시뮬레이션 기획서 연습, 수행평가 체크리스트</div></div>
+  </div>
+
+  <h3>수행평가 미리보기 <span class="tag">25점</span></h3>
+  <div class="card">
+    <p style="margin-top:0">수행평가에서는 오늘 연습한 <b>시뮬레이션 제작 4단계</b>에 따라 주어진 문제 상황을 <b>모델로 설계</b>하고, VPython 코드를 <b>수정·실행</b>하여 결과를 <b>해석</b>합니다. 웹페이지에 학번과 이름을 입력한 뒤 바로 참여합니다.</p>
+    <ul class="tight">
+      <li>문제를 정의하고, 모델 구성 요소(<b>객체</b>, <b>규칙</b>)와 필요한 <b>자료</b>를 정리하기</li>
+      <li>VPython 코드에서 객체의 속성과 변수 값, 조건을 바꾸어 <b>모델 구현</b>하기</li>
+      <li>실행 결과를 관찰하고 현실과 비교하여 <b>모델 평가</b>하기</li>
+    </ul>
+    <p class="muted" style="margin-bottom:0">※ 세부 문항과 채점 기준은 수행평가 시간에 안내합니다.</p>
+  </div>
+</section>
+
+<!-- ===================== 1. 시뮬레이션의 이해 ===================== -->
+<section class="step" id="theory1" data-nav="이론 ① 시뮬레이션의 이해" data-group="이론 복습">
+  <div class="step-head">
+    <div class="kicker">이론 복습 ①</div>
+    <h2>시뮬레이션이란?</h2>
+    <p>현실 세계에서 일어나는 일이나 시스템을 <b>모방하는 실험</b>을 시뮬레이션이라고 합니다.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h4 style="margin-top:0">시뮬레이션</h4><p class="muted" style="margin:0">현실의 일이나 시스템을 모방하는 실험<br>예) 과학 실험, 운동 선수의 모의 경기 연습</p></div>
+    <div class="card"><h4 style="margin-top:0">시뮬레이션 프로그램</h4><p class="muted" style="margin:0">컴퓨터에서 모의 실험을 할 수 있도록 만든 프로그램<br>예) 운전 연습 프로그램, 해수면 상승 예측 프로그램</p></div>
+  </div>
+  <div class="callout"><b>왜 시뮬레이션 프로그램을 쓸까?</b> 시간·공간의 한계 때문에 확인하기 어려운 상황을 간단히 설정할 수 있고, 결과를 바로 확인할 수 있으며, 현실에서 직접 하는 것보다 <b>시간과 비용</b>이 적게 들고 <b>안전</b>합니다.</div>
+
+  <h3>시뮬레이션 프로그램의 3가지 역할</h3>
+  <div class="grid3">
+    <div class="card"><span class="tag">역할 1</span><h4>문제 파악</h4><p class="muted" style="margin:0">현실의 문제 상황을 프로그램에서 확인하고, 결과를 기록·누적해 경험적으로 해석</p></div>
+    <div class="card"><span class="tag">역할 2</span><h4>다양한 대안 적용·확인</h4><p class="muted" style="margin:0">여러 상황이나 요소를 현실보다 간단히 바꿔 적용하고 결과를 바로 확인</p></div>
+    <div class="card"><span class="tag">역할 3</span><h4>미래 예측</h4><p class="muted" style="margin:0">실제 시간의 흐름에 구애받지 않고 결과를 확인하여 미래를 예측</p></div>
+  </div>
+
+  <div class="quiz sorter" data-name="role">
+    <div class="qh"><span class="badge">활동</span><b>주차 연습 시뮬레이션 — 어떤 역할에 해당할까?</b></div>
+    <div class="items" style="grid-template-columns:1fr">
+      <div class="item" data-ans="문제 파악">여러 번 주차를 해 보며 주차 상황의 문제점을 찾는다<select></select></div>
+      <div class="item" data-ans="다양한 대안 적용·확인">비·눈이 오는 날 등 원하는 날씨를 골라 연습한다<select></select></div>
+      <div class="item" data-ans="미래 예측">연습 결과를 바탕으로 실제 도로에서 생길 문제 상황을 미리 예측한다<select></select></div>
+      <div class="item" data-ans="미래 예측">해수면 상승 프로그램에 수치를 넣어 50년 뒤 해안 도시의 모습을 확인한다<select></select></div>
+      <div class="item" data-ans="다양한 대안 적용·확인">건물 배치를 여러 가지로 바꿔 가며 바람길이 어떻게 달라지는지 확인한다<select></select></div>
+    </div>
+    <div class="row-btns"><button class="btn grade">채점하기</button><button class="btn ghost reset">다시 하기</button></div>
+    <div class="fb"></div>
+  </div>
+
+  <div class="quiz mcq" data-ans="c">
+    <div class="qh"><span class="badge">퀴즈</span></div>
+    <p class="q">다음 중 시뮬레이션 프로그램을 활용하기에 가장 알맞지 <u>않은</u> 상황은?</p>
+    <div class="opts">
+      <button data-k="a">① 비행기 조종사가 엔진 고장 상황에 대처하는 훈련을 한다.</button>
+      <button data-k="b">② 새 다리를 짓기 전에 강한 바람에도 버틸 수 있는지 확인한다.</button>
+      <button data-k="c">③ 오늘 점심 급식 메뉴가 무엇인지 확인한다.</button>
+      <button data-k="d">④ 호흡기 전염병이 거리에 따라 얼마나 빨리 퍼지는지 살펴본다.</button>
+    </div>
+    <div class="fb" data-exp="③은 이미 정해진 정보를 확인하는 일이라 모의 실험이 필요하지 않아요. 나머지는 위험하거나, 비용이 크거나, 눈으로 보기 어려운 현상이라 시뮬레이션이 유용합니다."></div>
+  </div>
+</section>
+
+<!-- ===================== 2. 제작 4단계 ===================== -->
+<section class="step" id="theory2" data-nav="이론 ② 제작 4단계와 모델" data-group="이론 복습">
+  <div class="step-head">
+    <div class="kicker">이론 복습 ②</div>
+    <h2>시뮬레이션 프로그램 제작 4단계</h2>
+    <p>복잡한 문제나 현상의 원리를 시뮬레이션 모델로 표현하면 쉽고 효율적으로 탐구할 수 있습니다. <span class="muted">카드를 눌러 보세요</span></p>
+  </div>
+  <div class="stages">
+    <button class="stage st1"><div class="no">1단계</div><div class="nm">문제 정의하기</div><div class="hint">눌러서 펼치기</div><div class="dt">시뮬레이션으로 무엇을 확인할지 정한다.<br><i>예) 중력에 의한 공의 낙하를 확인할 수 있을까?</i></div></button>
+    <button class="stage st2"><div class="no">2단계</div><div class="nm">모델 설계하기</div><div class="hint">눌러서 펼치기</div><div class="dt">• 자료 수집<br>• 모델 구성 요소: <b>객체</b>와 <b>규칙</b><br><i>예) 공·바닥, 중력가속도 9.8m/s²</i></div></button>
+    <button class="stage st3"><div class="no">3단계</div><div class="nm">모델 구현하기</div><div class="hint">눌러서 펼치기</div><div class="dt">알고리즘과 코드를 이용해 시뮬레이션 프로그램으로 구현한다.<br><i>화면 구성 + 구현 기능</i></div></button>
+    <button class="stage st4"><div class="no">4단계</div><div class="nm">모델 평가하기</div><div class="hint">눌러서 펼치기</div><div class="dt">실행 결과가 처음 목표에 맞는지, 현실을 잘 표현하는지 확인한다.</div></button>
+  </div>
+
+  <h3>예시 — 공 튀기기 모델 설계</h3>
+  <div class="model">
+    <div class="k">문제 정의</div><div>시뮬레이션 프로그램을 활용하여 중력의 작용에 따른 농구공의 낙하 현상을 확인할 수 있을까?</div>
+    <div class="k">자료 수집</div><div>• 물체는 중력에 의해 일정한 가속도(중력가속도, 약 9.8 m/s²)로 떨어진다.<br>• v(현재 속도) = v₀(처음 속도) + a × t (가속도 × 시간)</div>
+    <div class="k">객체</div><div>공, 바닥</div>
+    <div class="k">규칙</div><div>공은 중력의 영향으로 일정한 가속도로 떨어진다. 바닥에 닿으면 속도의 방향이 반대로 바뀌어 튀어 오르고, 에너지 손실로 이전보다 낮게 튄다.</div>
+    <div class="k">가정</div><div>현실에는 공기 저항 등 많은 요소가 있지만, 이 모델은 <b>중력가속도에만 초점</b>을 맞추고 나머지는 무시한다.</div>
+  </div>
+
+  <div class="quiz sorter" data-name="stage-sort">
+    <div class="qh"><span class="badge">활동</span><b>횡단보도 시뮬레이션 — 몇 단계에서 하는 일일까?</b></div>
+    <div class="items">
+      <div class="item" data-ans="2">노인의 보행 속도가 초당 약 0.85m라는 자료를 찾는다<select></select></div>
+      <div class="item" data-ans="1">“횡단보도에서의 보행 상황을 확인해 볼 수 있을까?”로 목표를 정한다<select></select></div>
+      <div class="item" data-ans="3">VPython으로 신호등, 보행자, 횡단보도를 만들고 이동 코드를 쓴다<select></select></div>
+      <div class="item" data-ans="4">실행 결과가 실제 보행 상황을 잘 나타내는지 확인한다<select></select></div>
+      <div class="item" data-ans="2">객체를 신호등·보행자·횡단보도로, 규칙을 ‘초록불일 때 1초당 0.8m 이동’으로 정한다<select></select></div>
+      <div class="item" data-ans="4">신호 시간 안에 건너지 못한 경우가 현실과 비슷한지 비교하고 고칠 점을 찾는다<select></select></div>
+    </div>
+    <div class="row-btns"><button class="btn grade">채점하기</button><button class="btn ghost reset">다시 하기</button></div>
+    <div class="fb"></div>
+  </div>
+
+  <div class="quiz mcq" data-ans="b">
+    <div class="qh"><span class="badge">퀴즈</span></div>
+    <p class="q">시뮬레이션 모델의 ‘구성 요소’를 바르게 짝지은 것은?</p>
+    <div class="opts">
+      <button data-k="a">① 입력과 출력</button><button data-k="b">② 객체와 규칙</button><button data-k="c">③ 데이터와 그래프</button><button data-k="d">④ 문제와 정답</button>
+    </div>
+    <div class="fb" data-exp="모델은 화면에 등장하는 대상(객체)과 그 객체가 따르는 규칙으로 구성돼요. 예) 객체: 공·바닥 / 규칙: 일정한 가속도로 떨어지고 바닥에서 튀어 오름"></div>
+  </div>
+</section>
+
+<!-- ===================== 3. VPython 기초 ===================== -->
+<section class="step" id="vp1" data-nav="VPython 기초" data-group="코드 실습">
+  <div class="step-head">
+    <div class="kicker">실습 ① · 교과서 131쪽 움직이는 원 만들기</div>
+    <h2>VPython 기초 — 객체를 만들고 움직이기</h2>
+    <p>VPython은 파이썬 코드로 3D 객체를 만들고 움직여 시뮬레이션하는 소프트웨어입니다.</p>
+  </div>
+
+  <div class="coord card">
+    <svg viewBox="0 0 200 170" role="img" aria-label="x축은 오른쪽, y축은 위쪽, z축은 화면 밖을 향하는 좌표계">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2c6e28"/></marker></defs>
+      <line x1="90" y1="100" x2="180" y2="100" stroke="#2c6e28" stroke-width="3" marker-end="url(#ar)"/>
+      <line x1="90" y1="100" x2="90" y2="12" stroke="#2c6e28" stroke-width="3" marker-end="url(#ar)"/>
+      <line x1="90" y1="100" x2="38" y2="150" stroke="#2c6e28" stroke-width="3" marker-end="url(#ar)"/>
+      <text x="184" y="105" font-size="16" font-weight="700" fill="#1f2330">x</text>
+      <text x="96" y="16" font-size="16" font-weight="700" fill="#1f2330">y</text>
+      <text x="22" y="160" font-size="16" font-weight="700" fill="#1f2330">z</text>
+      <circle cx="90" cy="100" r="4" fill="#1f2330"/><text x="96" y="118" font-size="12" fill="#4a5063">(0,0,0)</text>
+    </svg>
+    <div>
+      <b>VPython의 3차원 좌표</b>
+      <ul class="tight"><li><b>x</b>: 오른쪽이 +, <b>y</b>: 위쪽이 +, <b>z</b>: 화면 밖(나를 향하는 쪽)이 +</li>
+      <li>위치·크기·방향은 <code class="inl">vector(x, y, z)</code>로 나타냅니다.</li>
+      <li>VPython은 cm, m 같은 정해진 단위가 아니라 <b>좌표값</b>을 쓰므로, 만드는 사람이 기준을 정해야 해요.</li></ul>
+    </div>
+  </div>
+
+  <table class="plain">
+    <thead><tr><th style="width:44%">코드</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>Web VPython 3.2</code></td><td>첫 줄에 꼭 쓰는 문장 (Web VPython 환경에서 실행)</td></tr>
+      <tr><td><code>sphere(pos=vector(0,0,0), radius=0.25, color=color.green)</code></td><td>구 만들기 — 위치(pos), 반지름(radius), 색(color)</td></tr>
+      <tr><td><code>box(pos=..., size=vector(10,0.5,10), color=color.blue)</code></td><td>상자 만들기 — 크기(size)는 가로·세로·깊이</td></tr>
+      <tr><td><code>cylinder(pos=..., axis=vector(0,2,0), radius=0.1)</code></td><td>원기둥 만들기 — axis는 방향과 길이</td></tr>
+      <tr><td><code>color.red</code> · <code>color.white</code> · <code>vector(1,1,1)</code></td><td>색 지정 (vector(빨강, 초록, 파랑), 각 0~1)</td></tr>
+      <tr><td><code>rate(10)</code></td><td>반복문을 1초에 최대 10번 실행 (애니메이션 속도 조절)</td></tr>
+      <tr><td><code>my_sphere.pos.x = my_sphere.pos.x + dx</code></td><td>객체의 x 위치를 dx만큼 바꾸기 (움직이기)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="explain"><div class="num">1</div><div><h4>움직이는 구 만들기</h4><p>실행해 보고, 구가 어느 방향으로 움직이는지 관찰하세요.</p></div></div>
+  <div class="vp" data-title="교과서 131쪽 · 움직이는 구"><textarea>Web VPython 3.2
+
+# 구 객체 생성
+my_sphere = sphere(pos=vector(0, 0, 0), radius=0.25, color=color.green)
+
+# 루프가 한 번 실행할 때마다 이동할 거리
+dx = 0.01
+
+# 시뮬레이션 반복 수행
+while(True):
+    rate(10)                                  # 1초당 루프를 약 10회 실행
+    my_sphere.pos.x = my_sphere.pos.x + dx    # 구의 x 위치에 dx를 더하면서 갱신</textarea></div>
+
+  <div class="quiz mcq" data-ans="b">
+    <div class="qh"><span class="badge">예측</span></div>
+    <p class="q"><code>rate(10)</code>을 <code>rate(100)</code>으로 바꾸면 구는 어떻게 될까요? 먼저 예측한 뒤 코드를 고쳐 실행해 확인하세요.</p>
+    <div class="opts"><button data-k="a">① 더 느리게 움직인다</button><button data-k="b">② 더 빠르게 움직인다</button><button data-k="c">③ 반대 방향으로 움직인다</button><button data-k="d">④ 움직이지 않는다</button></div>
+    <div class="fb" data-exp="1초에 반복하는 횟수가 10번 → 100번으로 늘어나 같은 시간 동안 dx를 10배 더 많이 더하므로 더 빠르게 움직여요."></div>
+  </div>
+
+  <div class="mission">
+    <div class="mt"><span class="m">연습</span>위 코드를 고쳐 보세요</div>
+    <ol style="margin:8px 0 0;padding-left:22px">
+      <li>구의 색을 <b>빨간색</b>, 반지름을 <b>0.5</b>로 바꾸기</li>
+      <li>구가 <b>왼쪽</b>으로 움직이게 하기</li>
+      <li>구가 <b>위쪽</b>으로 움직이게 하기</li>
+    </ol>
+    <details class="answer"><summary>정답 보기</summary>
+      <p style="margin:2px 0">① <code>sphere(pos=vector(0, 0, 0), radius=0.5, color=color.red)</code><br>
+      ② <code>dx = -0.01</code> (음수로 바꾸기)<br>
+      ③ <code>my_sphere.pos.y = my_sphere.pos.y + dx</code> (x 대신 y를 바꾸기)</p>
+    </details>
+  </div>
+
+  <div class="explain"><div class="num">2</div><div><h4>객체 만들기 연습장</h4><p>공 튀기기·횡단보도에 쓰이는 객체들입니다. 위치와 크기를 바꿔 보며 좌표에 익숙해지세요.</p></div></div>
+  <div class="vp" data-title="객체 연습장"><textarea>Web VPython 3.2
+scene.background = color.white
+
+floor = box(pos=vector(0, -2, 0), size=vector(8, 0.3, 4), color=color.blue)       # 바닥(상자)
+ball = sphere(pos=vector(0, 1, 0), radius=0.6, color=color.red)                    # 공(구)
+pole = cylinder(pos=vector(-3, -2, 0), axis=vector(0, 3, 0), radius=0.1, color=color.gray(0.5))  # 기둥(원기둥)
+light = box(pos=vector(-3, 1.5, 0), size=vector(0.5, 1, 0.5), color=color.green)    # 신호등(상자)
+
+print("공의 위치:", ball.pos)
+print("바닥 윗면의 y좌표:", floor.pos.y + floor.size.y / 2)</textarea></div>
+  <div class="think"><b>생각해 보기</b> 공을 바닥 바로 위에 딱 붙여 놓으려면 공의 y좌표는 얼마여야 할까요? (바닥 윗면 y좌표 + 공의 반지름)
+    <details class="answer"><summary>확인</summary>바닥 윗면은 -2 + 0.3/2 = -1.85, 여기에 반지름 0.6을 더하면 <b>-1.25</b>예요. <code>ball = sphere(pos=vector(0, -1.25, 0), ...)</code>로 바꿔 확인해 보세요.</details></div>
+</section>
+
+<!-- ===================== 4. 공 튀기기 ===================== -->
+<section class="step" id="vp2" data-nav="중력 · 공 튀기기" data-group="코드 실습">
+  <div class="step-head">
+    <div class="kicker">실습 ② · 교과서 156쪽 시뮬레이션을 활용한 중력 작용 확인</div>
+    <h2>중력에 따라 떨어지고 튀어 오르는 공</h2>
+    <p>3단계 <b>모델 구현하기</b>입니다. 모델 설계에서 정한 규칙이 코드의 어디에 들어 있는지 찾아보세요.</p>
+  </div>
+
+  <div class="vp" data-title="교과서 156쪽 · 공 튀기기" data-stack="1"><textarea>Web VPython 3.2
+# 객체 설정
+ball = sphere(pos=vector(0,10,0), radius=1, color=color.red, make_trail=True,
+              trail_type="points", trail_radius=0.1, interval=10)
+scene.background = vector(1,1,1)     # 배경 색상을 흰색으로 설정
+floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)
+
+# 초기 변수 설정
+ball.velocity = vector(0,0,0)   # 공의 초기 속도
+dt = 0.01                       # 루프가 한 번 수행될 때의 시간 간격
+t = 0                           # 전체 수행 시간을 누적하는 변수
+g = -9.8                        # 중력가속도 (아래 방향이므로 -9.8)
+
+while t < 20:
+    rate(100)                                       # 1초당 루프 100번
+    ball.velocity.y = ball.velocity.y + (g*dt)      # 속도 = 현재 속도 + (중력가속도 × 시간 간격)
+    ball.pos = ball.pos + ball.velocity*dt          # 위치 = 현재 위치 + 속도 × 시간 간격
+    crash = floor.pos.y + (floor.size.y/2) + ball.radius   # 충돌이 일어나는 y좌표
+
+    if ball.pos.y < crash:                          # 공이 바닥에 닿으면
+        ball.velocity.y = -ball.velocity.y*0.8      # 방향을 바꾸고, 튀어 오르는 정도 조절
+        ball.pos.y = crash                          # 위치 보정: 바닥 표면 위로
+    t = t + dt                                      # 시간 업데이트</textarea></div>
+
+  <h3>코드 읽기</h3>
+  <table class="lines">
+    <tr><td>ball.velocity.y = ball.velocity.y + (g*dt)</td><td><b>v = v₀ + a·t</b>를 코드로 쓴 것. 0.01초마다 속도가 g×0.01만큼 바뀌어요.</td></tr>
+    <tr><td>ball.pos = ball.pos + ball.velocity*dt</td><td>0.01초 동안 이동한 거리(속도 × 시간)만큼 위치를 바꿔요.</td></tr>
+    <tr><td>crash = floor.pos.y + (floor.size.y/2) + ball.radius</td><td>바닥의 중심 y + 바닥 두께의 절반 + 공 반지름 = 공이 바닥에 닿는 높이</td></tr>
+    <tr><td>ball.velocity.y = -ball.velocity.y*0.8</td><td><b>-</b>는 방향을 반대로(위로), <b>0.8</b>은 에너지 손실로 속도가 80%로 줄어드는 것</td></tr>
+    <tr><td>while t &lt; 20:</td><td>시뮬레이션 시간 20초 동안 반복</td></tr>
+  </table>
+
+  <div class="quiz mcq" data-ans="c">
+    <div class="qh"><span class="badge">계산</span></div>
+    <p class="q">바닥 pos.y = -5, 바닥 size.y = 0.5, 공 radius = 1일 때 crash 값은?</p>
+    <div class="opts"><button data-k="a">① -5</button><button data-k="b">② -4.5</button><button data-k="c">③ -3.75</button><button data-k="d">④ -3.5</button></div>
+    <div class="fb" data-exp="-5 + 0.5/2 + 1 = -5 + 0.25 + 1 = -3.75. 공의 중심이 -3.75보다 아래로 내려가면 바닥에 닿은 거예요."></div>
+  </div>
+
+  <h3>실험 — 값을 바꾸면 어떻게 될까?</h3>
+  <p class="muted" style="margin-top:0">위 코드에서 값을 하나씩 바꿔 실행하고, 결과를 표에 기록하세요. (기록은 이 브라우저에 저장돼요)</p>
+  <table class="plain">
+    <thead><tr><th style="width:30%">바꿀 값</th><th style="width:25%">예측</th><th>관찰 결과</th></tr></thead>
+    <tbody>
+      <tr><td><code>g = -1.6</code> (달)</td><td><input data-save="e1p" placeholder="예측"></td><td><input data-save="e1" placeholder="관찰한 것"></td></tr>
+      <tr><td><code>g = -24.8</code> (목성)</td><td><input data-save="e2p"></td><td><input data-save="e2"></td></tr>
+      <tr><td><code>*0.8</code> → <code>*1.0</code></td><td><input data-save="e3p"></td><td><input data-save="e3"></td></tr>
+      <tr><td><code>*0.8</code> → <code>*0.5</code></td><td><input data-save="e4p"></td><td><input data-save="e4"></td></tr>
+      <tr><td><code>*0.8</code> → <code>*1.2</code></td><td><input data-save="e5p"></td><td><input data-save="e5"></td></tr>
+    </tbody>
+  </table>
+  <details class="answer"><summary>실험 결과 정리</summary>
+    <ul class="tight" style="margin:0">
+      <li><b>달(-1.6)</b>: 천천히 떨어지고 천천히 튄다. <b>목성(-24.8)</b>: 매우 빠르게 떨어지고 빠르게 튄다. 중력가속도가 클수록 속도가 빨리 변한다.</li>
+      <li><b>1.0</b>: 에너지 손실이 없어 처음 높이까지 계속 튄다. <b>0.5</b>: 금방 낮아져 멈춘다.</li>
+      <li><b>1.2</b>: 튈수록 더 높이 올라간다 → 현실에서는 일어날 수 없는 결과! <b>모델 평가</b>에서 이런 값은 잘못된 규칙임을 찾아내야 해요.</li>
+    </ul>
+  </details>
+
+  <div class="mission">
+    <div class="mt"><span class="m">미션</span>지구와 달에서 동시에 공 떨어뜨리기</div>
+    <p>두 공을 나란히 놓고 같은 높이에서 떨어뜨려 비교하는 시뮬레이션입니다. 빈칸 <code>____</code>을 채워 완성하세요.</p>
+    <div class="vp" data-title="미션 · 지구 vs 달" data-stack="1"><textarea>Web VPython 3.2
+scene.background = vector(1,1,1)
+floor = box(pos=vector(0,-5,0), size=vector(16,0.5,6), color=color.blue)
+earth = sphere(pos=vector(-4,10,0), radius=1, color=color.red, make_trail=True)       # 지구의 공
+moon = sphere(pos=vector(4,10,0), radius=1, color=color.orange, make_trail=True)      # 달의 공
+
+earth.velocity = vector(0,0,0)
+moon.velocity = vector(0,0,0)
+g_earth = -9.8          # 지구의 중력가속도
+g_moon = ____           # 달의 중력가속도 (약 1.6, 아래 방향)
+dt = 0.01
+t = 0
+
+while t < 20:
+    rate(100)
+    crash = floor.pos.y + (floor.size.y/2) + 1      # 두 공의 반지름이 1
+
+    # 지구의 공
+    earth.velocity.y = earth.velocity.y + (g_earth*dt)
+    earth.pos = earth.pos + earth.velocity*dt
+    if earth.pos.y < crash:
+        earth.velocity.y = -earth.velocity.y*0.8
+        earth.pos.y = crash
+
+    # 달의 공 — 지구의 공 코드를 참고하여 빈칸을 채우세요
+    moon.velocity.y = moon.velocity.y + (____*dt)
+    moon.pos = moon.pos + moon.velocity*dt
+    if moon.pos.y < crash:
+        moon.velocity.y = ____
+        moon.pos.y = crash
+
+    t = t + dt</textarea></div>
+    <details class="answer"><summary>정답 보기</summary>
+      <pre>g_moon = -1.6
+moon.velocity.y = moon.velocity.y + (g_moon*dt)
+moon.velocity.y = -moon.velocity.y*0.8</pre>
+      <p style="margin:4px 0"><b>해석</b> 같은 높이에서 떨어뜨려도 달의 공은 훨씬 천천히 떨어져 바닥에 늦게 닿고, 튀어 오르는 움직임도 느리다. 중력가속도가 작을수록 속도가 느리게 변하기 때문이다.</p>
+    </details>
+  </div>
+
+  <div class="mission" style="border-style:dashed">
+    <div class="mt"><span class="m" style="background:#8b62c9">도전</span>튀어 오른 횟수 세기</div>
+    <p>원래 공 튀기기 코드에 <code>count</code> 변수를 만들어, 공이 바닥에 닿을 때마다 1씩 늘리고 화면 아래(<code>scene.caption</code>)에 표시해 보세요.</p>
+    <details class="answer"><summary>힌트 / 정답</summary>
+      <pre>count = 0                                   # while 문 위에 추가
+...
+    if ball.pos.y &lt; crash:
+        ball.velocity.y = -ball.velocity.y*0.8
+        ball.pos.y = crash
+        if ball.velocity.y &gt; 0.5:            # 거의 멈춘 공은 세지 않기
+            count = count + 1
+            scene.caption = "튀어 오른 횟수: " + count</pre>
+      <p class="muted" style="margin:4px 0">💡 <code>if ball.velocity.y &gt; 0.5</code>가 없으면 어떻게 될까요? 공이 거의 멈춘 뒤에도 0.01초마다 ‘닿았다’고 계산되어 숫자가 계속 커져요. 이렇게 결과가 현실과 다른 점을 찾아 고치는 것이 <b>모델 평가</b>입니다.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ===================== 5. 입자 운동 ===================== -->
+<section class="step" id="vp3" data-nav="입자 운동 (랜덤워크)" data-group="코드 실습">
+  <div class="step-head">
+    <div class="kicker">실습 ③ · 교과서 158쪽 입자의 운동 현상 확인</div>
+    <h2>무작위로 움직이는 입자들</h2>
+    <p>공기 중의 입자처럼 위치가 <b>무작위로</b> 바뀌는 현상(랜덤워크)을 시뮬레이션합니다. 리스트, 함수, 반복문이 함께 쓰여요.</p>
+  </div>
+
+  <div class="vp" data-title="교과서 158쪽 · 입자 운동"><textarea>Web VPython 3.2
+# 화면 및 초기 입자 설정
+width = 600
+height = 600
+scene = canvas(width=width, height=height, background=color.white, center=vector(width/2, height/2, 0))
+
+num_particles = 100          # 화면에 생성할 입자의 개수
+particle_objects = []        # 생성된 입자 객체들을 담을 리스트(저장소)
+
+for i in range(0, num_particles):    # 입자 생성 및 초기화
+    particle_objects.append(sphere(pos=vector(random()*width, random()*height, 0), color=color.green, radius=10))
+
+# 입자 이동 함수
+def move_particles():
+    for particle in particle_objects:
+        particle.pos.x += (random() - 0.5)*40    # x, y 위치를 무작위로 수정
+        particle.pos.y += (random() - 0.5)*40    # random()은 0.0~1.0 → -0.5를 하면 - 방향 이동도 가능
+
+        if particle.pos.x < 0:                  # 경계에 닿으면 위치 조정
+            particle.pos.x = 0
+        elif particle.pos.x > width:
+            particle.pos.x = width
+        if particle.pos.y < 0:
+            particle.pos.y = 0
+        elif particle.pos.y > height:
+            particle.pos.y = height
+
+while True:
+    rate(100)                # 1초에 루프 100번
+    move_particles()         # 모든 입자를 이동시키는 함수 호출</textarea></div>
+
+  <div class="quiz mcq" data-ans="d">
+    <div class="qh"><span class="badge">퀴즈</span></div>
+    <p class="q"><code>(random() - 0.5)*40</code>이 만들 수 있는 값의 범위는? (random()은 0.0 이상 1.0 미만)</p>
+    <div class="opts"><button data-k="a">① 0 ~ 40</button><button data-k="b">② -0.5 ~ 0.5</button><button data-k="c">③ 0 ~ 20</button><button data-k="d">④ -20 ~ 20</button></div>
+    <div class="fb" data-exp="random() - 0.5는 -0.5 ~ 0.5, 여기에 40을 곱하면 -20 ~ 20이에요. 그래서 입자가 왼쪽·오른쪽, 위·아래로 모두 움직일 수 있어요."></div>
+  </div>
+  <div class="quiz mcq" data-ans="a">
+    <div class="qh"><span class="badge">퀴즈</span></div>
+    <p class="q">입자가 화면 밖으로 나가지 않도록 하는 코드는 어느 부분일까요?</p>
+    <div class="opts"><button data-k="a">① if particle.pos.x &lt; 0: … elif particle.pos.y &gt; height: 부분</button><button data-k="b">② particle_objects = []</button><button data-k="c">③ rate(100)</button><button data-k="d">④ for i in range(0, num_particles):</button></div>
+    <div class="fb" data-exp="x, y 좌표가 0보다 작거나 width·height보다 크면 경계 값으로 되돌려 화면 안에 머물게 해요."></div>
+  </div>
+
+  <table class="plain">
+    <thead><tr><th style="width:36%">실험</th><th>관찰 결과</th></tr></thead>
+    <tbody>
+      <tr><td><code>num_particles = 300</code></td><td><input data-save="p1"></td></tr>
+      <tr><td><code>*40</code> → <code>*10</code></td><td><input data-save="p2"></td></tr>
+      <tr><td><code>*40</code> → <code>*100</code></td><td><input data-save="p3"></td></tr>
+      <tr><td>처음 위치를 모두 가운데로: <code>pos=vector(width/2, height/2, 0)</code></td><td><input data-save="p4"></td></tr>
+    </tbody>
+  </table>
+  <details class="answer"><summary>생각 정리</summary>마지막 실험처럼 한곳에 모여 있던 입자들이 시간이 지나면서 사방으로 퍼져 나가요. 냄새나 잉크가 퍼지는 <b>확산</b> 현상을 이렇게 시뮬레이션으로 관찰할 수 있어요.</details>
+
+  <h3>심화 — 호흡기 전염병 예방 수칙 시뮬레이션 <span class="tag">탐구 활동</span></h3>
+  <p class="muted" style="margin-top:0">빨간 입자(감염자)와 가까이(<code>infect_dist</code> 이내) 있는 파란 입자는 감염됩니다. 거리(밀집도)와 움직임에 따라 감염이 얼마나 빨리 퍼지는지 확인해 보세요.</p>
+  <div class="vp" data-title="심화 · 감염 확산"><textarea>Web VPython 3.2
+width = 600
+height = 600
+scene = canvas(width=width, height=height, background=color.white, center=vector(width/2, height/2, 0))
+
+num_people = 80          # 사람 수 (늘리면 더 밀집)
+step = 20                # 한 번에 움직이는 정도
+infect_dist = 20         # 이 거리보다 가까우면 감염
+
+people = []
+for i in range(num_people):
+    p = sphere(pos=vector(random()*width, random()*height, 0), radius=8, color=color.blue)
+    p.infected = False
+    people.append(p)
+people[0].color = color.red          # 첫 번째 사람이 감염자
+people[0].infected = True
+
+t = 0
+while t < 600:
+    rate(30)
+    for p in people:                                 # 모든 사람 무작위 이동
+        p.pos.x = min(max(p.pos.x + (random()-0.5)*step, 0), width)
+        p.pos.y = min(max(p.pos.y + (random()-0.5)*step, 0), height)
+    for a in people:                                 # 감염자 가까이 있으면 감염
+        if a.infected:
+            for b in people:
+                if (not b.infected) and mag(a.pos - b.pos) < infect_dist:
+                    b.infected = True
+                    b.color = color.red
+    count = 0
+    for p in people:
+        if p.infected:
+            count = count + 1
+    scene.caption = "시간: " + t + "   감염자 수: " + count + " / " + num_people
+    t = t + 1</textarea></div>
+  <div class="think"><b>실험</b> ① <code>num_people</code>를 30과 150으로 바꿔 보기(밀집도) ② <code>infect_dist</code>를 10으로 줄여 보기(거리 두기). 모두 감염되기까지 걸리는 시간이 어떻게 달라지나요?
+    <details class="answer"><summary>생각 정리</summary>사람이 많아(밀집) 서로 가까울수록 감염이 빨리 퍼지고, 감염 거리를 줄이면(거리 두기·마스크) 퍼지는 속도가 느려져요. 눈에 보이지 않는 감염원의 확산을 시뮬레이션으로 확인할 수 있습니다.</details></div>
+</section>
+
+<!-- ===================== 6. 횡단보도 ===================== -->
+<section class="step" id="vp4" data-nav="프로젝트 · 횡단보도" data-group="코드 실습">
+  <div class="step-head">
+    <div class="kicker">실습 ④ · 교과서 162~163쪽 시뮬레이션 프로젝트</div>
+    <h2>횡단보도 보행 시간은 충분할까?</h2>
+    <p>“횡단보도에서의 보행 환경 개선”을 주제로 시뮬레이션 프로젝트 4단계를 따라가 봅니다.</p>
+  </div>
+
+  <div class="model">
+    <div class="k">1단계<br>문제 정의</div><div>시뮬레이션 프로그램을 활용해 횡단보도에서의 보행 상황을 확인해 볼 수 있을까?</div>
+    <div class="k">2단계<br>자료 수집</div><div>• 현재 보행 시간: 보행 진입 시간 <b>7초</b> + 횡단보도 <b>1m당 1초</b> (고령자 등 교통 약자 밀집 지역은 <b>0.8m당 1초</b>)<br>• 65세 이상 노인의 보행 속도: 1초당 약 <b>0.85m</b>, 지팡이 등 보조 장치를 쓰면 <b>0.7m</b> 이하</div>
+    <div class="k">2단계<br>모델 구성</div><div><b>객체</b>: 신호등, 보행자, 횡단보도<br><b>규칙</b>: ① 신호등은 정해진 보행 시간이 지나면 신호를 바꾼다. ② 보행자는 초록불인 동안 1초당 입력한 거리만큼 이동한다.</div>
+    <div class="k">3단계<br>모델 구현</div><div>VPython으로 화면(횡단보도·신호등·보행자)을 구성하고, 입력받은 신호 시간과 보행 속도로 이동을 구현</div>
+    <div class="k">4단계<br>모델 평가</div><div>시뮬레이션의 보행 상황이 실제 보행 상황을 잘 표현하는지 확인</div>
+  </div>
+
+  <div class="vp" data-title="교과서 163쪽 · 횡단보도 (노란 칸에 신호 시간과 보행 속도를 적고 실행)" data-stack="1"><textarea>Web VPython 3.2
+# 초기 설정
+scene = canvas(width=800, height=300, background=color.white)     # 화면 설정
+crosswalk = box(pos=vector(0, -1, 0), size=vector(6, 0.1, 1), color=color.white)     # 횡단보도 생성
+human = sphere(pos=vector(-3, -0.5, 0), size=vector(0.2, 0.2, 0.1), color=color.green)  # 보행자 생성
+
+traffic_light_pole = cylinder(pos=vector(-4, -2, 0), axis=vector(0, 2, 0), radius=0.1, color=color.gray(0.5))
+traffic_light_box = box(pos=vector(-4, 0, 0), size=vector(0.5, 1, 0.5), color=color.red)
+
+print("현재 횡단보도 길이는 :", crosswalk.size.x)
+crosswalk_time = float(input("신호등 제한 시간을 입력하세요(초): "))
+print(f"신호길이 : {crosswalk_time} 초")
+
+human_walk = float(input("보행자가 1초당 건너는 m를 입력하세요: 1m인 경우 1로 입력"))   # 1초당 횡단 거리
+print(f"신호등 제한시간 : {crosswalk_time:.2f} 초")
+print(f"1초당 보행자 횡단거리 : {human_walk:.4f} m")
+
+# 보행자 이동 함수
+def simulation():
+    time = 0
+    dt = 0.01
+    while time < crosswalk_time:
+        rate(100)
+        traffic_light_box.color = color.green      # 초록불로 변경
+        human.pos.x += (human_walk*dt)
+        time += dt
+        if human.pos.x >= crosswalk.size.x/2:     # 오른쪽 끝에 도착하면 종료
+            break
+
+    # 보행 상황 판별
+    if human.pos.x >= crosswalk.size.x/2:
+        traffic_light_box.color = color.green
+        print("보행자가 신호 안에 횡단보도를 건넜습니다.")
+    else:
+        traffic_light_box.color = color.red
+        print("보행자가 신호 안에 횡단보도를 건너지 못했습니다")
+
+simulation()</textarea></div>
+
+  <h3>예측하고 실행하기</h3>
+  <p class="muted" style="margin-top:0">횡단보도 길이는 6m(보행자는 x = -3에서 +3까지 이동). <b>필요한 시간 = 6 ÷ 보행 속도</b>로 먼저 계산한 뒤, 실행해서 확인하세요.</p>
+  <table class="plain">
+    <thead><tr><th>신호 시간(초)</th><th>보행 속도(m/s)</th><th>필요한 시간 계산</th><th>예측(건넘/못 건넘)</th><th>실행 결과</th></tr></thead>
+    <tbody>
+      <tr><td>13 <span class="muted">(7+6×1)</span></td><td>0.85 <span class="muted">(노인)</span></td><td><input data-save="c1a"></td><td><input data-save="c1b"></td><td><input data-save="c1c"></td></tr>
+      <tr><td>8</td><td>1</td><td><input data-save="c2a"></td><td><input data-save="c2b"></td><td><input data-save="c2c"></td></tr>
+      <tr><td>8</td><td>0.7 <span class="muted">(보조 장치)</span></td><td><input data-save="c3a"></td><td><input data-save="c3b"></td><td><input data-save="c3c"></td></tr>
+      <tr><td>5</td><td>0.85</td><td><input data-save="c4a"></td><td><input data-save="c4b"></td><td><input data-save="c4c"></td></tr>
+    </tbody>
+  </table>
+  <details class="answer"><summary>정답 확인</summary>
+    <ul class="tight" style="margin:0">
+      <li>13초, 0.85m/s → 6÷0.85 ≈ 7.1초 필요 → <b>건넘</b></li>
+      <li>8초, 1m/s → 6초 필요 → <b>건넘</b></li>
+      <li>8초, 0.7m/s → 6÷0.7 ≈ 8.6초 필요 → <b>못 건넘</b></li>
+      <li>5초, 0.85m/s → 약 7.1초 필요 → <b>못 건넘</b></li>
+    </ul>
+  </details>
+
+  <div class="quiz mcq" data-ans="c">
+    <div class="qh"><span class="badge">모델 평가</span></div>
+    <p class="q">이 시뮬레이션을 실제 상황과 비교할 때, <b>모델을 개선</b>할 점으로 가장 알맞은 것은?</p>
+    <div class="opts">
+      <button data-k="a">① 신호등 기둥의 색을 회색에서 검은색으로 바꾼다.</button>
+      <button data-k="b">② 화면의 배경색을 바꾼다.</button>
+      <button data-k="c">③ 실제로는 초록불이 켜진 뒤 바로 출발하지 못하는 경우가 있으므로, 출발이 늦어지는 시간을 규칙에 넣는다.</button>
+      <button data-k="d">④ print 문의 문장을 더 길게 쓴다.</button>
+    </div>
+    <div class="fb" data-exp="모델 평가는 실행 결과가 현실을 잘 나타내는지 확인하는 단계예요. 겉모양보다 규칙(출발 지연, 보행 속도의 차이, 신호 깜빡임 등)이 현실과 다른 점을 찾아 개선해야 해요."></div>
+  </div>
+</section>
+
+<!-- ===================== 7. 정리 ===================== -->
+<section class="step" id="wrap" data-nav="정리 · 수행평가 대비" data-group="정리">
+  <div class="step-head">
+    <div class="kicker">정리</div>
+    <h2>나만의 시뮬레이션 기획서 연습</h2>
+    <p>우리 주변의 문제(환경, 주거, 교통 등)를 하나 골라 시뮬레이션 제작 4단계로 기획해 보세요. 수행평가의 설계 문항 연습입니다.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><span class="tag" style="background:#f6e3ef;color:var(--s1)">1단계</span><b>문제 정의하기</b><textarea class="note" data-save="w1" placeholder="시뮬레이션으로 무엇을 확인하고 싶나요?"></textarea></div>
+    <div class="card"><span class="tag" style="background:#eef5e2;color:#5b7d21">2단계</span><b>모델 설계하기 — 자료 수집</b><textarea class="note" data-save="w2" placeholder="어떤 자료(수치, 법칙, 조사 결과)가 필요한가요?"></textarea></div>
+    <div class="card"><span class="tag" style="background:#eef5e2;color:#5b7d21">2단계</span><b>모델 설계하기 — 객체와 규칙</b><textarea class="note" data-save="w3" placeholder="객체: … / 규칙: …"></textarea></div>
+    <div class="card"><span class="tag" style="background:#e5effb;color:var(--s3)">3단계</span><b>모델 구현하기</b><textarea class="note" data-save="w4" placeholder="어떤 VPython 객체(sphere, box…)와 코드(while, if…)를 쓸까요?"></textarea></div>
+    <div class="card" style="grid-column:1/-1"><span class="tag" style="background:#efe7fa;color:var(--s4)">4단계</span><b>모델 평가하기</b><textarea class="note" data-save="w5" placeholder="결과가 현실을 잘 나타내는지 어떻게 확인할까요? 현실과 다른 점은?"></textarea></div>
+  </div>
+  <details class="answer"><summary>예시 보기 — 비 오는 날 우산 속도 시뮬레이션</summary>
+    <p style="margin:4px 0"><b>1단계</b> 걷는 속도에 따라 비를 얼마나 맞는지 시뮬레이션으로 확인할 수 있을까?</p>
+    <p style="margin:4px 0"><b>2단계 자료</b> 빗방울의 낙하 속도(약 초당 수 m), 사람의 걷기·뛰기 속도(초당 약 1.4m, 3m)</p>
+    <p style="margin:4px 0"><b>2단계 객체·규칙</b> 객체: 사람(상자), 빗방울(작은 구 여러 개) / 규칙: 빗방울은 일정한 속도로 떨어지고, 사람은 입력한 속도로 이동하며, 사람에 닿은 빗방울 수를 센다.</p>
+    <p style="margin:4px 0"><b>3단계</b> 빗방울을 리스트로 만들고 while 반복문으로 위치를 갱신, if로 사람과의 충돌을 판별한다.</p>
+    <p style="margin:4px 0"><b>4단계</b> 속도를 바꿔 실행한 결과를 실제 경험과 비교한다. 바람의 영향은 무시했으므로 바람을 규칙에 추가할 수 있다.</p>
+  </details>
+
+  <h3>수행평가 전 스스로 점검</h3>
+  <div class="card checklist">
+    <label><input type="checkbox" data-save="k1"> 시뮬레이션과 시뮬레이션 프로그램의 뜻, 3가지 역할을 설명할 수 있다.</label>
+    <label><input type="checkbox" data-save="k2"> 시뮬레이션 제작 4단계의 이름과 각 단계에서 하는 일을 말할 수 있다.</label>
+    <label><input type="checkbox" data-save="k3"> 모델 구성 요소(객체, 규칙)와 모델의 가정을 예를 들어 설명할 수 있다.</label>
+    <label><input type="checkbox" data-save="k4"> sphere, box, cylinder의 pos, size, radius, color, axis를 바꿀 수 있다.</label>
+    <label><input type="checkbox" data-save="k5"> rate(), while, if가 시뮬레이션에서 하는 역할을 설명할 수 있다.</label>
+    <label><input type="checkbox" data-save="k6"> 공 튀기기 코드에서 중력가속도와 튀어 오르는 정도를 바꾸고 결과를 해석할 수 있다.</label>
+    <label><input type="checkbox" data-save="k7"> 실행 결과를 현실과 비교하여 모델의 한계와 개선점을 쓸 수 있다.</label>
+  </div>
+
+  <h3>glowscript.org에서 직접 해 보기 <span class="muted" style="font-weight:400">(선택)</span></h3>
+  <div class="card">
+    <ol class="tight" style="margin:0">
+      <li><a href="https://www.glowscript.org" target="_blank" rel="noopener">glowscript.org</a> 접속 → <b>Sign in</b>으로 로그인</li>
+      <li>화면 가운데 <b>your programs are here</b> 링크 클릭 → <b>Create New Program</b></li>
+      <li>이 페이지 코드 칸의 <kbd>📋 복사</kbd> 버튼으로 코드를 복사해 붙여 넣고 <b>Run this program</b></li>
+    </ol>
+  </div>
+</section>
+
+<div class="navbtns" id="navbtns"></div>
+</main>
+</div>
+
+<!-- VPython 실행용 iframe 문서 (코드마다 새로 만들어 이전 실행을 완전히 멈춤) -->
+<script type="text/plain" id="runner-src">
+<!doctype html><html><head><meta charset="utf-8">
+<link type="text/css" href="https://www.glowscript.org/css/redmond/2.1/jquery-ui.custom.css" rel="stylesheet">
+<link type="text/css" href="https://www.glowscript.org/css/ide.css" rel="stylesheet">
+<style>html,body{margin:0;background:#fff;font-family:sans-serif} #wrap{padding:8px} .glowscript{font-size:15px}
+textarea#print{width:calc(100% - 16px)!important;height:130px!important;margin:6px 8px 8px;font-size:14px!important;font-family:'Nanum Gothic Coding',monospace!important;border:1px solid #e4e6ee;border-radius:8px;padding:6px 8px;box-sizing:border-box;background:#fafbfd}</style>
+</head><body><div id="wrap"><div id="glowscript" class="glowscript"></div></div>
+<!-- glow는 불러올 때 print 위치를 $("body")로 잡으므로 body 안에서 불러와야 print 결과가 보인다 -->
+<script src="https://www.glowscript.org/lib/jquery/2.1/jquery.min.js"><\/script>
+<script src="https://www.glowscript.org/lib/jquery/2.1/jquery-ui.custom.min.js"><\/script>
+<script src="https://www.glowscript.org/package/glow.3.2.min.js" charset="UTF-8"><\/script>
+<script src="https://www.glowscript.org/package/RSrun.3.2.min.js"><\/script>
+<script src="https://www.glowscript.org/package/RScompiler.3.2.min.js"><\/script>
+<script>
+var KEY = '@@KEY@@';
+function send(o) { o.key = KEY; parent.postMessage(o, '*'); }
+function lineOf(err, prog) {
+  try {
+    var rawStack = typeof err.stack == 'string' ? err.stack.split('\n') : (err.stack || []);
+    var unpack = /[ ]*at[ ]([^ ]*)[^>]*>:(\d*):(\d*)/;
+    var lines = prog.split('\n');
+    for (var i = 0; i < rawStack.length; i++) {
+      var m = rawStack[i].match(unpack); if (m === null) continue;
+      if (m[1].slice(0, 3) == 'RS_') continue;
+      var jsline = +m[2], jschar = +m[3], line = lines[jsline - 1], L, end;
+      if (line === undefined) continue;
+      for (var c = jschar; c >= 0; c--) {
+        if (line[c] == ';') { if (c > 0 && line[c - 1] == '"') { end = c - 1; c--; } }
+        else if (line[c] == '"' && end !== undefined) { L = line.slice(c + 1, end); break; }
+        else if (c === 0) { jsline--; line = lines[jsline - 1]; if (line === undefined) break; c = line.length; }
+      }
+      if (L !== undefined) return Number(L);
+    }
+  } catch (e) {}
+  return null;
+}
+setInterval(function () { send({type: 'height', h: document.documentElement.scrollHeight}); }, 400);
+window.addEventListener('message', async function (e) {
+  if (!e.data || e.data.type !== 'run') return;
+  // input()은 prompt 창을 쓰므로, 바깥 페이지의 입력 칸에 적은 값을 차례대로 돌려준다
+  var answers = (e.data.inputs || []).slice();
+  window.prompt = function () { return answers.length ? String(answers.shift()) : null; };
+  var prog;
+  try {
+    prog = window.glowscript_compile(e.data.code, {lang: 'vpython', version: '3.2'});
+  } catch (err) {
+    // 컴파일러가 알려 주는 줄 번호는 1만큼 크다 (GlowScript 오프라인 IDE와 같은 보정)
+    var msg = String(err), m = msg.match(/line(\s*)(\d+)/), n = m ? Number(m[2]) - 1 : null;
+    if (m) msg = msg.replace(m[0], 'line' + m[1] + n);
+    send({type: 'error', phase: 'compile', msg: msg, line: n});
+    return;
+  }
+  try {
+    window.__context = {glowscript_container: $('#glowscript').removeAttr('id')};
+    eval(prog);
+    send({type: 'started'});
+    await __main__();
+    send({type: 'done'});
+  } catch (err) {
+    send({type: 'error', phase: 'run', msg: String(err), line: lineOf(err, prog)});
+  }
+});
+send({type: 'ready'});
+<\/script></body></html>
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script>
+(() => {
+'use strict';
+const STORE = 'sw-sim-lab:';
+const store = {
+  get(k) { try { return localStorage.getItem(STORE + k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(STORE + k, v); } catch (e) {} },
+};
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+
+/* ---------------- 단계 내비게이션 ---------------- */
+const steps = $$('.step');
+const nav = $('#sidenav');
+const cells = [];
+let lastGroup = null;
+steps.forEach((s, i) => {
+  if (s.dataset.group !== lastGroup) {
+    lastGroup = s.dataset.group;
+    const l = document.createElement('div'); l.className = 'navlabel'; l.textContent = lastGroup; nav.appendChild(l);
+  }
+  const a = document.createElement('a');
+  a.href = '#' + s.id; a.dataset.id = s.id;
+  a.innerHTML = '<span class="n">' + i + '</span><span>' + esc(s.dataset.nav) + '</span>';
+  nav.appendChild(a);
+});
+function show(id) {
+  const idx = Math.max(0, steps.findIndex((s) => s.id === id));
+  steps.forEach((s, i) => s.classList.toggle('active', i === idx));
+  $$('a', nav).forEach((a) => a.classList.toggle('active', a.dataset.id === steps[idx].id));
+  const nb = $('#navbtns'); nb.innerHTML = '';
+  const prev = steps[idx - 1], next = steps[idx + 1];
+  const mk = (s, label) => { const b = document.createElement('a'); b.className = 'btn' + (label.startsWith('←') ? ' ghost' : ''); b.href = '#' + s.id; b.textContent = label; b.style.textDecoration = 'none'; return b; };
+  nb.appendChild(prev ? mk(prev, '← ' + prev.dataset.nav) : document.createElement('span'));
+  if (next) nb.appendChild(mk(next, next.dataset.nav + ' →'));
+  // 다른 단계로 가면 실행 중인 시뮬레이션을 멈춘다
+  cells.forEach((c) => { if (!steps[idx].contains(c.el)) c.stop(true); else c.cm.refresh(); });
+  const act = $('a.active', nav); if (act && window.innerWidth <= 900) act.scrollIntoView({inline: 'center', block: 'nearest'});
+}
+window.addEventListener('hashchange', () => { show(location.hash.slice(1)); window.scrollTo(0, 0); });
+
+$$('.stage').forEach((b) => b.addEventListener('click', () => b.classList.toggle('open')));
+
+/* ---------------- 객관식 ---------------- */
+$$('.quiz.mcq').forEach((q) => {
+  const fb = $('.fb', q);
+  $$('.opts button', q).forEach((b) => b.addEventListener('click', () => {
+    const ok = b.dataset.k === q.dataset.ans;
+    $$('.opts button', q).forEach((x) => x.classList.remove('right', 'wrong'));
+    b.classList.add(ok ? 'right' : 'wrong');
+    fb.className = 'fb show ' + (ok ? 'ok' : 'no');
+    fb.textContent = ok ? '정답! ' + (fb.dataset.exp || '') : '다시 생각해 보세요.';
+  }));
+});
+
+/* ---------------- 분류 활동 ---------------- */
+$$('.quiz.sorter').forEach((q) => {
+  const items = $$('.item', q);
+  const isStage = q.dataset.name === 'stage-sort';
+  const labels = isStage ? {'1': '1단계 문제 정의', '2': '2단계 모델 설계', '3': '3단계 모델 구현', '4': '4단계 모델 평가'} : null;
+  const opts = isStage ? ['1', '2', '3', '4'] : [...new Set(items.map((i) => i.dataset.ans))].sort();
+  items.forEach((it) => {
+    $('select', it).innerHTML = '<option value="">선택</option>' + opts.map((o) => '<option value="' + esc(o) + '">' + esc(labels ? labels[o] : o) + '</option>').join('');
+  });
+  const fb = $('.fb', q);
+  $('.grade', q).addEventListener('click', () => {
+    let right = 0;
+    items.forEach((it) => { const ok = $('select', it).value === it.dataset.ans; it.classList.toggle('right', ok); it.classList.toggle('wrong', !ok); if (ok) right++; });
+    const all = right === items.length;
+    fb.className = 'fb show ' + (all ? 'ok' : 'no');
+    fb.textContent = all ? '모두 정답! 🎉' : items.length + '개 중 ' + right + '개 정답. 빨간 칸을 다시 골라 보세요.';
+  });
+  $('.reset', q).addEventListener('click', () => { items.forEach((it) => { $('select', it).value = ''; it.classList.remove('right', 'wrong'); }); fb.className = 'fb'; });
+});
+
+/* ---------------- 기록 저장 ---------------- */
+$$('[data-save]').forEach((el) => {
+  const k = el.dataset.save; const v = store.get(k);
+  if (el.type === 'checkbox') { el.checked = v === '1'; el.addEventListener('change', () => store.set(k, el.checked ? '1' : '0')); }
+  else { if (v) el.value = v; el.addEventListener('input', () => store.set(k, el.value)); }
+});
+
+/* ---------------- VPython 실행기 ---------------- */
+const RUNNER = $('#runner-src').textContent.replace(/<\\\/script>/g, '</' + 'script>');
+const HEADER = /^\s*(Web\s*VPython|GlowScript)\s*[0-9.]+/i;
+function hintFor(msg) {
+  if (/____/.test(msg)) return '빈칸(____)이 아직 남아 있어요. 알맞게 채운 뒤 실행하세요.';
+  if (/is not defined|undefined variable/i.test(msg)) return '정의되지 않은 이름이 있어요. 변수·객체 이름의 철자와 대소문자를 확인하세요.';
+  if (/parenthes|bracket|Unexpected|Missing|unterminated|EOF/i.test(msg)) return '괄호 ( ), 따옴표 " ", 쉼표, 콜론(:)의 짝이 맞는지 확인하세요.';
+  if (/indent/i.test(msg)) return '들여쓰기(줄 앞 빈칸)를 확인하세요. while·if·def 아래 줄은 4칸 들여씁니다.';
+  if (/not a function|is not callable/i.test(msg)) return '함수처럼 쓸 수 없는 이름에 ( )를 붙였어요. 철자를 확인하세요.';
+  if (/Cannot read prop|of undefined|of null/i.test(msg)) return '없는 속성을 사용했어요. pos, size, radius, color, velocity 등 철자를 확인하세요.';
+  return '오류가 난 줄과 그 위아래 줄을 살펴보세요.';
+}
+let activeKey = null;
+window.addEventListener('message', (e) => {
+  const d = e.data; if (!d || !d.key) return;
+  const c = cells.find((x) => x.key === d.key); if (c) c.onMsg(d);
+});
+
+$$('.vp').forEach((el, i) => {
+  const ta = $('textarea', el); const original = ta.value;
+  const head = document.createElement('div'); head.className = 'vp-head';
+  head.innerHTML = '<span class="lbl">코드 ' + (i + 1) + '</span><span class="ttl">' + esc(el.dataset.title || '') + '</span>' +
+    '<button class="btn small run">▶ 실행</button><button class="btn small stop" style="display:none">■ 멈춤</button>' +
+    '<button class="btn ghost small copy" title="glowscript.org에 붙여 넣을 수 있도록 복사">📋 복사</button>' +
+    '<button class="btn ghost small reset" title="처음 코드로 되돌리기">↺ 되돌리기</button>';
+  const body = document.createElement('div'); body.className = 'vp-body';
+  const left = document.createElement('div'); const out = document.createElement('div'); out.className = 'vp-out';
+  const idle = '<div class="placeholder">▶ 실행을 누르면 여기에 시뮬레이션이 나타나요<br><span style="font-size:13px">단축키: 코드 칸에서 Shift+Enter</span></div>';
+  out.innerHTML = idle;
+  const errBox = document.createElement('div'); errBox.className = 'vp-err';
+  const inBox = document.createElement('div'); inBox.className = 'vp-inputs';
+  el.insertBefore(head, ta); el.insertBefore(inBox, ta); el.insertBefore(body, ta); body.appendChild(left); body.appendChild(out); left.appendChild(ta); el.appendChild(errBox);
+  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
+    extraKeys: {'Shift-Enter': () => run(), 'Ctrl-Enter': () => run(), Tab: (c) => c.replaceSelection('    ')}});
+  const runBtn = $('.run', head), stopBtn = $('.stop', head);
+  const cell = {el, cm, key: null, stop, onMsg};
+  cells.push(cell);
+  let frame = null, offset = 0, errLine = null;
+
+  function clearErr() { errBox.className = 'vp-err'; errBox.innerHTML = ''; if (errLine !== null) { cm.removeLineClass(errLine, 'background', 'cm-errline'); errLine = null; } }
+  function showErr(msg, line) {
+    const src = cm.getValue().split('\n');
+    const userLine = line ? line - offset : null;
+    let where = '';
+    if (userLine && userLine >= 1 && userLine <= src.length) {
+      where = userLine + '번째 줄: <code>' + esc(src[userLine - 1].trim()) + '</code><br>';
+      errLine = userLine - 1; cm.addLineClass(errLine, 'background', 'cm-errline');
+    }
+    errBox.innerHTML = '<b>⚠ 오류</b> ' + where + '<span class="mono" style="font-size:14px">' + esc(msg) + '</span><div class="hint">💡 ' + esc(hintFor(cm.getValue().includes('____') ? '____' : msg)) + '</div>';
+    errBox.className = 'vp-err show';
+  }
+  // 코드 속 input("안내 문장") 호출을 찾아 입력 칸을 만든다
+  let inputVals = [];
+  function scanInputs() {
+    const labels = [...cm.getValue().matchAll(/\binput\s*\(\s*(?:(["'])((?:\\.|(?!\1).)*)\1)?/g)].map((m, k) => m[2] || ('입력 ' + (k + 1)));
+    const old = $$('input', inBox).map((x) => x.value);
+    if (old.length) inputVals = old;
+    if (!labels.length) { inBox.className = 'vp-inputs'; inBox.innerHTML = ''; return; }
+    inBox.innerHTML = '<div class="t">⌨ 실행할 때 코드의 input()에 들어갈 값을 먼저 적으세요</div>' +
+      labels.map((l, k) => '<label>' + esc(l) + '<input inputmode="decimal" value="' + esc(inputVals[k] || '') + '"></label>').join('');
+    inBox.className = 'vp-inputs show';
+    $$('input', inBox).forEach((x) => x.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') run(); }));
+  }
+  let scanTimer = null;
+  cm.on('change', () => { clearTimeout(scanTimer); scanTimer = setTimeout(scanInputs, 400); });
+  scanInputs();
+
+  function run() {
+    scanInputs();
+    const fields = $$('input', inBox);
+    const empty = fields.filter((x) => x.value.trim() === '');
+    fields.forEach((x) => x.classList.toggle('need', x.value.trim() === ''));
+    if (empty.length) { empty[0].focus(); return; }
+    cell.inputs = fields.map((x) => x.value.trim());
+    stop(true); clearErr();
+    let code = cm.getValue();
+    offset = 0;
+    if (!HEADER.test(code.split('\n')[0] || '')) { code = 'Web VPython 3.2\n' + code; offset = 1; }
+    else code = code.replace(/^\s*[^\n]*/, 'Web VPython 3.2');
+    cell.key = 'k' + Date.now() + Math.random().toString(36).slice(2);
+    out.innerHTML = '<div class="placeholder">VPython 준비 중… (처음에는 몇 초 걸려요)</div>';
+    frame = document.createElement('iframe');
+    frame.setAttribute('title', 'VPython 실행 화면');
+    frame.style.height = '0px';
+    frame.srcdoc = RUNNER.replace('@@KEY@@', cell.key);
+    out.appendChild(frame);
+    cell.pendingCode = code;
+    runBtn.textContent = '▶ 다시 실행'; stopBtn.style.display = '';
+  }
+  function stop(silent) {
+    if (!frame) return;
+    frame.remove(); frame = null; cell.key = null;
+    stopBtn.style.display = 'none'; runBtn.textContent = '▶ 실행';
+    out.innerHTML = silent ? idle : '<div class="placeholder">■ 멈췄어요. ▶ 실행을 누르면 처음부터 다시 시작해요.</div>';
+  }
+  function onMsg(d) {
+    if (!frame) return;
+    if (d.type === 'ready') { frame.contentWindow.postMessage({type: 'run', code: cell.pendingCode, inputs: cell.inputs || []}, '*'); }
+    else if (d.type === 'started') { const p = $('.placeholder', out); if (p) p.remove(); }
+    else if (d.type === 'height') { frame.style.height = Math.min(Math.max(d.h, 120), 1400) + 'px'; }
+    else if (d.type === 'error') { const p = $('.placeholder', out); if (p) p.remove(); showErr(d.msg, d.line); }
+    else if (d.type === 'done') { stopBtn.style.display = 'none'; }
+  }
+  runBtn.addEventListener('click', run);
+  stopBtn.addEventListener('click', () => stop(false));
+  $('.reset', head).addEventListener('click', () => { if (confirm('이 코드를 처음 상태로 되돌릴까요?')) { stop(true); clearErr(); cm.setValue(original); } });
+  $('.copy', head).addEventListener('click', async (ev) => {
+    const b = ev.currentTarget;
+    try { await navigator.clipboard.writeText(cm.getValue()); b.textContent = '✓ 복사됨'; }
+    catch (e) { cm.execCommand('selectAll'); b.textContent = 'Ctrl+C로 복사'; }
+    setTimeout(() => { b.textContent = '📋 복사'; }, 1600);
+  });
+});
+
+show(location.hash.slice(1) || 'start');
+})();
+</script>
+</body>
+</html>

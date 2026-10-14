@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소프트웨어와 생활 실습실</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f2330;--ink-2:#4a5063;--line:#e4e6ee;--bg:#f6f7fb}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--ink);word-break:keep-all}
+main{max-width:860px;margin:0 auto;padding:56px 16px}
+h1{font-size:30px;font-weight:900;margin:0 0 6px}
+p.lead{color:var(--ink-2);margin:0 0 28px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+a.card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;border-top:6px solid var(--c);transition:transform .15s,box-shadow .15s}
+a.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(31,35,48,.08)}
+.unit{display:inline-block;background:var(--c);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:2px 10px}
+a.card h2{font-size:22px;margin:10px 0 6px}
+a.card p{margin:0;color:var(--ink-2);font-size:15px;line-height:1.6}
+a.card .go{margin-top:14px;font-weight:700;color:var(--c)}
+@media (max-width:640px){.cards{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>소프트웨어와 생활 실습실</h1>
+  <p class="lead">수행평가 대비 연습 — 로그인 없이 바로 코드를 실행할 수 있어요. 크롬 또는 엣지 브라우저를 사용하세요.</p>
+  <div class="cards">
+    <a class="card" href="data.html" style="--c:#d6457a">
+      <span class="unit">Ⅲ 단원</span>
+      <h2>데이터 분석 실습실</h2>
+      <p>데이터 분석 4단계 복습, pandas로 빙하 면적 데이터 전처리·시각화, 조건 바꾸기 미션(자동 확인)</p>
+      <div class="go">들어가기 →</div>
+    </a>
+    <a class="card" href="simulation.html" style="--c:#3f8f3a">
+      <span class="unit">Ⅳ 단원</span>
+      <h2>시뮬레이션 실습실</h2>
+      <p>시뮬레이션 제작 4단계 복습, VPython으로 공 튀기기·입자 운동·횡단보도 시뮬레이션 실험</p>
+      <div class="go">들어가기 →</div>
+    </a>
+  </div>
+</main>
+</body>
+</html>
