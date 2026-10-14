@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>읽고, 실험하다</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;700;900&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1f2330; --ink-2:#4a5063; --ink-3:#7a8094; --line:#e4e6ee; --bg:#f6f7fb; --card:#fff;
+  --data:#d6457a; --data-soft:#fdeef3; --sim:#3f8f3a; --sim-soft:#eef7e8;
+  --night:#0d1326; --night-2:#18213d; --gold:#f2c46d;
+  --s1:#c9579a; --s2:#7fa83a; --s3:#3f7fd1; --s4:#8b62c9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--ink);background:var(--bg);word-break:keep-all}
+code,.mono{font-family:'Nanum Gothic Coding',ui-monospace,monospace}
+/* ---------- 슬라이드 ---------- */
+.deck{position:fixed;inset:0}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:56px max(5vw,20px) 84px;opacity:0;pointer-events:none;transition:opacity .45s ease;overflow-y:auto;background:var(--bg)}
+.slide.on{opacity:1;pointer-events:auto}
+.slide .inner{max-width:1180px;width:100%;margin:0 auto}
+.slide.dark{background:radial-gradient(ellipse at 50% 120%,#24305a 0%,var(--night) 60%);color:#e8ecf8}
+.slide.dark::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1px 1px at 12% 22%,#fff8,transparent),radial-gradient(1px 1px at 72% 14%,#fff6,transparent),radial-gradient(1.5px 1.5px at 38% 68%,#fff5,transparent),radial-gradient(1px 1px at 88% 58%,#fff7,transparent),radial-gradient(1px 1px at 55% 35%,#fff4,transparent),radial-gradient(1.5px 1.5px at 22% 85%,#fff5,transparent),radial-gradient(1px 1px at 92% 88%,#fff6,transparent);pointer-events:none}
+.slide.data-c{background:linear-gradient(160deg,#fff 0%,var(--data-soft) 100%)}
+.slide.sim-c{background:linear-gradient(160deg,#fff 0%,var(--sim-soft) 100%)}
+/* ---------- 프롤로그 문체 ---------- */
+.kicker{font-weight:700;letter-spacing:.18em;font-size:15px;text-transform:uppercase;opacity:.75}
+.serif{font-family:'Noto Serif KR',serif}
+.title-xl{font-family:'Noto Serif KR',serif;font-weight:900;font-size:clamp(40px,7vw,92px);line-height:1.15;margin:14px 0}
+.title-l{font-family:'Noto Serif KR',serif;font-weight:900;font-size:clamp(32px,5vw,62px);line-height:1.2;margin:10px 0}
+.lead{font-size:clamp(18px,2vw,24px);line-height:1.8;opacity:.9}
+.story p{font-family:'Noto Serif KR',serif;font-size:clamp(20px,2.4vw,32px);line-height:1.9;margin:0 0 .5em;opacity:0;transform:translateY(8px);transition:opacity .8s ease,transform .8s ease}
+.story p.shown{opacity:1;transform:none}
+.story p .hl{color:var(--gold);font-weight:700}
+.chapter-no{font-family:'Noto Serif KR',serif;font-size:clamp(20px,2.4vw,30px);color:var(--gold);letter-spacing:.3em}
+.center{text-align:center}
+.hint-next{position:absolute;bottom:96px;left:0;right:0;text-align:center;font-size:14px;opacity:.55;animation:blink 2s infinite}
+@keyframes blink{50%{opacity:.15}}
+/* ---------- 본문 슬라이드 ---------- */
+.tag{display:inline-block;font-size:14px;font-weight:700;border-radius:999px;padding:3px 14px;color:#fff;background:var(--data)}
+.sim-c .tag{background:var(--sim)}
+h2{font-size:clamp(28px,3.6vw,46px);font-weight:900;margin:10px 0 6px;line-height:1.25}
+.sub{font-size:clamp(17px,1.7vw,21px);color:var(--ink-2);margin:0 0 22px;line-height:1.7}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:0 6px 20px rgba(31,35,48,.05)}
+.card h3{margin:0 0 6px;font-size:clamp(19px,1.8vw,24px);font-weight:800}
+.card p,.card li{font-size:clamp(15.5px,1.4vw,18px);line-height:1.65;color:var(--ink-2);margin:0}
+.card ul{margin:4px 0 0;padding-left:20px}
+.card .em{color:var(--ink);font-weight:700}
+.icon{font-size:30px;line-height:1;margin-bottom:8px}
+.big-q{font-family:'Noto Serif KR',serif;font-size:clamp(22px,2.6vw,34px);font-weight:700;line-height:1.5}
+/* 4단계 */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;counter-reset:st}
+.st{border-radius:18px;padding:18px;color:#fff;min-height:170px;cursor:pointer;border:0;text-align:left;font:inherit;position:relative;transition:transform .2s}
+.st:hover{transform:translateY(-3px)}
+.st .n{font-size:14px;font-weight:700;opacity:.9}
+.st .t{font-size:clamp(20px,2vw,26px);font-weight:900;margin:4px 0 8px}
+.st .d{font-size:clamp(14.5px,1.3vw,17px);line-height:1.6;opacity:0;transition:opacity .3s}
+.st.open .d{opacity:1}
+.st .h{position:absolute;bottom:12px;right:14px;font-size:12px;opacity:.8}
+.st.open .h{display:none}
+.st:nth-child(1){background:var(--s1)} .st:nth-child(2){background:var(--s2)} .st:nth-child(3){background:var(--s3)} .st:nth-child(4){background:var(--s4)}
+/* 비교 */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:stretch}
+.vs .mid{align-self:center;font-family:'Noto Serif KR',serif;font-weight:900;font-size:28px;color:var(--ink-3)}
+/* 표 */
+table.t{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;font-size:clamp(14.5px,1.35vw,17px)}
+table.t th,table.t td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+table.t th{background:#f1f2f7}
+table.t td.bad{background:#fdeaec;font-weight:700;color:#a3202c}
+/* 퀴즈 카드 */
+.quiz{display:grid;gap:14px}
+.qz{background:#fff;border:2px solid var(--line);border-radius:18px;padding:18px 22px;cursor:pointer;transition:border-color .2s}
+.qz:hover{border-color:#c9cfe2}
+.qz .q{font-size:clamp(18px,1.8vw,23px);font-weight:700;line-height:1.5}
+.qz .a{margin-top:10px;font-size:clamp(16px,1.5vw,20px);line-height:1.6;color:#14593a;background:#e5f5ec;border-radius:12px;padding:10px 14px;display:none}
+.qz.open{border-color:#1f8a4c}
+.qz.open .a{display:block}
+.qz .tap{font-size:13px;color:var(--ink-3);margin-top:6px}
+.qz.open .tap{display:none}
+/* 그래프 아이콘 */
+.chart svg{width:100%;height:76px;display:block;margin-bottom:6px}
+/* 코드 박스 */
+pre.code{background:#101626;color:#e6ebff;border-radius:14px;padding:16px 18px;font-size:clamp(14px,1.3vw,17px);line-height:1.6;overflow:auto;margin:0}
+pre.code .c{color:#7f8bb3}
+pre.code .k{color:#f2c46d}
+/* ---------- 하단 내비 ---------- */
+.nav{position:fixed;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:14px;padding:0 max(3vw,16px);z-index:10;background:linear-gradient(to top,rgba(246,247,251,.96),rgba(246,247,251,.75));backdrop-filter:blur(6px);border-top:1px solid var(--line);transition:background .4s,border-color .4s}
+.nav.dark{background:linear-gradient(to top,rgba(13,19,38,.92),rgba(13,19,38,.5));border-color:#ffffff1a;color:#e8ecf8}
+.nav button{font:inherit;font-weight:700;border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:10px;padding:6px 14px;cursor:pointer;opacity:.85}
+.nav button:hover{opacity:1}
+.nav .chap{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.bar{flex:1;height:6px;border-radius:999px;background:#0000001a;position:relative;overflow:hidden;min-width:60px}
+.nav.dark .bar{background:#ffffff22}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--data),var(--gold),var(--sim));border-radius:999px;transition:width .4s}
+.count{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;opacity:.8}
+@media (max-width:860px){
+  .g3,.g4,.g5,.steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g2,.vs{grid-template-columns:1fr}
+  .vs .mid{text-align:center}
+  .slide{justify-content:flex-start;padding-top:40px}
+  .nav .chap{display:none}
+}
+@media (max-width:520px){ .g3,.g4,.g5,.steps{grid-template-columns:1fr} }
+@media print{ html,body{overflow:visible;height:auto} .deck{position:static} .slide{position:relative;opacity:1;page-break-after:always;min-height:100vh} .nav,.hint-next{display:none} .story p{opacity:1;transform:none} .st .d,.qz .a{opacity:1;display:block} }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ===================== PROLOGUE ===================== -->
+<section class="slide dark" data-chap="Prologue">
+  <div class="inner center">
+    <div class="kicker">소프트웨어와 생활 · Ⅲ·Ⅳ단원 이론 복습</div>
+    <div class="title-xl">읽고, 실험하다</div>
+    <p class="lead">— 현상을 분석하는 소프트웨어 &amp; 모의 실험하는 소프트웨어 —</p>
+  </div>
+  <div class="hint-next">→ 키 또는 화면을 눌러 시작</div>
+</section>
+
+<section class="slide dark" data-chap="Prologue">
+  <div class="inner story" style="max-width:980px">
+    <div class="kicker" style="margin-bottom:28px">Prologue</div>
+    <p>어느 날, 뉴스에서 이런 말을 들었다.</p>
+    <p><span class="hl">“이대로라면 2070년에는 북극의 여름 빙하가 모두 사라질 수도 있습니다.”</span></p>
+    <p>정말일까? 누가, 무엇을 근거로 그렇게 말할 수 있을까?</p>
+    <p>그리고 만약 사실이라면 — 우리는 무엇을 미리 해 볼 수 있을까?</p>
+  </div>
+</section>
+
+<section class="slide dark" data-chap="Prologue">
+  <div class="inner story" style="max-width:1040px">
+    <p>답을 찾으려면 두 가지 도구가 필요하다.</p>
+    <p>하나는 <span class="hl">이미 일어난 일</span>을 숫자로 읽어 내는 도구 — <span class="hl">데이터 분석</span>.</p>
+    <p>다른 하나는 <span class="hl">아직 일어나지 않은 일</span>을 컴퓨터 속에서 먼저 해 보는 도구 — <span class="hl">시뮬레이션</span>.</p>
+    <p>이제, 지난 몇 주 동안 우리가 손에 넣은 이 두 도구를 다시 꺼내 보자.</p>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 1 ===================== -->
+<section class="slide dark" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner center">
+    <div class="chapter-no">CHAPTER 1</div>
+    <div class="title-l">데이터를 읽다</div>
+    <p class="lead">Ⅲ. 현상을 분석하는 소프트웨어</p>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">1-1 데이터의 가치</span>
+    <h2>데이터는 ‘21세기의 원유’</h2>
+    <p class="sub">경험·실험·관찰·측정·조사로 모은 <b>수치, 문자, 이미지, 음성</b>은 모두 데이터다. 하나하나는 버려지기 쉽지만 <b>쌓이고 분석되면</b> 몰랐던 사실을 밝히고, 합리적인 의사 결정과 <b>미래 예측</b>을 돕는다. 원유를 정제하면 여러 제품이 되듯, 같은 데이터도 <b>누가 어떤 목적으로 분석하느냐</b>에 따라 다른 정보가 된다.</p>
+    <div class="grid g4">
+      <div class="card"><div class="icon">🏥</div><h3>의료</h3><p>병명 진단, 치료 반응 예측, 전염병 발생 패턴 파악</p></div>
+      <div class="card"><div class="icon">🚗</div><h3>교통</h3><p>교통 흐름 최적화, 사고 예측, 스마트 도시</p></div>
+      <div class="card"><div class="icon">🎨</div><h3>예술</h3><p>관람 데이터로 콘텐츠 방향, 수익 예측, 마케팅</p></div>
+      <div class="card"><div class="icon">💳</div><h3>금융</h3><p>맞춤형 상품, 신용 점수 예측, 부정 거래 탐지</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">1-2 데이터 분석의 개념과 방법</span>
+    <h2>데이터 분석 4단계</h2>
+    <p class="sub">데이터를 구조적으로 표현해 유용한 정보를 뽑아내고, 의사 결정이나 예측을 돕는 과정. <span style="color:var(--ink-3)">— 카드를 눌러 보세요</span></p>
+    <div class="steps">
+      <button class="st"><div class="n">1단계</div><div class="t">문제 이해</div><div class="d">문제 해결 동기·목적 파악<br>문제 정의<br>“무엇을, 왜, 어디까지?”</div><div class="h">눌러서 보기</div></button>
+      <button class="st"><div class="n">2단계</div><div class="t">데이터 준비</div><div class="d">데이터 수집<br>데이터 전처리<br>시간과 노력이 가장 많이 드는 단계</div><div class="h">눌러서 보기</div></button>
+      <button class="st"><div class="n">3단계</div><div class="t">시각화 및 해석</div><div class="d">그래프로 시각화<br>결과 해석<br>주관·편견 없이 있는 그대로</div><div class="h">눌러서 보기</div></button>
+      <button class="st"><div class="n">4단계</div><div class="t">활용 방안 탐색</div><div class="d">사회 현상과 연결<br>윤리적 활용</div><div class="h">눌러서 보기</div></button>
+    </div>
+    <div class="vs" style="margin-top:20px">
+      <div class="card"><h3>확증적 데이터 분석</h3><p>목표가 <span class="em">명확</span>할 때 — 세운 가설을 데이터로 <span class="em">검증</span></p></div>
+      <div class="mid">vs</div>
+      <div class="card"><h3>탐색적 데이터 분석</h3><p>목표가 명확하지 않을 때 — 데이터를 <span class="em">탐색</span>하며 정보를 찾음</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">1-3 데이터 준비 ① 수집</span>
+    <h2>어디에서, 어떤 데이터를?</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h3>수집할 때 생각할 점</h3>
+        <ul><li>분석에 필요한 <span class="em">속성</span>은?</li><li>어떤 <span class="em">방법·유형</span>으로 수집할까?</li><li><span class="em">얼마나 많이</span> 수집할까?</li><li>개인 정보라면 <span class="em">동의</span>는 어떻게?</li></ul>
+      </div>
+      <div class="card">
+        <h3>데이터 수집 플랫폼</h3>
+        <ul><li><span class="em">공공</span>: 공공데이터포털, 국가통계포털(KOSIS), 서울 열린데이터광장</li><li><span class="em">민간</span>: 캐글(Kaggle), 데이콘(DACON)</li><li>교과서 속: 빙하 → 캐글(NSIDC 자료) · 모기지수 → 공공데이터포털 · 소비자물가 → KOSIS</li></ul>
+      </div>
+    </div>
+    <div class="vs" style="margin-top:16px">
+      <div class="card"><h3>정형 데이터</h3><p>속성이 명확한 <span class="em">표(테이블)</span> 형태<br>예) 성별·나이·표정이 정리된 표, CSV 파일</p></div>
+      <div class="mid">vs</div>
+      <div class="card"><h3>비정형 데이터</h3><p>형식과 구조가 없는 데이터<br>예) <span class="em">텍스트, 이미지, 오디오, 영상</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">1-4 데이터 준비 ② 전처리</span>
+    <h2>있는 그대로 쓸 수 있는 데이터는 드물다</h2>
+    <div class="grid g3" style="margin-bottom:18px">
+      <div class="card"><h3>결측치</h3><p>수집되지 않았거나 <span class="em">누락된 값</span> (빈칸)</p></div>
+      <div class="card"><h3>이상치</h3><p>분포에서 벗어나 <span class="em">극단적으로 크거나 작은 값</span></p></div>
+      <div class="card"><h3>중복 데이터</h3><p>같은 내용이 <span class="em">두 번 이상</span> 들어 있는 행</p></div>
+    </div>
+    <table class="t">
+      <tr><th>성별</th><th>나이</th><th>표정</th><th>눈동자 위치</th><th>고개 각도</th><th>국가</th><th>처리</th></tr>
+      <tr><td>여</td><td>17</td><td>옅은 미소</td><td>상</td><td>7</td><td>A</td><td>표정 → 수치 변환 (0.8)</td></tr>
+      <tr><td>여</td><td class="bad">224</td><td>밝은 미소</td><td>정면</td><td>-1</td><td>B</td><td>잘못된 값(이상치) → 제거</td></tr>
+      <tr><td>남</td><td>22</td><td>찡그림</td><td class="bad">(빈칸)</td><td>-19</td><td>C</td><td>결측치 → 제거</td></tr>
+    </table>
+    <p class="sub" style="margin:12px 0 0">※ 결측치·이상치를 처리하지 않거나 잘못 처리하면 분석 결과가 달라진다.</p>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">1-5 시각화 및 해석</span>
+    <h2>목적에 맞는 그래프를 고르자</h2>
+    <div class="grid g5 chart">
+      <div class="card"><svg viewBox="0 0 100 60"><rect x="10" y="30" width="14" height="26" fill="#d6457a"/><rect x="32" y="12" width="14" height="44" fill="#d6457a"/><rect x="54" y="22" width="14" height="34" fill="#d6457a"/><rect x="76" y="40" width="14" height="16" fill="#d6457a"/></svg><h3>막대 그래프</h3><p>항목 간 크기 비교</p></div>
+      <div class="card"><svg viewBox="0 0 100 60"><polyline points="6,14 22,20 38,18 54,30 70,34 90,48" fill="none" stroke="#3f7fd1" stroke-width="4" stroke-linejoin="round"/></svg><h3>선 그래프</h3><p>시간에 따른 추세 변화</p></div>
+      <div class="card"><svg viewBox="0 0 100 60"><g fill="#7fa83a"><circle cx="14" cy="50" r="4"/><circle cx="26" cy="44" r="4"/><circle cx="36" cy="38" r="4"/><circle cx="48" cy="34" r="4"/><circle cx="58" cy="26" r="4"/><circle cx="70" cy="22" r="4"/><circle cx="82" cy="12" r="4"/><circle cx="44" cy="44" r="4"/></g></svg><h3>산점도</h3><p>두 속성의 상관 관계</p></div>
+      <div class="card"><svg viewBox="0 0 100 60"><rect x="10" y="6" width="20" height="16" fill="#fbd3e0"/><rect x="30" y="6" width="20" height="16" fill="#d6457a"/><rect x="50" y="6" width="20" height="16" fill="#f08bb0"/><rect x="70" y="6" width="20" height="16" fill="#fbd3e0"/><rect x="10" y="22" width="20" height="16" fill="#f08bb0"/><rect x="30" y="22" width="20" height="16" fill="#fbd3e0"/><rect x="50" y="22" width="20" height="16" fill="#b8305f"/><rect x="70" y="22" width="20" height="16" fill="#f08bb0"/><rect x="10" y="38" width="20" height="16" fill="#d6457a"/><rect x="30" y="38" width="20" height="16" fill="#f08bb0"/><rect x="50" y="38" width="20" height="16" fill="#fbd3e0"/><rect x="70" y="38" width="20" height="16" fill="#d6457a"/></svg><h3>히트맵</h3><p>관계를 색으로 표시</p></div>
+      <div class="card"><svg viewBox="0 0 100 60"><line x1="50" y1="6" x2="50" y2="18" stroke="#8b62c9" stroke-width="3"/><rect x="34" y="18" width="32" height="24" fill="#e9defa" stroke="#8b62c9" stroke-width="3"/><line x1="34" y1="30" x2="66" y2="30" stroke="#8b62c9" stroke-width="3"/><line x1="50" y1="42" x2="50" y2="52" stroke="#8b62c9" stroke-width="3"/><circle cx="80" cy="10" r="3" fill="#8b62c9"/></svg><h3>상자 그림</h3><p>분포와 이상치</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>해석할 때</h3><p>개인의 의견·편견 없이 <span class="em">있는 그대로</span>, 그래프의 <span class="em">근거</span>(기간, 방향, 수치)를 들어</p></div>
+      <div class="card"><h3>활용할 때</h3><p>여론·경제·인구·지역 패턴 등 <span class="em">사회 현상과 연결</span>하고, 과정과 방법은 <span class="em">윤리적</span>으로</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">1-6 우리가 풀어 본 세 가지 이야기</span>
+    <h2>교과서 속 데이터 분석 다시 보기</h2>
+    <div class="grid g3">
+      <div class="card"><div class="icon">🧊</div><h3>빙하 면적</h3><ul><li>캐글 · seaice.csv</li><li>열 이름 공백 제거 <code>str.strip()</code></li><li>필요 없는 열·행 삭제 → <span class="em">북극 9월</span>만</li><li>선 그래프 → <span class="em">감소 경향</span></li></ul></div>
+      <div class="card"><div class="icon">🦟</div><h3>모기지수</h3><ul><li>공공데이터포털 · <code>encoding='CP949'</code></li><li>중복 제거, 날짜 변환</li><li>0~1000 → <span class="em">0~100 범위 맞추기</span></li><li>피벗 테이블로 월-일 평균</li></ul></div>
+      <div class="card"><div class="icon">🛒</div><h3>소비자 물가지수</h3><ul><li>KOSIS · consumer_price.csv</li><li>행·열 바꾸기 <code>transpose()</code></li><li>문자 → 숫자 <code>to_numeric()</code></li><li>plotly로 대화형 선 그래프</li></ul></div>
+    </div>
+    <pre class="code" style="margin-top:16px"><span class="k">import</span> pandas <span class="k">as</span> pd
+df = pd.read_csv(<span class="k">'seaice.csv'</span>)            <span class="c"># 불러오기</span>
+df.info()  ·  df.describe()  ·  df.isnull().sum()  ·  df['Month'].unique()   <span class="c"># 탐색</span>
+df.drop(columns=[...])  ·  df.drop(df[조건].index, inplace=True)  ·  df.loc[:, [...]]   <span class="c"># 전처리</span>
+sns.lineplot(x=<span class="k">'Year'</span>, y=<span class="k">'Extent'</span>, data=df)   <span class="c"># 시각화</span></pre>
+  </div>
+</section>
+
+<section class="slide data-c" data-chap="Chapter 1 · 데이터를 읽다">
+  <div class="inner">
+    <span class="tag">Checkpoint 1</span>
+    <h2>여기까지 기억나나요? <span style="font-size:.55em;color:var(--ink-3)">— 카드를 눌러 정답 확인</span></h2>
+    <div class="quiz">
+      <div class="qz"><div class="q">Q1. 데이터 분석 4단계 중 시간과 노력이 가장 많이 드는 단계는?</div><div class="tap">눌러서 정답 보기</div><div class="a">데이터 준비 (수집·전처리). 바로 분석에 쓸 수 있는 데이터는 드물어 결측치·이상치·중복 처리가 필요하다.</div></div>
+      <div class="qz"><div class="q">Q2. 셀카 사진, SNS 글, 수업 녹음 파일은 정형 데이터일까, 비정형 데이터일까?</div><div class="tap">눌러서 정답 보기</div><div class="a">비정형 데이터. 속성이 명확한 표 형태가 아니다.</div></div>
+      <div class="qz"><div class="q">Q3. ‘공부 시간과 시험 점수의 관계’를 보려면 어떤 그래프가 알맞을까?</div><div class="tap">눌러서 정답 보기</div><div class="a">산점도. 두 속성 사이의 상관 관계를 볼 때 쓴다. (시간에 따른 변화 → 선 그래프)</div></div>
+      <div class="qz"><div class="q">Q4. 열 이름 앞의 공백 때문에 df['Month']가 오류가 날 때 쓰는 코드는?</div><div class="tap">눌러서 정답 보기</div><div class="a"><code>df.columns = df.columns.str.strip()</code></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INTERLUDE ===================== -->
+<section class="slide dark" data-chap="Interlude">
+  <div class="inner story" style="max-width:1000px">
+    <div class="kicker" style="margin-bottom:28px">Interlude</div>
+    <p>데이터는 <span class="hl">지나온 시간</span>을 정직하게 말해 준다.</p>
+    <p>북극의 빙하는 정말로, 해마다 조금씩 줄어들고 있었다.</p>
+    <p>그렇다면 <span class="hl">아직 오지 않은 시간</span>은 어떻게 알아볼 수 있을까?</p>
+    <p>직접 해 보기엔 너무 위험하거나, 너무 비싸거나, 너무 오래 걸리는 일이라면 — <span class="hl">컴퓨터 속에서 먼저 실험</span>하면 된다.</p>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 2 ===================== -->
+<section class="slide dark" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner center">
+    <div class="chapter-no">CHAPTER 2</div>
+    <div class="title-l">미래를 실험하다</div>
+    <p class="lead">Ⅳ. 모의 실험하는 소프트웨어</p>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag">2-1 시뮬레이션의 이해</span>
+    <h2>현실을 본뜬 실험</h2>
+    <div class="vs">
+      <div class="card"><h3>시뮬레이션</h3><p>현실 세계에서 일어나는 일이나 시스템을 <span class="em">모방하는 실험</span><br>예) 과학 실험, 운동 선수의 모의 경기 연습</p></div>
+      <div class="mid">→</div>
+      <div class="card"><h3>시뮬레이션 프로그램</h3><p><span class="em">컴퓨터에서</span> 모의 실험을 할 수 있도록 만든 프로그램<br>예) 운전 연습, 해수면 상승 예측</p></div>
+    </div>
+    <p class="sub" style="margin:18px 0 10px">시간·공간의 한계로 확인하기 어려운 상황을 간단히 설정하고 결과를 바로 확인 → <b>시간과 비용</b>을 아끼고 <b>안전</b>하다.</p>
+    <div class="grid g3">
+      <div class="card"><div class="icon">🔍</div><h3>역할 ① 문제 파악</h3><p>현실의 문제 상황을 프로그램에서 확인하고, 결과를 기록·누적해 해석</p></div>
+      <div class="card"><div class="icon">🔁</div><h3>역할 ② 다양한 대안 적용</h3><p>여러 상황과 요소를 간단히 바꿔 적용하고 결과를 바로 확인</p></div>
+      <div class="card"><div class="icon">🔮</div><h3>역할 ③ 미래 예측</h3><p>시간의 흐름에 구애받지 않고 실행 결과로 미래를 예측</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag">2-2 시뮬레이션 모델과 구성 요소</span>
+    <h2>현실 세계 → <span style="color:var(--sim)">추상화</span> → 모델 → 프로그램</h2>
+    <p class="sub"><b>시뮬레이션 모델</b>: 모의 실험의 대상을 목적에 맞게 <b>단순화</b>한 것. 대상이 되는 <b>객체</b>와 객체가 따르는 <b>규칙</b>을 분명히 정해야 한다.</p>
+    <div class="grid g3">
+      <div class="card"><h3>추상화</h3><p>컴퓨터가 처리할 수 있도록 복잡한 현상을 <span class="em">단순화</span></p></div>
+      <div class="card"><h3>계산 가능성</h3><p>수학적 알고리즘을 기반으로 프로그램에서 <span class="em">계산 가능</span></p></div>
+      <div class="card"><h3>가변성</h3><p>다양한 <span class="em">변수와 조건</span>을 바꿀 수 있음</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h3>예) 급식실 시뮬레이션</h3><p><span class="em">객체</span>: 학생, 배식대, 좌석<br><span class="em">규칙</span>: 배식 받기 → 자리에 앉기 → 식사하기 → 퇴식구에 정리하기</p></div>
+      <div class="card"><h3>시뮬레이션 프로그램의 구성 요소</h3><p><span class="em">시뮬레이션 모델</span> + <span class="em">화면 구성</span>(어떻게 보여 줄지) + <span class="em">구현 기능</span>(규칙을 구현하는 알고리즘과 코드)</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag">2-3 시뮬레이션 도구</span>
+    <h2>블록으로, 코드로</h2>
+    <div class="grid g2">
+      <div class="card"><h3>알지오매스 (AlgeoMath)</h3><p>대수(Algebra)·기하(Geometry) 원리를 시뮬레이션하는 <span class="em">블록 코딩</span> 기반 소프트웨어<br>화면에 도형을 배치하고, 블록(구성·동작·제어·이벤트·연산·변수 등)으로 동작 구현</p></div>
+      <div class="card"><h3>V파이썬 (VPython)</h3><p>파이썬 코드로 <span class="em">3D 객체</span>를 만들고 움직이는 소프트웨어 (glowscript.org)<br>3D objects · work with 3D objects · events</p></div>
+    </div>
+    <pre class="code" style="margin-top:16px">Web VPython 3.2                                        <span class="c"># 첫 줄에 꼭</span>
+ball = sphere(pos=vector(0,10,0), radius=1, color=color.red)   <span class="c"># 구: 위치·반지름·색</span>
+floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10))        <span class="c"># 상자: 위치·크기(가로,세로,깊이)</span>
+<span class="k">while</span> t &lt; 20:
+    rate(100)                                          <span class="c"># 1초에 최대 100번 반복</span>
+    ball.velocity.y = ball.velocity.y + g*dt           <span class="c"># v = v₀ + a·t</span>
+    ball.pos = ball.pos + ball.velocity*dt             <span class="c"># 위치 = 위치 + 속도 × 시간</span>
+    <span class="k">if</span> ball.pos.y &lt; crash:  ball.velocity.y = -ball.velocity.y*0.8   <span class="c"># 방향 반대 · 80%로</span></pre>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag">2-4 시뮬레이션 프로그램의 활용 분야</span>
+    <h2>어디에 쓰일까?</h2>
+    <div class="grid g3">
+      <div class="card"><div class="icon">🔮</div><h3>예측</h3><p>데이터에서 특징을 뽑아 모델로 구현하고 <span class="em">미래 값</span>을 대입<br>예) 우주 물체 위치, 감염병 확산, 물류, 강수</p></div>
+      <div class="card"><div class="icon">🧪</div><h3>실험</h3><p>가설이 성립하는지 <span class="em">안전하게, 적은 비용</span>으로 확인<br>예) 신약 개발, 자동차 충돌, 피난 경로, 가상 세포</p></div>
+      <div class="card"><div class="icon">🎮</div><h3>게임</h3><p>현실을 자연스럽게 구현해 <span class="em">몰입감</span>을 높임 (목표 설정 → 모델 구현 → 테스트와 최적화 → 결과 확인)<br>예) 야구, 비행, 메타버스</p></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>시뮬레이션 프로그램의 종류</h3><p>✈ 비행 · 🏢 건축 · 📦 물류 · 📈 수학 그래프 · 🌌 천체 · 🔌 전기 회로 — 목적에 맞는 소프트웨어로 가상 구현·체험</p></div>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag">2-5 시뮬레이션 프로그램 제작하기</span>
+    <h2>시뮬레이션 제작 4단계</h2>
+    <p class="sub"><span style="color:var(--ink-3)">— 카드를 눌러 공 튀기기 예시 보기</span></p>
+    <div class="steps">
+      <button class="st"><div class="n">1단계</div><div class="t">문제 정의하기</div><div class="d">무엇을 확인할지 정한다<br>“중력에 의한 공의 낙하를 확인할 수 있을까?”</div><div class="h">눌러서 보기</div></button>
+      <button class="st"><div class="n">2단계</div><div class="t">모델 설계하기</div><div class="d">자료 수집(중력가속도 9.8m/s²)<br>객체: 공, 바닥 / 규칙: 일정한 가속도로 떨어지고 바닥에서 튀어 오름<br>가정: 공기 저항 무시</div><div class="h">눌러서 보기</div></button>
+      <button class="st"><div class="n">3단계</div><div class="t">모델 구현하기</div><div class="d">알고리즘과 코드로 시뮬레이션 프로그램 구현 (VPython)</div><div class="h">눌러서 보기</div></button>
+      <button class="st"><div class="n">4단계</div><div class="t">모델 평가하기</div><div class="d">실행 결과가 목표에 맞는지, 현실을 잘 표현하는지 확인</div><div class="h">눌러서 보기</div></button>
+    </div>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag">2-6 우리가 만든 시뮬레이션들</span>
+    <h2>원리를 탐구하고, 현상을 확인하다</h2>
+    <div class="grid g3">
+      <div class="card"><div class="icon">❄️</div><h3>코흐의 눈송이 (프랙탈)</h3><p>선분을 삼등분해 가운데에 삼각형을 그리는 규칙을 반복 → 부분이 전체와 닮은 <span class="em">자기 유사성</span></p></div>
+      <div class="card"><div class="icon">🎯</div><h3>원주율 구하기 (몬테카를로)</h3><p>정사각형에 점을 무작위로 찍어 원 안에 든 비율로 π 추정 → <span class="em">점이 많을수록</span> 3.14에 가까워짐<br>응용: 몬티홀 딜레마 (바꾸면 2/3)</p></div>
+      <div class="card"><div class="icon">⚽</div><h3>공 튀기기 (중력)</h3><p>속도 += 중력가속도 × dt, 위치 += 속도 × dt, 바닥에 닿으면 속도 방향 반대 · 0.8배</p></div>
+      <div class="card"><div class="icon">🫧</div><h3>입자 운동 (랜덤워크)</h3><p><code>(random()-0.5)*40</code> → -20~20만큼 무작위 이동, 경계 처리<br>응용: 호흡기 전염병 예방 수칙 (거리에 따른 감염 속도)</p></div>
+      <div class="card"><div class="icon">🚦</div><h3>횡단보도 프로젝트</h3><p>보행 시간 = 7초 + 1m당 1초 / 노인 보행 속도 약 0.85m/s<br>입력한 신호 시간 안에 건널 수 있을까?</p></div>
+      <div class="card"><div class="icon">🏙</div><h3>시뮬레이션과 문제 해결</h3><p>버추얼 싱가포르: 가상 도시에서 바람길을 시뮬레이션해 건물 배치를 수정 → <span class="em">의사 결정</span>에 활용</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide sim-c" data-chap="Chapter 2 · 미래를 실험하다">
+  <div class="inner">
+    <span class="tag" style="background:var(--sim)">Checkpoint 2</span>
+    <h2>여기까지 기억나나요? <span style="font-size:.55em;color:var(--ink-3)">— 카드를 눌러 정답 확인</span></h2>
+    <div class="quiz">
+      <div class="qz"><div class="q">Q1. 시뮬레이션 프로그램의 3가지 역할은?</div><div class="tap">눌러서 정답 보기</div><div class="a">① 문제 파악 ② 다양한 대안 적용·확인 ③ 미래 예측</div></div>
+      <div class="qz"><div class="q">Q2. 시뮬레이션 모델을 정의할 때 분명하게 정해야 하는 두 가지는?</div><div class="tap">눌러서 정답 보기</div><div class="a">객체와 규칙</div></div>
+      <div class="qz"><div class="q">Q3. 공 튀기기에서 <code>-ball.velocity.y*0.8</code>의 ‘-’와 ‘0.8’의 뜻은?</div><div class="tap">눌러서 정답 보기</div><div class="a">‘-’: 속도의 방향을 반대로(위로) · ‘0.8’: 에너지 손실로 속도가 80%로 줄어듦</div></div>
+      <div class="qz"><div class="q">Q4. 반발 정도를 1.2로 바꾸면 공이 점점 높이 튄다. 이 모델의 문제점을 찾는 단계는?</div><div class="tap">눌러서 정답 보기</div><div class="a">모델 평가하기 — 실행 결과가 현실을 잘 표현하는지 확인하는 단계</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TO BE CONTINUED ===================== -->
+<section class="slide dark" data-chap="To be continued">
+  <div class="inner story" style="max-width:1000px">
+    <p>이제 우리는 두 가지 도구를 모두 가졌다.</p>
+    <p><span class="hl">데이터로 읽고</span>, <span class="hl">시뮬레이션으로 실험하는</span> 힘.</p>
+    <p>남은 질문은 하나다.</p>
+    <p>“나는 이 도구로, <span class="hl">내가 꿈꾸는 분야</span>의 어떤 문제를 풀어 볼까?”</p>
+  </div>
+</section>
+
+<section class="slide dark" data-chap="To be continued">
+  <div class="inner center">
+    <div class="chapter-no">NEXT EPISODE</div>
+    <div class="title-l">수행평가</div>
+    <div class="grid g2" style="margin-top:26px;text-align:left;color:var(--ink)">
+      <div class="card"><div class="tag">Ⅲ 데이터 분석 · 15점</div><p style="margin-top:10px">개념 객관식 → 코드 골라 실행 → 전처리·시각화 코드 고르기 → <span class="em">그래프 해석 + 진로 연계 데이터 분석 계획</span></p></div>
+      <div class="card"><div class="tag" style="background:var(--sim)">Ⅳ 시뮬레이션 · 25점</div><p style="margin-top:10px">개념 객관식 → 교실 환기 모델 설계 → 행성 조건 코드 고르기 → <span class="em">결과 비교 + 진로 연계 시뮬레이션 계획</span></p></div>
+    </div>
+    <p class="lead" style="margin-top:26px">마지막 문항은 <span style="color:var(--gold);font-weight:700">나의 희망 진로·학과</span>와 연결해 써요. 미리 생각해 두세요!</p>
+  </div>
+</section>
+
+</div>
+
+<nav class="nav" id="nav">
+  <button id="prev" aria-label="이전">←</button>
+  <span class="chap" id="chap"></span>
+  <div class="bar"><i id="bar"></i></div>
+  <span class="count" id="count"></span>
+  <button id="full" title="전체 화면 (F)">⛶</button>
+  <button id="next" aria-label="다음">→</button>
+</nav>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const nav = document.getElementById('nav');
+  let cur = 0, typing = [];
+
+  function playStory(s) {
+    typing.forEach(clearTimeout); typing = [];
+    const ps = [...s.querySelectorAll('.story p')];
+    ps.forEach((p) => p.classList.remove('shown'));
+    ps.forEach((p, i) => typing.push(setTimeout(() => p.classList.add('shown'), 350 + i * 1300)));
+  }
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+    const s = slides[cur];
+    s.scrollTop = 0;
+    nav.classList.toggle('dark', s.classList.contains('dark'));
+    document.getElementById('chap').textContent = s.dataset.chap || '';
+    document.getElementById('count').textContent = (cur + 1) + ' / ' + slides.length;
+    document.getElementById('bar').style.width = ((cur + 1) / slides.length * 100) + '%';
+    if (s.querySelector('.story')) playStory(s);
+    history.replaceState(null, '', '#' + (cur + 1));
+  }
+  // 이야기 장면에서는 다음으로 넘어가기 전에 남은 문장부터 모두 보여 준다
+  function next() {
+    const hidden = [...slides[cur].querySelectorAll('.story p:not(.shown)')];
+    if (hidden.length) { typing.forEach(clearTimeout); hidden.forEach((p) => p.classList.add('shown')); return; }
+    show(cur + 1);
+  }
+  const prev = () => show(cur - 1);
+
+  document.getElementById('next').onclick = next;
+  document.getElementById('prev').onclick = prev;
+  document.getElementById('full').onclick = () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); };
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') document.getElementById('full').click();
+  });
+  // 어두운 장면(프롤로그·장 제목)은 화면 아무 곳이나 눌러도 다음으로
+  slides.forEach((s) => s.addEventListener('click', (e) => { if (s.classList.contains('dark') && !e.target.closest('.card,button')) next(); }));
+  // 단계 카드, 퀴즈 카드 펼치기
+  document.querySelectorAll('.st').forEach((b) => b.addEventListener('click', () => b.classList.toggle('open')));
+  document.querySelectorAll('.qz').forEach((q) => q.addEventListener('click', () => q.classList.toggle('open')));
+  // 휴대폰: 좌우로 밀어 넘기기
+  let sx = null;
+  document.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, {passive: true});
+  document.addEventListener('touchend', (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60) (dx < 0 ? next : prev)(); sx = null; });
+
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+})();
+</script>
+</body>
+</html>
