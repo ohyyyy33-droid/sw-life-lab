@@ -98,7 +98,24 @@ textarea.essay:focus,.field input:focus{outline:none;border-color:var(--accent)}
 .receipt{background:var(--ok-soft);border:2px solid var(--ok);border-radius:18px;padding:22px;margin-top:20px;text-align:center;display:none}
 .receipt.show{display:block}
 .receipt b.big{font-size:24px;color:#14593a;display:block}
-@media (max-width:700px){ body{font-size:16px} main{padding:16px 16px 80px} .field{grid-template-columns:1fr} .topbar h1{font-size:16px} h2{font-size:23px} .cond .big{font-size:21px} }
+.notice{background:var(--warn-soft);border-radius:12px;padding:12px 16px;margin:16px 0 4px;font-size:14.5px;line-height:1.6}
+.notice ul{margin:4px 0 0;padding-left:18px} .notice li{margin:2px 0}
+.tag-sl{display:inline-block;background:#3446a0;color:#fff;font-size:12.5px;font-weight:700;border-radius:999px;padding:1px 10px;vertical-align:middle}
+.career-note{background:#f0f3ff;border:1.5px solid #b9c3ea;border-radius:12px;padding:12px 16px;font-size:15.5px}
+.career-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.career-grid .full{grid-column:1/-1}
+.career-grid label{display:flex;flex-direction:column;gap:3px;font-weight:700;font-size:14.5px}
+.career-grid input{font:inherit;font-weight:400;font-size:16.5px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px}
+.career-grid input:focus{outline:none;border-color:var(--accent)}
+.guide{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:8px 0;font-size:15px}
+.guide ol{margin:4px 0 0;padding-left:20px}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin:10px 0}
+.step .sl{font-weight:800;margin-bottom:6px}
+.step label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:7px 12px;margin:6px 0;cursor:pointer;font-family:'Nanum Gothic Coding',monospace;font-size:15px;word-break:break-all}
+.step label:hover{border-color:var(--accent-line)}
+.step label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.step input{accent-color:var(--accent);margin-top:4px;flex:none}
+@media (max-width:700px){ body{font-size:16px} main{padding:16px 16px 80px} .field{grid-template-columns:1fr} .career-grid{grid-template-columns:1fr} .topbar h1{font-size:16px} h2{font-size:23px} .cond .big{font-size:21px} }
 </style>
 </head>
 <body>
@@ -120,7 +137,18 @@ textarea.essay:focus,.field input:focus{outline:none;border-color:var(--accent)}
   <input type="text" id="sid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="10305">
   <label class="f" for="sname">이름</label>
   <input type="text" id="sname" maxlength="20" autocomplete="off" placeholder="홍길동">
-  <label class="pledge"><input type="checkbox" id="pledge"> 다른 사람의 도움 없이 스스로 해결하겠습니다. 응시 중 다른 창이나 탭으로 이동하면 그 횟수가 기록된다는 것을 알고 있습니다.</label>
+  <div class="notice">
+    <b>유의사항</b>
+    <ul>
+      <li>학번에 따라 분석 조건이 정해지므로 <b>학번과 이름을 정확히</b> 입력하세요.</li>
+      <li>코드 문항은 직접 쓰지 않고 <b>보기에서 골라</b> 실행해 볼 수 있습니다.</li>
+      <li><b>4번 문항은 과목별 세부능력 및 특기사항(세특) 기록의 참고 자료</b>로 활용됩니다. 본인의 희망 진로·학과와 관련지어 구체적으로 쓰세요. 진로가 정해지지 않았다면 관심 있는 분야로 써도 됩니다.</li>
+      <li>서술 답안은 <b>본인의 생각</b>으로 작성해야 합니다. 다른 사람의 글이나 인터넷·생성형 AI의 결과를 그대로 옮긴 경우 점수와 기록에 반영되지 않습니다.</li>
+      <li>응시 중 다른 창이나 탭으로 이동하면 그 횟수가 기록됩니다.</li>
+      <li>다시 제출할 수 있으며, <b>마지막 제출</b>이 최종 답안이 됩니다.</li>
+    </ul>
+  </div>
+  <label class="pledge"><input type="checkbox" id="pledge"> 위 유의사항을 읽었으며, 다른 사람의 도움 없이 스스로 해결하고 서술 답안은 본인의 생각으로 작성하겠습니다.</label>
   <button class="btn big" id="startBtn" style="width:100%">시작하기</button>
   <div class="msg" id="gateMsg"></div>
   <div class="msg" id="openState"></div>
@@ -132,16 +160,17 @@ textarea.essay:focus,.field input:focus{outline:none;border-color:var(--accent)}
     <b>안내</b>
     <ul style="margin:6px 0 0;padding-left:20px">
       <li>작성한 내용은 이 컴퓨터에 <b>자동 저장</b>됩니다. 창을 실수로 닫아도 같은 학번으로 다시 들어오면 이어서 할 수 있어요.</li>
-      <li>코드 셀은 <b>▶ 실행</b> 또는 <code class="inl">Shift+Enter</code>로 실행합니다. 처음에는 파이썬 준비에 30초~1분이 걸려요 (오른쪽 위 상태 확인).</li>
+      <li>코드 문항은 <b>보기를 고르면 코드가 자동으로 완성</b>됩니다. <b>▶ 실행</b>으로 결과를 확인해 보세요. 처음에는 파이썬 준비에 30초~1분이 걸려요 (오른쪽 위 상태 확인).</li>
+      <li><b>4번 문항은 세특(과목별 세부능력 및 특기사항) 기록에 참고</b>됩니다. 희망 진로·학과와 관련지어 본인의 생각으로 구체적으로 쓰세요.</li>
       <li>모든 문항을 마친 뒤 맨 아래 <b>제출하기</b>를 누르세요. 다시 제출하면 마지막 제출이 최종 답안이 됩니다.</li>
     </ul>
   </div>
   <table class="plain">
     <tr><th>문항</th><th>내용</th><th style="width:70px">배점</th></tr>
     <tr><td>1</td><td>데이터 분석 개념 (객관식 3문항)</td><td>3점</td></tr>
-    <tr><td>2</td><td>데이터 탐색 — 코드를 실행하고 결과 읽기</td><td>2점</td></tr>
-    <tr><td>3</td><td>데이터 전처리와 시각화 — 코드 작성</td><td>5점</td></tr>
-    <tr><td>4</td><td>결과 해석과 활용 방안 — 서술</td><td>5점</td></tr>
+    <tr><td>2</td><td>데이터 탐색 — 코드를 골라 실행하고 결과 읽기</td><td>2점</td></tr>
+    <tr><td>3</td><td>데이터 전처리와 시각화 — 단계별 코드 고르기</td><td>5점</td></tr>
+    <tr><td>4</td><td>결과 해석과 진로 연계 데이터 분석 계획 — 서술 <span class="tag-sl">세특 반영</span></td><td>5점</td></tr>
   </table>
 
   <!-- 문항 1 -->
@@ -150,12 +179,9 @@ textarea.essay:focus,.field input:focus{outline:none;border-color:var(--accent)}
 
   <!-- 문항 2 -->
   <div class="q-title"><span class="no">2</span><h3>데이터 탐색</h3><span class="pt">2점</span></div>
-  <p style="margin:4px 0">아래 코드는 북극·남극 해빙 면적 데이터 <code class="inl">seaice.csv</code>를 불러옵니다. 코드를 이어서 작성·실행하여 데이터의 정보를 확인하고 물음에 답하세요.</p>
-  <div class="cell" data-cell="c1" data-title="문항 2 · 데이터 탐색"><textarea>import pandas as pd
-df = pd.read_csv('seaice.csv')
-
-# 데이터의 정보(행 개수, 열 이름, 자료형)를 확인하는 코드를 아래에 쓰고 실행하세요.
-</textarea></div>
+  <p style="margin:4px 0">북극·남극 해빙 면적 데이터 <code class="inl">seaice.csv</code>를 불러온 뒤, 데이터의 정보(행 개수, 열 이름, 자료형)를 확인하는 코드를 <b>보기에서 골라</b> 실행하고 물음에 답하세요.</p>
+  <div id="exploreHost"></div>
+  <div class="cell" data-cell="c1" data-title="문항 2 · 완성된 코드 (보기를 고르면 바뀌어요)"><textarea></textarea></div>
   <div class="field"><label for="a_rows">① 전체 행(데이터)의 개수</label><input id="a_rows" data-a="rows" inputmode="numeric" placeholder="숫자로 입력"></div>
   <div class="field"><label for="a_dtype">② Extent 열의 자료형(Dtype)</label><input id="a_dtype" data-a="dtype" placeholder="예: int64, object …"></div>
 
@@ -163,49 +189,35 @@ df = pd.read_csv('seaice.csv')
   <div class="q-title"><span class="no">3</span><h3>데이터 전처리와 시각화</h3><span class="pt">5점</span></div>
   <div class="cond"><div><div class="muted" style="font-weight:700">나의 분석 조건</div><div class="big" id="condText">—</div></div></div>
   <p style="margin:4px 0"><b>문제 정의</b>: 연도에 따라 <b id="condText2">—</b>의 해빙 면적(Extent)이 어떻게 변했는지 분석한다.<br>
-  주석(#)의 안내에 따라 코드를 완성하고 실행하여 <b>연도별 선 그래프</b>를 그리세요. 마지막에 <code class="inl">df</code>에는 조건에 맞는 행과 <code class="inl">Year</code>, <code class="inl">Extent</code> 열만 남아 있어야 합니다.</p>
-  <table class="plain" style="margin:8px 0">
-    <tr><th style="width:50%">채점 요소</th><th>배점</th></tr>
-    <tr><td>열 이름의 공백 제거</td><td>1점</td></tr>
-    <tr><td>나의 조건(반구, 월)에 맞는 행만 남기기</td><td>2점 (반구 1, 월 1)</td></tr>
-    <tr><td>Year, Extent 열만 남기기</td><td>1점</td></tr>
-    <tr><td>연도별 선 그래프 그리기</td><td>1점</td></tr>
-  </table>
-  <div class="cell" data-cell="c2" data-title="문항 3 · 전처리와 시각화"><textarea>import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import matplotlib.ticker as ticker
-
-df = pd.read_csv('seaice.csv')
-
-# ① 열 이름 앞뒤의 공백을 제거하세요.
-
-
-# ② 분석에 필요 없는 Day, Missing, Source Data 열을 삭제하세요.
-
-
-# ③ 나의 분석 조건(반구, 월)에 맞는 행만 남기세요.
-
-
-# ④ Year, Extent 열만 남기세요.
-
-
-# ⑤ x축은 Year, y축은 Extent인 선 그래프를 그리세요.
-plt.figure(figsize=(15, 5))
-
-
-plt.show()</textarea></div>
+  각 단계에 알맞은 코드를 <b>보기에서 하나씩 고르세요</b>. 고른 코드가 아래에 조립되며, <b>▶ 실행</b>으로 그래프를 확인할 수 있습니다. <span class="muted">(각 단계 1점)</span></p>
+  <div id="stepHost"></div>
+  <div class="cell" data-cell="c2" data-title="문항 3 · 완성된 코드 (보기를 고르면 바뀌어요)"><textarea></textarea></div>
 
   <!-- 문항 4 -->
-  <div class="q-title"><span class="no">4</span><h3>결과 해석과 활용 방안</h3><span class="pt">5점</span></div>
-  <p style="margin:4px 0"><b>4-1. (3점)</b> 문항 3에서 그린 그래프를 해석하세요. <span class="muted">— 기간(연도), 변화의 방향, 눈에 띄는 연도나 값 등 그래프에서 찾은 근거를 들어 객관적으로 쓰세요.</span></p>
+  <div class="q-title"><span class="no">4</span><h3>결과 해석과 진로 연계</h3><span class="pt">5점</span><span class="tag-sl">세특 반영</span></div>
+  <div class="career-note">✍ 이 문항은 <b>과목별 세부능력 및 특기사항(세특)</b> 기록의 참고 자료로 활용됩니다. 본인의 희망 진로·학과와 관련지어 <b>본인의 생각</b>으로 구체적으로 쓰세요. 다른 사람의 글이나 인터넷·생성형 AI의 결과를 그대로 옮긴 경우 반영되지 않습니다.</div>
+  <p style="margin:12px 0 4px"><b>4-1. (2점)</b> 문항 3에서 그린 그래프를 해석하세요. <span class="muted">— 기간(연도), 변화의 방향, 눈에 띄는 연도나 값 등 그래프에서 찾은 근거를 들어 객관적으로 쓰세요.</span></p>
   <textarea class="essay" data-a="interp" maxlength="1000" placeholder="예) ○○년부터 ○○년까지 …"></textarea><div class="count" data-count="interp"></div>
-  <p style="margin:14px 0 4px"><b>4-2. (2점)</b> 분석 결과를 사회 현상과 연결하여 활용할 수 있는 방안을 쓰세요. <span class="muted">— 데이터를 윤리적으로 활용하기 위해 주의할 점도 함께 쓰세요.</span></p>
-  <textarea class="essay" data-a="use" maxlength="1000" placeholder="예) 이 분석 결과를 …"></textarea><div class="count" data-count="use"></div>
+  <p style="margin:16px 0 4px"><b>4-2. (3점)</b> 나의 희망 진로·학과 분야에서 <b>데이터 분석으로 해결하고 싶은 문제</b>를 하나 정하고, 데이터 분석 과정에 따라 계획을 쓰세요.</p>
+  <div class="career-grid">
+    <label>희망 진로(직업)<input data-a="job" maxlength="40" placeholder="예) 기상 연구원"></label>
+    <label>희망 학과(계열)<input data-a="major" maxlength="40" placeholder="예) 대기과학과"></label>
+    <label class="full">분석 주제 (한 줄)<input data-a="topic" maxlength="80" placeholder="예) 우리 지역 폭염 일수의 변화와 온열 질환자 수의 관계"></label>
+  </div>
+  <div class="guide">
+    <b>꼭 들어가야 할 내용</b>
+    <ol>
+      <li><b>문제 이해</b>: 이 주제가 희망 진로·학과와 어떤 관련이 있고, 왜 분석하려고 하는가?</li>
+      <li><b>데이터 준비</b>: 어떤 데이터가 필요하고, 어디에서 수집할 수 있는가? (예: 공공데이터포털, KOSIS, 캐글)</li>
+      <li><b>시각화 및 해석</b>: 어떤 그래프로 나타내고, 무엇을 알아보려고 하는가?</li>
+      <li><b>활용 방안</b>: 결과를 어떻게 활용하며, 윤리적으로 주의할 점은 무엇인가?</li>
+    </ol>
+  </div>
+  <textarea class="essay" data-a="plan" maxlength="1500" style="min-height:200px" placeholder="위 1~4의 내용이 모두 들어가도록 문장으로 쓰세요."></textarea><div class="count" data-count="plan" data-max="1500"></div>
 
   <div class="submit-box">
     <div style="font-weight:900;font-size:20px">모든 문항을 확인했나요?</div>
-    <p class="muted" style="margin:6px 0 14px">제출하면 문항 3의 코드를 한 번 더 실행하여 결과를 함께 보냅니다.</p>
+    <p class="muted" style="margin:6px 0 14px">고른 보기와 서술 답안이 함께 제출됩니다.</p>
     <button class="btn big" id="submitBtn">제출하기</button>
     <div class="msg" id="submitMsg"></div>
     <div style="margin-top:12px"><button class="btn ghost small" id="backupBtn">답안을 파일로 저장 (제출이 안 될 때)</button></div>
@@ -498,6 +510,43 @@ const MCQ = [
     o: {a: '막대 그래프', b: '선 그래프', c: '산점도', d: '상자 그림'}},
 ];
 
+/* 코드 고르기 보기 — 정답은 서버에서 채점한다 (보기 순서는 학번에 따라 섞임) */
+const EXPLORE = [{id: 'e1', label: '데이터의 정보(행 개수, 열 이름, 자료형)를 확인하는 코드', opts: ['df.info()', 'df.head()', 'df.columns', 'df.isnull().sum()']}];
+function stepsFor(v) {
+  const other = v.hemi === 'north' ? 'south' : 'north', m = v.month;
+  return [
+    {id: 's1', label: '① 열 이름 앞뒤의 공백을 제거한다.', opts: ['df.columns = df.columns.str.strip()', 'df.columns = df.columns.unique()', 'df = df.dropna()', 'df.columns = df.columns.str.upper()']},
+    {id: 's2', label: '② 분석에 필요 없는 Day, Missing, Source Data 열을 삭제한다.', opts: ["df = df.drop(columns=['Day', 'Missing', 'Source Data'])", "df = df.loc[:, ['Day', 'Missing', 'Source Data']]", 'df = df.drop_duplicates()', "df = df.isnull().sum()"]},
+    {id: 's3', label: '③ 나의 분석 조건(' + v.label + ')에 맞는 행만 남긴다.', opts: [
+      "df.drop(df[(df['hemisphere'] == '" + other + "') | (df['Month'] != " + m + ")].index, inplace=True)",
+      "df.drop(df[(df['hemisphere'] == '" + v.hemi + "') | (df['Month'] != " + m + ")].index, inplace=True)",
+      "df.drop(df[(df['hemisphere'] == '" + other + "') | (df['Month'] == " + m + ")].index, inplace=True)",
+      "df.drop(df[(df['hemisphere'] == '" + v.hemi + "') & (df['Month'] == " + m + ")].index, inplace=True)"]},
+    {id: 's4', label: '④ Year, Extent 열만 남긴다.', opts: ["df = df.loc[:, ['Year', 'Extent']]", "df = df.loc[['Year', 'Extent'], :]", "df = df.drop(columns=['Year', 'Extent'])", "df = df['Year']"]},
+    {id: 's5', label: '⑤ x축은 Year, y축은 Extent인 선 그래프를 그린다.', opts: ["ax = sns.lineplot(x='Year', y='Extent', data=df)", "ax = sns.lineplot(x='Extent', y='Year', data=df)", 'plt.xticks(rotation=90)', 'df.describe()']},
+  ];
+}
+let STEPS = [];
+function renderChoices(host, steps, rnd) {
+  host.innerHTML = '';
+  steps.forEach((st) => {
+    const d = document.createElement('div'); d.className = 'step';
+    d.innerHTML = '<div class="sl">' + esc(st.label) + '</div>' + shuffle(st.opts, rnd).map((o) => '<label><input type="radio" name="' + st.id + '" value="' + esc(o) + '" data-a="' + st.id + '"><span>' + esc(o) + '</span></label>').join('');
+    host.appendChild(d);
+  });
+}
+const picked = (id) => { const el = $('input[name="' + id + '"]:checked'); return el ? el.value : null; };
+function assemble() {
+  const c1 = "import pandas as pd\ndf = pd.read_csv('seaice.csv')\n\n" + (picked('e1') || '# (위에서 보기를 고르세요)');
+  const line = (id, n) => picked(id) || '# ' + n + ' (위에서 보기를 고르세요)';
+  const c2 = 'import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\n' +
+    "df = pd.read_csv('seaice.csv')\n" + line('s1', '①') + '\n' + line('s2', '②') + '\n' + line('s3', '③') + '\n' + line('s4', '④') + '\n\n' +
+    'plt.figure(figsize=(15, 5))\n' + line('s5', '⑤') + '\nplt.xticks(rotation=90)\nplt.show()';
+  if (cmCells.c1 && cmCells.c1.cm.getValue() !== c1) cmCells.c1.cm.setValue(c1);
+  if (cmCells.c2 && cmCells.c2.cm.getValue() !== c2) cmCells.c2.cm.setValue(c2);
+}
+document.addEventListener('change', (e) => { if (e.target.matches('#exploreHost input, #stepHost input')) assemble(); });
+
 let S = null;              // {sid, name, startedAt, leave, submitted}
 let variant = null;
 const cmCells = {};
@@ -538,7 +587,13 @@ function begin(sid, name) {
   $('#condText').textContent = variant.label;
   $('#condText2').textContent = variant.label;
   renderMcq(Number(sid));
+  const rnd = seeded(Number(sid) * 13 + 1);
+  STEPS = stepsFor(variant);
+  renderChoices($('#exploreHost'), EXPLORE, rnd);
+  renderChoices($('#stepHost'), STEPS, rnd);
   if (draft) restore(draft);
+  else prefillCareer(sid);
+  assemble();
   $('#gate').style.display = 'none';
   $('#paper').style.display = 'block';
   const who = $('#who'); who.style.display = ''; who.textContent = sid + ' ' + name;
@@ -568,24 +623,29 @@ function collectFields() {
   });
   return f;
 }
+// 다른 수행평가에서 적은 희망 진로·학과가 있으면 미리 채운다
+function prefillCareer(sid) {
+  try {
+    const o = JSON.parse(lsGet('sw-assess-' + (KIND === 'data' ? 'sim' : 'data') + ':' + sid) || 'null');
+    if (o && o.fields) ['job', 'major'].forEach((k) => { const el = $('[data-a="' + k + '"]'); if (el && !el.value && o.fields[k]) el.value = o.fields[k]; });
+  } catch (e) {}
+}
 function save() {
   if (!S) return;
-  const code = {}; Object.entries(cmCells).forEach(([k, c]) => { code[k] = c.cm.getValue(); });
-  lsSet(draftKey(), JSON.stringify({fields: collectFields(), code, startedAt: S.startedAt, leave: S.leave, submitted: S.submitted}));
+  lsSet(draftKey(), JSON.stringify({fields: collectFields(), startedAt: S.startedAt, leave: S.leave, submitted: S.submitted}));
   $('#saveState').textContent = '자동 저장 ' + new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
 }
 function restore(d) {
   Object.entries(d.fields || {}).forEach(([k, v]) => {
     $$('[data-a="' + k + '"]').forEach((el) => { if (el.type === 'radio') el.checked = el.value === v; else el.value = v; });
   });
-  Object.entries(d.code || {}).forEach(([k, v]) => { if (cmCells[k] && v) cmCells[k].cm.setValue(v); });
   updateCounts();
 }
 let saveTimer = null;
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 600); };
 document.addEventListener('input', (e) => { if (e.target.closest('[data-a]')) { saveSoon(); updateCounts(); } });
 document.addEventListener('change', (e) => { if (e.target.closest('[data-a]')) save(); });
-function updateCounts() { $$('[data-count]').forEach((el) => { const t = $('[data-a="' + el.dataset.count + '"]'); el.textContent = t.value.length + ' / 1000자'; }); }
+function updateCounts() { $$('[data-count]').forEach((el) => { const t = $('[data-a="' + el.dataset.count + '"]'); el.textContent = t.value.length + ' / ' + (el.dataset.max || 1000) + '자'; }); }
 document.addEventListener('visibilitychange', () => { if (S && document.hidden) { S.leave++; save(); } });
 
 /* ---------------- 파이썬 엔진 ---------------- */
@@ -633,25 +693,22 @@ async function pyCall(fn, args) {
 }
 
 /* ---------------- 코드 셀 ---------------- */
-let lastC2 = null; // 문항 3 마지막 실행 결과
+// 코드는 보기를 골라 조립하므로 읽기 전용이다
 $$('.cell').forEach((el) => {
-  const ta = $('textarea', el), original = ta.value, key = el.dataset.cell;
+  const ta = $('textarea', el), key = el.dataset.cell;
   const head = document.createElement('div'); head.className = 'cell-head';
-  head.innerHTML = '<span class="ttl">' + esc(el.dataset.title) + '</span><button class="btn small run">▶ 실행</button><button class="btn ghost small reset">↺ 처음 코드로</button>';
+  head.innerHTML = '<span class="ttl">' + esc(el.dataset.title) + '</span><button class="btn small run">▶ 실행</button>';
   el.insertBefore(head, ta);
-  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
-    extraKeys: {'Shift-Enter': () => run(), 'Ctrl-Enter': () => run(), Tab: (c) => c.replaceSelection('    ')}});
-  cm.on('change', saveSoon);
+  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, readOnly: true, viewportMargin: Infinity});
   const out = document.createElement('div'); out.className = 'cell-out'; el.appendChild(out);
   cmCells[key] = {cm, run};
   $('.run', head).addEventListener('click', () => run());
-  $('.reset', head).addEventListener('click', () => { if (confirm('작성한 코드를 지우고 처음 코드로 되돌릴까요?')) { cm.setValue(original); out.className = 'cell-out'; } });
+  cm.on('change', () => { out.className = 'cell-out'; });
   async function run() {
     out.className = 'cell-out show';
     out.innerHTML = '<div class="empty">' + (ready ? '실행 중…' : '파이썬이 준비되면 자동으로 실행돼요… (' + esc(engineText.textContent) + ')') + '</div>';
     const code = cm.getValue();
     const r = await pyCall('_run_cell', [code, true]);
-    if (key === 'c2') lastC2 = {code, r};
     let h = '';
     if (r.stdout) h += '<pre>' + esc(r.stdout) + '</pre>';
     if (r.html) h += r.html;
@@ -667,29 +724,23 @@ $$('.cell').forEach((el) => {
 });
 
 /* ---------------- 제출 ---------------- */
-async function gradeCode() {
-  // 제출 시점의 코드를 새로 실행해 자동 확인 (문항 3)
-  const code = cmCells.c2.cm.getValue();
-  const r = await pyCall('_run_cell', [code, true]);
-  const c = await pyCall('_check_assess', [variant.hemi, variant.month]);
-  const graph = (r.images || []).length > 0 && !r.error ? 1 : 0;
-  const score = (c.strip || 0) + (c.hemi || 0) + (c.month || 0) + (c.cols || 0) + graph;
-  const detail = '공백제거 ' + c.strip + ' / 반구 ' + c.hemi + ' / 월 ' + c.month + ' / 열선택 ' + c.cols + ' / 그래프 ' + graph +
-    (r.error ? ' / 실행 오류: ' + r.error.type + ' ' + r.error.msg : '') + ((c.notes || []).length ? ' / ' + c.notes.join('; ') : '');
-  return {score, detail};
-}
 function missingList(f) {
   const miss = [];
   MCQ.forEach((m, i) => { if (!f[m.id]) miss.push('문항 1-' + (i + 1)); });
+  if (!f.e1) miss.push('문항 2 코드 보기');
   if (!f.rows) miss.push('문항 2-①'); if (!f.dtype) miss.push('문항 2-②');
-  if (!f.interp || !f.interp.trim()) miss.push('문항 4-1'); if (!f.use || !f.use.trim()) miss.push('문항 4-2');
+  STEPS.forEach((st, i) => { if (!f[st.id]) miss.push('문항 3-' + '①②③④⑤'[i]); });
+  if (!(f.interp || '').trim()) miss.push('문항 4-1');
+  [['job', '희망 진로'], ['major', '희망 학과'], ['topic', '분석 주제'], ['plan', '분석 계획']].forEach(([k, n]) => { if (!(f[k] || '').trim()) miss.push('문항 4-2 ' + n); });
   return miss;
 }
 function buildBase() {
   const f = collectFields();
   return {kind: KIND, sid: S.sid, name: S.name, variant: variant.label,
     mcq: {q1: f.q1, q2: f.q2, q3: f.q3}, short: {rows: f.rows, dtype: f.dtype},
-    essay: {interp: f.interp, use: f.use}, code: {c1: cmCells.c1.cm.getValue(), c2: cmCells.c2.cm.getValue()},
+    choices: {s1: f.s1, s2: f.s2, s3: f.s3, s4: f.s4, s5: f.s5},
+    essay: {interp: f.interp}, career: {job: f.job, major: f.major, topic: f.topic, plan: f.plan},
+    code: {c1: cmCells.c1.cm.getValue(), c2: cmCells.c2.cm.getValue()},
     leave: S.leave, startedAt: S.startedAt, client: navigator.userAgent};
 }
 // 응답을 받았지만 읽지 못한 경우에는 다시 보내지 않는다 (중복 제출 방지)
@@ -711,11 +762,7 @@ $('#submitBtn').addEventListener('click', async () => {
   if (!SUBMIT_URL) { show('no', '제출 주소가 설정되지 않았어요. 선생님께 알리고, 아래 <b>답안을 파일로 저장</b>을 눌러 두세요.'); return; }
   btn.disabled = true; save();
   try {
-    show('info', '문항 3 코드를 확인하는 중… ' + (ready ? '' : '(파이썬 준비를 기다리는 중)'));
-    let auto;
-    try { auto = await Promise.race([gradeCode(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 120000))]); }
-    catch (e) { auto = {score: 0, detail: '자동 확인 실패(' + e.message + ') — 교사 확인 필요'}; }
-    const payload = buildBase(); payload.auto = auto;
+    const payload = buildBase();
     show('info', '제출하는 중…');
     const res = await sendPayload(payload);
     if (!res.ok) { show('no', esc(res.msg || '제출하지 못했어요. 다시 시도하세요.')); return; }
@@ -731,7 +778,8 @@ $('#backupBtn').addEventListener('click', () => {
   if (!S) return;
   const b = buildBase();
   const txt = '[데이터 분석 수행평가 답안]\n학번: ' + b.sid + '\n이름: ' + b.name + '\n분석 조건: ' + b.variant + '\n\n[문항 1] ' + JSON.stringify(b.mcq) + '\n[문항 2] 행 개수: ' + b.short.rows + ' / 자료형: ' + b.short.dtype +
-    '\n\n[문항 2 코드]\n' + b.code.c1 + '\n\n[문항 3 코드]\n' + b.code.c2 + '\n\n[문항 4-1]\n' + b.essay.interp + '\n\n[문항 4-2]\n' + b.essay.use + '\n';
+    '\n\n[문항 2 코드]\n' + b.code.c1 + '\n\n[문항 3 코드]\n' + b.code.c2 + '\n\n[문항 4-1]\n' + b.essay.interp +
+    '\n\n[문항 4-2]\n희망 진로: ' + b.career.job + '\n희망 학과: ' + b.career.major + '\n분석 주제: ' + b.career.topic + '\n' + b.career.plan + '\n';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([txt], {type: 'text/plain;charset=utf-8'}));
   a.download = '데이터분석_' + b.sid + '_' + b.name + '.txt'; a.click();

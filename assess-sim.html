@@ -89,7 +89,24 @@ textarea.essay:focus{outline:none;border-color:var(--accent)}
 .receipt{background:var(--ok-soft);border:2px solid var(--ok);border-radius:18px;padding:22px;margin-top:20px;text-align:center;display:none}
 .receipt.show{display:block}
 .receipt b.big{font-size:24px;color:#14593a;display:block}
-@media (max-width:700px){ body{font-size:16px} main{padding:16px 16px 80px} .design{grid-template-columns:1fr} .topbar h1{font-size:16px} h2{font-size:23px} }
+.notice{background:var(--warn-soft);border-radius:12px;padding:12px 16px;margin:16px 0 4px;font-size:14.5px;line-height:1.6}
+.notice ul{margin:4px 0 0;padding-left:18px} .notice li{margin:2px 0}
+.tag-sl{display:inline-block;background:#3446a0;color:#fff;font-size:12.5px;font-weight:700;border-radius:999px;padding:1px 10px;vertical-align:middle}
+.career-note{background:#f0f3ff;border:1.5px solid #b9c3ea;border-radius:12px;padding:12px 16px;font-size:15.5px}
+.career-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.career-grid .full{grid-column:1/-1}
+.career-grid label{display:flex;flex-direction:column;gap:3px;font-weight:700;font-size:14.5px}
+.career-grid input{font:inherit;font-weight:400;font-size:16.5px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px}
+.career-grid input:focus{outline:none;border-color:var(--accent)}
+.guide{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:8px 0;font-size:15px}
+.guide ol{margin:4px 0 0;padding-left:20px}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin:10px 0}
+.step .sl{font-weight:800;margin-bottom:6px}
+.step label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:7px 12px;margin:6px 0;cursor:pointer;font-family:'Nanum Gothic Coding',monospace;font-size:15px;word-break:break-all}
+.step label:hover{border-color:var(--accent-line)}
+.step label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.step input{accent-color:var(--accent);margin-top:4px;flex:none}
+@media (max-width:700px){ body{font-size:16px} main{padding:16px 16px 80px} .design{grid-template-columns:1fr} .career-grid{grid-template-columns:1fr} .topbar h1{font-size:16px} h2{font-size:23px} }
 </style>
 </head>
 <body>
@@ -110,7 +127,18 @@ textarea.essay:focus{outline:none;border-color:var(--accent)}
   <input type="text" id="sid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="10305">
   <label class="f" for="sname">이름</label>
   <input type="text" id="sname" maxlength="20" autocomplete="off" placeholder="홍길동">
-  <label class="pledge"><input type="checkbox" id="pledge"> 다른 사람의 도움 없이 스스로 해결하겠습니다. 응시 중 다른 창이나 탭으로 이동하면 그 횟수가 기록된다는 것을 알고 있습니다.</label>
+  <div class="notice">
+    <b>유의사항</b>
+    <ul>
+      <li>학번에 따라 시뮬레이션 조건(행성)이 정해지므로 <b>학번과 이름을 정확히</b> 입력하세요.</li>
+      <li>코드 문항은 직접 쓰지 않고 <b>보기에서 골라</b> 실행해 볼 수 있습니다.</li>
+      <li><b>4번 문항은 과목별 세부능력 및 특기사항(세특) 기록의 참고 자료</b>로 활용됩니다. 본인의 희망 진로·학과와 관련지어 구체적으로 쓰세요. 진로가 정해지지 않았다면 관심 있는 분야로 써도 됩니다.</li>
+      <li>서술 답안은 <b>본인의 생각</b>으로 작성해야 합니다. 다른 사람의 글이나 인터넷·생성형 AI의 결과를 그대로 옮긴 경우 점수와 기록에 반영되지 않습니다.</li>
+      <li>응시 중 다른 창이나 탭으로 이동하면 그 횟수가 기록됩니다.</li>
+      <li>다시 제출할 수 있으며, <b>마지막 제출</b>이 최종 답안이 됩니다.</li>
+    </ul>
+  </div>
+  <label class="pledge"><input type="checkbox" id="pledge"> 위 유의사항을 읽었으며, 다른 사람의 도움 없이 스스로 해결하고 서술 답안은 본인의 생각으로 작성하겠습니다.</label>
   <button class="btn big" id="startBtn" style="width:100%">시작하기</button>
   <div class="msg" id="gateMsg"></div>
   <div class="msg" id="openState"></div>
@@ -122,7 +150,8 @@ textarea.essay:focus{outline:none;border-color:var(--accent)}
     <b>안내</b>
     <ul style="margin:6px 0 0;padding-left:20px">
       <li>작성한 내용은 이 컴퓨터에 <b>자동 저장</b>됩니다. 창을 닫아도 같은 학번으로 다시 들어오면 이어서 할 수 있어요.</li>
-      <li>VPython 코드는 <b>▶ 실행</b> 또는 <code class="inl">Shift+Enter</code>로 실행합니다. 화면을 오른쪽 드래그하면 회전, 휠로 확대·축소돼요.</li>
+      <li>코드 문항은 <b>보기를 고르면 코드가 자동으로 완성</b>됩니다. <b>▶ 실행</b>으로 결과를 확인해 보세요. 화면을 오른쪽 드래그하면 회전, 휠로 확대·축소돼요.</li>
+      <li><b>4번 문항은 세특(과목별 세부능력 및 특기사항) 기록에 참고</b>됩니다. 희망 진로·학과와 관련지어 본인의 생각으로 구체적으로 쓰세요.</li>
       <li>모든 문항을 마친 뒤 맨 아래 <b>제출하기</b>를 누르세요. 다시 제출하면 마지막 제출이 최종 답안이 됩니다.</li>
     </ul>
   </div>
@@ -130,8 +159,8 @@ textarea.essay:focus{outline:none;border-color:var(--accent)}
     <tr><th>문항</th><th>내용</th><th style="width:70px">배점</th></tr>
     <tr><td>1</td><td>시뮬레이션 개념 (객관식 4문항)</td><td>4점</td></tr>
     <tr><td>2</td><td>모델 설계 — 교실 환기 시뮬레이션 기획 (서술)</td><td>6점</td></tr>
-    <tr><td>3</td><td>모델 구현 — 행성에서 공 튀기기 코드 수정</td><td>10점</td></tr>
-    <tr><td>4</td><td>모델 평가 — 결과 비교와 개선 방안 (서술)</td><td>5점</td></tr>
+    <tr><td>3</td><td>모델 구현 — 행성에서 공 튀기기, 요구 사항별 코드 고르기</td><td>10점</td></tr>
+    <tr><td>4</td><td>결과 비교와 진로 연계 시뮬레이션 계획 — 서술 <span class="tag-sl">세특 반영</span></td><td>5점</td></tr>
   </table>
 
   <!-- 문항 1 -->
@@ -155,33 +184,11 @@ textarea.essay:focus{outline:none;border-color:var(--accent)}
 
   <!-- 문항 3 -->
   <div class="q-title"><span class="no">3</span><h3>모델 구현 — 행성에서 공 튀기기</h3><span class="pt">10점</span></div>
-  <p style="margin:4px 0">교과서 156쪽의 <b>지구</b>에서 공 튀기기 코드를 고쳐, <b>나의 행성 조건</b>에 맞는 시뮬레이션을 구현하세요.</p>
+  <p style="margin:4px 0">교과서 156쪽의 <b>지구</b>에서 공 튀기기 코드를 <b>나의 행성 조건</b>에 맞게 바꾸려고 합니다. 각 요구 사항에 알맞은 코드를 <b>보기에서 하나씩 고르세요</b>. 고른 코드가 아래에 조립되며, <b>▶ 실행</b>으로 결과를 확인할 수 있습니다. <span class="muted">(각 2점)</span></p>
   <div class="cond"><div class="muted" style="font-weight:700">나의 행성 조건</div><div class="big" id="planetText">—</div></div>
-  <table class="plain" id="reqTable"></table>
+  <div id="stepHost"></div>
 
-  <div class="vp" data-cell="mine" data-title="내 코드 (제출됨)"><textarea>Web VPython 3.2
-# 객체 설정
-ball = sphere(pos=vector(0,10,0), radius=1, color=color.red, make_trail=True,
-              trail_type="points", trail_radius=0.1, interval=10)
-scene.background = vector(1,1,1)     # 배경 색상을 흰색으로 설정
-floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)
-
-# 초기 변수 설정
-ball.velocity = vector(0,0,0)   # 공의 초기 속도
-dt = 0.01                       # 루프가 한 번 수행될 때의 시간 간격
-t = 0                           # 전체 수행 시간을 누적하는 변수
-g = -9.8                        # 중력가속도 (아래 방향이므로 -9.8)
-
-while t < 20:
-    rate(100)                                       # 1초당 루프 100번
-    ball.velocity.y = ball.velocity.y + (g*dt)      # 속도 = 현재 속도 + (중력가속도 × 시간 간격)
-    ball.pos = ball.pos + ball.velocity*dt          # 위치 = 현재 위치 + 속도 × 시간 간격
-    crash = floor.pos.y + (floor.size.y/2) + ball.radius   # 충돌이 일어나는 y좌표
-
-    if ball.pos.y < crash:                          # 공이 바닥에 닿으면
-        ball.velocity.y = -ball.velocity.y*0.8      # 방향을 바꾸고, 튀어 오르는 정도 조절
-        ball.pos.y = crash                          # 위치 보정: 바닥 표면 위로
-    t = t + dt                                      # 시간 업데이트</textarea></div>
+  <div class="vp" data-cell="mine" data-title="완성된 코드 (보기를 고르면 바뀌어요)"><textarea></textarea></div>
 
   <details class="card" style="padding:12px 18px">
     <summary style="cursor:pointer;font-weight:700">비교용: 원래 코드(지구) 실행해 보기 — 문항 4에 활용 (제출되지 않음)</summary>
@@ -206,15 +213,30 @@ while t < 20:
   </details>
 
   <!-- 문항 4 -->
-  <div class="q-title"><span class="no">4</span><h3>모델 평가</h3><span class="pt">5점</span></div>
-  <p style="margin:4px 0"><b>4-1. (3점)</b> 원래 코드(지구)와 내 코드(행성)의 실행 결과를 비교하여, 공의 움직임이 어떻게 다른지와 <b>그 이유</b>를 쓰세요.</p>
+  <div class="q-title"><span class="no">4</span><h3>결과 비교와 진로 연계</h3><span class="pt">5점</span><span class="tag-sl">세특 반영</span></div>
+  <div class="career-note">✍ 이 문항은 <b>과목별 세부능력 및 특기사항(세특)</b> 기록의 참고 자료로 활용됩니다. 본인의 희망 진로·학과와 관련지어 <b>본인의 생각</b>으로 구체적으로 쓰세요. 다른 사람의 글이나 인터넷·생성형 AI의 결과를 그대로 옮긴 경우 반영되지 않습니다.</div>
+  <p style="margin:12px 0 4px"><b>4-1. (2점)</b> 원래 코드(지구)와 내 코드(행성)의 실행 결과를 비교하여, 공의 움직임이 어떻게 다른지와 <b>그 이유</b>를 쓰세요.</p>
   <textarea class="essay" data-a="compare" maxlength="1000" placeholder="예) 지구에서는 … 내 행성에서는 … 그 이유는 …"></textarea><div class="count" data-count="compare"></div>
-  <p style="margin:14px 0 4px"><b>4-2. (2점)</b> 이 공 튀기기 모델이 <b>현실과 다른 점</b> 1가지와 이를 <b>개선하는 방법</b>을 쓰세요.</p>
-  <textarea class="essay" data-a="improve" maxlength="1000" placeholder="예) 이 모델은 … 을 고려하지 않았으므로 …"></textarea><div class="count" data-count="improve"></div>
+  <p style="margin:16px 0 4px"><b>4-2. (3점)</b> 나의 희망 진로·학과 분야에서 <b>시뮬레이션으로 확인하거나 해결하고 싶은 문제</b>를 하나 정하고, 시뮬레이션 제작 과정에 따라 계획을 쓰세요.</p>
+  <div class="career-grid">
+    <label>희망 진로(직업)<input data-a="job" maxlength="40" placeholder="예) 건축가"></label>
+    <label>희망 학과(계열)<input data-a="major" maxlength="40" placeholder="예) 건축공학과"></label>
+    <label class="full">시뮬레이션 주제 (한 줄)<input data-a="topic" maxlength="80" placeholder="예) 건물 배치에 따른 아파트 단지의 바람길 시뮬레이션"></label>
+  </div>
+  <div class="guide">
+    <b>꼭 들어가야 할 내용</b>
+    <ol>
+      <li><b>문제 정의</b>: 이 주제가 희망 진로·학과와 어떤 관련이 있고, 시뮬레이션으로 무엇을 확인하려고 하는가?</li>
+      <li><b>모델 설계</b>: 필요한 자료, 모델의 <b>객체</b>와 <b>규칙</b>은 무엇인가?</li>
+      <li><b>모델 구현</b>: 어떤 VPython 객체(sphere, box 등)와 코드(반복문, 조건문)로 나타낼 수 있는가?</li>
+      <li><b>모델 평가</b>: 현실에서 직접 하는 것보다 좋은 점과, 현실과 다를 수 있는 점(한계)은 무엇인가?</li>
+    </ol>
+  </div>
+  <textarea class="essay" data-a="plan" maxlength="1500" style="min-height:200px" placeholder="위 1~4의 내용이 모두 들어가도록 문장으로 쓰세요."></textarea><div class="count" data-count="plan" data-max="1500"></div>
 
   <div class="submit-box">
     <div style="font-weight:900;font-size:20px">모든 문항을 확인했나요?</div>
-    <p class="muted" style="margin:6px 0 14px">문항 3은 <b>내 코드</b> 칸의 코드가 제출됩니다. 제출 전에 한 번 더 실행해 오류가 없는지 확인하세요.</p>
+    <p class="muted" style="margin:6px 0 14px">고른 보기와 서술 답안이 함께 제출됩니다. 문항 3은 제출 전에 한 번 실행해 결과를 확인해 보세요.</p>
     <button class="btn big" id="submitBtn">제출하기</button>
     <div class="msg" id="submitMsg"></div>
     <div style="margin-top:12px"><button class="btn ghost small" id="backupBtn">답안을 파일로 저장 (제출이 안 될 때)</button></div>
@@ -319,6 +341,47 @@ const MCQ = [
     o: {a: '객체를 50만큼 이동시킨다', b: '공의 반지름을 50으로 정한다', c: '시뮬레이션을 50초 동안 실행한다', d: '반복문을 1초에 최대 50번 실행한다'}},
 ];
 
+/* 요구 사항별 코드 보기 — 정답은 서버에서 채점한다 (보기 순서는 학번에 따라 섞임) */
+function stepsFor(v) {
+  const sp = (y, r, c) => 'ball = sphere(pos=vector(0,' + y + ',0), radius=' + r + ', color=color.' + c + ', make_trail=True)';
+  const fl = (s, c) => 'floor = box(pos=vector(0,-5,0), size=vector(' + s + '), color=color.' + c + ')';
+  return [
+    {id: 'c1', label: '① ' + v.planet + '의 중력가속도 ' + Math.abs(v.g) + ' m/s²를 적용한다. (아래 방향)', opts: ['g = ' + v.g, 'g = ' + (-v.g), 'g = -9.8', 'dt = ' + Math.abs(v.g)]},
+    {id: 'c2', label: '② 공이 바닥에 닿으면 방향이 바뀌고 속도가 ' + v.e + '배가 된다.', opts: ['ball.velocity.y = -ball.velocity.y*' + v.e, 'ball.velocity.y = ball.velocity.y*' + v.e, 'ball.velocity.y = -ball.velocity.y*0.8', 'ball.velocity.y = -ball.velocity.y+' + v.e]},
+    {id: 'c3', label: '③ 공의 반지름은 ' + v.br + ', 색은 ' + COLOR_KO[v.bc] + ', 처음 위치는 (0, ' + v.by + ', 0)이다.', opts: [sp(v.by, v.br, v.bc), 'ball = sphere(pos=vector(' + v.by + ',0,0), radius=' + v.br + ', color=color.' + v.bc + ', make_trail=True)', sp(v.br, v.by, v.bc), sp(v.by, v.br, 'red')]},
+    {id: 'c4', label: '④ 바닥의 가로 크기(x)는 ' + v.fx + ', 색은 ' + COLOR_KO[v.fc] + '이다.', opts: [fl(v.fx + ',0.5,10', v.fc), fl('10,0.5,' + v.fx, v.fc), fl(v.fx + ',0.5,10', 'blue'), fl('0.5,' + v.fx + ',10', v.fc)]},
+    {id: 'c5', label: '⑤ 시뮬레이션을 ' + v.T + '초 동안 실행한다.', opts: ['while t < ' + v.T + ':', 'while t > ' + v.T + ':', 'while t < 20:', 'while t < ' + (v.T * 100) + ':']},
+  ];
+}
+const EARTH = {c1: 'g = -9.8', c2: 'ball.velocity.y = -ball.velocity.y*0.8', c3: 'ball = sphere(pos=vector(0,10,0), radius=1, color=color.red, make_trail=True)', c4: 'floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)', c5: 'while t < 20:'};
+let STEPS = [];
+function renderChoices(host, steps, rnd) {
+  host.innerHTML = '';
+  steps.forEach((st) => {
+    const d = document.createElement('div'); d.className = 'step';
+    d.innerHTML = '<div class="sl">' + esc(st.label) + '</div>' + shuffle(st.opts, rnd).map((o) => '<label><input type="radio" name="' + st.id + '" value="' + esc(o) + '" data-a="' + st.id + '"><span>' + esc(o) + '</span></label>').join('');
+    host.appendChild(d);
+  });
+}
+const picked = (id) => { const el = $('input[name="' + id + '"]:checked'); return el ? el.value : null; };
+function assemble() {
+  // 고르지 않은 요구 사항은 원래(지구) 코드로 채워 실행할 수 있게 한다
+  const L = (id, n, ind) => (picked(id) ? ind + '# ' + n + '\n' + ind + picked(id) : ind + '# ' + n + ' (아직 고르지 않음 — 지구 코드)\n' + ind + EARTH[id]);
+  const code = 'Web VPython 3.2\n' + L('c3', '③ 공', '') + '\nscene.background = vector(1,1,1)\n' + L('c4', '④ 바닥', '') +
+    '\n\nball.velocity = vector(0,0,0)\ndt = 0.01\nt = 0\n' + L('c1', '① 중력가속도', '') + '\n\n' + L('c5', '⑤ 실행 시간', '') +
+    '\n    rate(100)\n    ball.velocity.y = ball.velocity.y + (g*dt)\n    ball.pos = ball.pos + ball.velocity*dt\n    crash = floor.pos.y + (floor.size.y/2) + ball.radius\n    if ball.pos.y < crash:\n' +
+    L('c2', '② 반발', '        ') + '\n        ball.pos.y = crash\n    t = t + dt';
+  if (cells.mine && cells.mine.cm.getValue() !== code) cells.mine.cm.setValue(code);
+}
+document.addEventListener('change', (e) => { if (e.target.matches('#stepHost input')) assemble(); });
+// 다른 수행평가에서 적은 희망 진로·학과가 있으면 미리 채운다
+function prefillCareer(sid) {
+  try {
+    const o = JSON.parse(lsGet('sw-assess-' + (KIND === 'data' ? 'sim' : 'data') + ':' + sid) || 'null');
+    if (o && o.fields) ['job', 'major'].forEach((k) => { const el = $('[data-a="' + k + '"]'); if (el && !el.value && o.fields[k]) el.value = o.fields[k]; });
+  } catch (e) {}
+}
+
 let S = null, V = null;
 const cells = {};
 function seeded(seed) { let x = seed % 2147483647; if (x <= 0) x += 2147483646; return () => (x = x * 16807 % 2147483647) / 2147483647; }
@@ -348,14 +411,12 @@ function begin(sid, name) {
   if (draft) { S.startedAt = draft.startedAt || S.startedAt; S.leave = draft.leave || 0; S.submitted = draft.submitted || 0; }
   V = VARIANTS[Number(sid.slice(3)) % 4];
   $('#planetText').textContent = V.planet + '  (중력가속도 ' + Math.abs(V.g) + ' m/s²)';
-  $('#reqTable').innerHTML = '<tr><th style="width:52px">번호</th><th>요구 사항</th><th style="width:70px">배점</th></tr>' +
-    '<tr><td>①</td><td>' + V.planet + '의 중력가속도 <b>' + Math.abs(V.g) + ' m/s²</b>를 적용한다. (아래 방향)</td><td>2점</td></tr>' +
-    '<tr><td>②</td><td>공이 바닥에 닿으면 방향이 바뀌고 속도가 <b>' + V.e + '배</b>가 된다.</td><td>2점</td></tr>' +
-    '<tr><td>③</td><td>공의 반지름은 <b>' + V.br + '</b>, 색은 <b>' + COLOR_KO[V.bc] + '(color.' + V.bc + ')</b>, 처음 위치는 <b>(0, ' + V.by + ', 0)</b>이다.</td><td>2점</td></tr>' +
-    '<tr><td>④</td><td>바닥의 가로 크기(size의 x)는 <b>' + V.fx + '</b>, 색은 <b>' + COLOR_KO[V.fc] + '(color.' + V.fc + ')</b>이다.</td><td>2점</td></tr>' +
-    '<tr><td>⑤</td><td>시뮬레이션을 <b>' + V.T + '초</b> 동안 실행한다.</td><td>2점</td></tr>';
   renderMcq(Number(sid));
+  STEPS = stepsFor(V);
+  renderChoices($('#stepHost'), STEPS, seeded(Number(sid) * 17 + 9));
   if (draft) restore(draft);
+  else prefillCareer(sid);
+  assemble();
   $('#gate').style.display = 'none'; $('#paper').style.display = 'block';
   const who = $('#who'); who.style.display = ''; who.textContent = sid + ' ' + name;
   $('#saveState').style.display = '';
@@ -384,19 +445,18 @@ function collectFields() {
 }
 function save() {
   if (!S) return;
-  lsSet(draftKey(), JSON.stringify({fields: collectFields(), code: cells.mine ? cells.mine.cm.getValue() : '', startedAt: S.startedAt, leave: S.leave, submitted: S.submitted}));
+  lsSet(draftKey(), JSON.stringify({fields: collectFields(), startedAt: S.startedAt, leave: S.leave, submitted: S.submitted}));
   $('#saveState').textContent = '자동 저장 ' + new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
 }
 function restore(d) {
   Object.entries(d.fields || {}).forEach(([k, v]) => { $$('[data-a="' + k + '"]').forEach((el) => { if (el.type === 'radio') el.checked = el.value === v; else el.value = v; }); });
-  if (d.code && cells.mine) cells.mine.cm.setValue(d.code);
   updateCounts();
 }
 let saveTimer = null;
 const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 600); };
 document.addEventListener('input', (e) => { if (e.target.closest('[data-a]')) { saveSoon(); updateCounts(); } });
 document.addEventListener('change', (e) => { if (e.target.closest('[data-a]')) save(); });
-function updateCounts() { $$('[data-count]').forEach((el) => { const t = $('[data-a="' + el.dataset.count + '"]'); el.textContent = t.value.length + ' / 1000자'; }); }
+function updateCounts() { $$('[data-count]').forEach((el) => { const t = $('[data-a="' + el.dataset.count + '"]'); el.textContent = t.value.length + ' / ' + (el.dataset.max || 1000) + '자'; }); }
 document.addEventListener('visibilitychange', () => { if (S && document.hidden) { S.leave++; save(); } });
 
 /* ---------------- VPython 실행기 ---------------- */
@@ -414,19 +474,19 @@ window.addEventListener('message', (e) => { const d = e.data; if (!d || !d.key) 
 $$('.vp').forEach((el) => {
   const ta = $('textarea', el), original = ta.value, name = el.dataset.cell;
   const head = document.createElement('div'); head.className = 'vp-head';
-  head.innerHTML = '<span class="ttl">' + esc(el.dataset.title) + '</span><button class="btn small run">▶ 실행</button><button class="btn small stop" style="display:none">■ 멈춤</button><button class="btn ghost small reset">↺ 처음 코드로</button>';
+  const locked = name === 'mine';   // 제출 코드는 보기를 골라 조립하므로 읽기 전용
+  head.innerHTML = '<span class="ttl">' + esc(el.dataset.title) + '</span><button class="btn small run">▶ 실행</button><button class="btn small stop" style="display:none">■ 멈춤</button>' + (locked ? '' : '<button class="btn ghost small reset">↺ 처음 코드로</button>');
   const out = document.createElement('div'); out.className = 'vp-out';
   const idle = '<div class="placeholder">▶ 실행을 누르면 여기에 시뮬레이션이 나타나요</div>';
   out.innerHTML = idle;
   const errBox = document.createElement('div'); errBox.className = 'vp-err';
   el.insertBefore(head, ta);
-  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
+  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity, readOnly: locked,
     extraKeys: {'Shift-Enter': () => run(), 'Ctrl-Enter': () => run(), Tab: (c) => c.replaceSelection('    ')}});
   el.appendChild(out); el.appendChild(errBox);
   const runBtn = $('.run', head), stopBtn = $('.stop', head);
   const cell = {cm, key: null, onMsg, lastRun: '실행 안 함', lastCode: null};
   cells[name] = cell;
-  if (name === 'mine') cm.on('change', saveSoon);
   let frame = null, offset = 0, errLine = null;
   function clearErr() { errBox.className = 'vp-err'; if (errLine !== null) { cm.removeLineClass(errLine, 'background', 'cm-errline'); errLine = null; } }
   function showErr(msg, line) {
@@ -467,53 +527,19 @@ $$('.vp').forEach((el) => {
   }
   runBtn.addEventListener('click', run);
   stopBtn.addEventListener('click', () => stop(false));
-  $('.reset', head).addEventListener('click', () => { if (confirm('작성한 코드를 지우고 처음 코드로 되돌릴까요?')) { stop(true); clearErr(); cm.setValue(original); } });
+  if (!locked) $('.reset', head).addEventListener('click', () => { if (confirm('작성한 코드를 지우고 처음 코드로 되돌릴까요?')) { stop(true); clearErr(); cm.setValue(original); } });
 });
 
 $$('details').forEach((d) => d.addEventListener('toggle', () => Object.values(cells).forEach((c) => c.cm.refresh())));
-
-/* ---------------- 문항 3 자동 확인 (코드 분석) ---------------- */
-function callArgs(code, re) {
-  const m = re.exec(code); if (!m) return null;
-  let i = m.index + m[0].length, depth = 1, s = '';
-  for (; i < code.length && depth > 0; i++) { const ch = code[i]; if (ch === '(') depth++; else if (ch === ')') depth--; if (depth > 0) s += ch; }
-  return s;
-}
-const num = (s) => (s == null ? NaN : parseFloat(String(s).replace(/\s+/g, '')));
-const same = (a, b) => Math.abs(a - b) < 1e-9;
-function gradeCode(raw) {
-  const code = raw.split('\n').map((l) => l.replace(/#.*$/, '')).join('\n');
-  const notes = []; let score = 0;
-  // ① 중력가속도
-  const gm = code.match(/^\s*g\s*=\s*(-?\s*\d*\.?\d+)\s*$/m);
-  const r1 = gm && same(num(gm[1]), V.g) ? 2 : 0; score += r1; notes.push('①중력 ' + r1 + (gm ? '(g=' + gm[1].replace(/\s/g, '') + ')' : '(g 없음)'));
-  // ② 반발 정도
-  const em = code.match(/ball\.velocity\.y\s*=\s*-\s*ball\.velocity\.y\s*\*\s*(\d*\.?\d+)/) || code.match(/ball\.velocity\.y\s*=\s*-\s*(\d*\.?\d+)\s*\*\s*ball\.velocity\.y/);
-  const r2 = em && same(num(em[1]), V.e) ? 2 : 0; score += r2; notes.push('②반발 ' + r2 + (em ? '(' + em[1] + ')' : '(찾지 못함)'));
-  // ③ 공
-  const ba = callArgs(code, /ball\s*=\s*sphere\s*\(/) || '';
-  const rad = (ba.match(/radius\s*=\s*(\d*\.?\d+)/) || code.match(/^\s*ball\.radius\s*=\s*(\d*\.?\d+)/m) || [])[1];
-  const col = (ba.match(/color\s*=\s*color\.(\w+)/) || code.match(/^\s*ball\.color\s*=\s*color\.(\w+)/m) || [])[1];
-  const pm = ba.match(/pos\s*=\s*vector\s*\(\s*([^,]+),\s*([^,]+),/);
-  const k3 = (same(num(rad), V.br) ? 1 : 0) + (col === V.bc ? 1 : 0) + (pm && same(num(pm[1]), 0) && same(num(pm[2]), V.by) ? 1 : 0);
-  const r3 = k3 === 3 ? 2 : k3 === 2 ? 1 : 0; score += r3; notes.push('③공 ' + r3 + '(반지름 ' + (rad || '?') + ', 색 ' + (col || '?') + ', 높이 ' + (pm ? pm[2].trim() : '?') + ')');
-  // ④ 바닥
-  const fa = callArgs(code, /floor\s*=\s*box\s*\(/) || '';
-  const sx = (fa.match(/size\s*=\s*vector\s*\(\s*([^,]+),/) || [])[1];
-  const fc = (fa.match(/color\s*=\s*color\.(\w+)/) || code.match(/^\s*floor\.color\s*=\s*color\.(\w+)/m) || [])[1];
-  const k4 = (same(num(sx), V.fx) ? 1 : 0) + (fc === V.fc ? 1 : 0);
-  const r4 = k4 === 2 ? 2 : k4 === 1 ? 1 : 0; score += r4; notes.push('④바닥 ' + r4 + '(가로 ' + (sx ? sx.trim() : '?') + ', 색 ' + (fc || '?') + ')');
-  // ⑤ 시간
-  const tm = code.match(/while\s*\(?\s*t\s*<=?\s*(\d*\.?\d+)/);
-  const r5 = tm && same(num(tm[1]), V.T) ? 2 : 0; score += r5; notes.push('⑤시간 ' + r5 + (tm ? '(' + tm[1] + '초)' : '(찾지 못함)'));
-  return {score, detail: notes.join(' / ')};
-}
 
 /* ---------------- 제출 ---------------- */
 function missingList(f) {
   const miss = [];
   MCQ.forEach((m, i) => { if (!f[m.id]) miss.push('문항 1-' + (i + 1)); });
-  [['problem', '2-①'], ['data', '2-②'], ['objects', '2-③'], ['rules', '2-④'], ['assume', '2-⑤'], ['compare', '4-1'], ['improve', '4-2']].forEach(([k, n]) => { if (!(f[k] || '').trim()) miss.push('문항 ' + n); });
+  [['problem', '2-①'], ['data', '2-②'], ['objects', '2-③'], ['rules', '2-④'], ['assume', '2-⑤']].forEach(([k, n]) => { if (!(f[k] || '').trim()) miss.push('문항 ' + n); });
+  STEPS.forEach((st, i) => { if (!f[st.id]) miss.push('문항 3-' + '①②③④⑤'[i]); });
+  if (!(f.compare || '').trim()) miss.push('문항 4-1');
+  [['job', '희망 진로'], ['major', '희망 학과'], ['topic', '주제'], ['plan', '계획']].forEach(([k, n]) => { if (!(f[k] || '').trim()) miss.push('문항 4-2 ' + n); });
   return miss;
 }
 function buildBase() {
@@ -523,8 +549,9 @@ function buildBase() {
   return {kind: KIND, sid: S.sid, name: S.name, variant: V.planet,
     mcq: {q1: f.q1, q2: f.q2, q3: f.q3, q4: f.q4},
     design: {problem: f.problem, data: f.data, objects: f.objects, rules: f.rules, assume: f.assume},
-    evalAns: {compare: f.compare, improve: f.improve},
-    code, lastRun, auto: gradeCode(code), leave: S.leave, startedAt: S.startedAt, client: navigator.userAgent};
+    choices: {c1: f.c1, c2: f.c2, c3: f.c3, c4: f.c4, c5: f.c5},
+    evalAns: {compare: f.compare}, career: {job: f.job, major: f.major, topic: f.topic, plan: f.plan},
+    code, lastRun, leave: S.leave, startedAt: S.startedAt, client: navigator.userAgent};
 }
 // 응답을 받았지만 읽지 못한 경우에는 다시 보내지 않는다 (중복 제출 방지)
 async function sendPayload(payload) {
@@ -542,7 +569,7 @@ $('#submitBtn').addEventListener('click', async () => {
   const show = (cls, t) => { msg.className = 'msg show ' + cls; msg.innerHTML = t; };
   const miss = missingList(collectFields());
   const mine = cells.mine;
-  const runNote = mine.lastCode === null ? '\n※ 내 코드를 한 번도 실행하지 않았어요.' : (mine.lastCode !== mine.cm.getValue() ? '\n※ 마지막 실행 뒤에 코드를 고쳤어요. 실행해서 확인했나요?' : '');
+  const runNote = mine.lastCode === null ? '\n※ 문항 3의 완성된 코드를 한 번도 실행하지 않았어요.' : (mine.lastCode !== mine.cm.getValue() ? '\n※ 마지막 실행 뒤에 보기를 바꿨어요. 실행해서 확인했나요?' : '');
   if (!confirm((miss.length ? '아직 답하지 않은 문항: ' + miss.join(', ') + '\n' : '') + runNote + '\n\n제출할까요? (다시 제출하면 마지막 제출이 최종 답안이 됩니다)')) return;
   if (!SUBMIT_URL) { show('no', '제출 주소가 설정되지 않았어요. 선생님께 알리고, 아래 <b>답안을 파일로 저장</b>을 눌러 두세요.'); return; }
   btn.disabled = true; save();
@@ -563,7 +590,8 @@ $('#backupBtn').addEventListener('click', () => {
   const b = buildBase();
   const txt = '[시뮬레이션 수행평가 답안]\n학번: ' + b.sid + '\n이름: ' + b.name + '\n행성: ' + b.variant + '\n\n[문항 1] ' + JSON.stringify(b.mcq) +
     '\n\n[문항 2]\n문제 정의: ' + b.design.problem + '\n필요한 자료: ' + b.design.data + '\n객체: ' + b.design.objects + '\n규칙: ' + b.design.rules + '\n가정: ' + b.design.assume +
-    '\n\n[문항 3 코드]\n' + b.code + '\n\n[문항 4-1]\n' + b.evalAns.compare + '\n\n[문항 4-2]\n' + b.evalAns.improve + '\n';
+    '\n\n[문항 3 코드]\n' + b.code + '\n\n[문항 4-1]\n' + b.evalAns.compare +
+    '\n\n[문항 4-2]\n희망 진로: ' + b.career.job + '\n희망 학과: ' + b.career.major + '\n주제: ' + b.career.topic + '\n' + b.career.plan + '\n';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([txt], {type: 'text/plain;charset=utf-8'}));
   a.download = '시뮬레이션_' + b.sid + '_' + b.name + '.txt'; a.click();
