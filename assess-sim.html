@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시뮬레이션 수행평가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<style>
+:root{
+  --accent:#3f8f3a; --accent-strong:#2c6e28; --accent-soft:#eef7e8; --accent-line:#c7e3bd;
+  --ink:#1f2330; --ink-2:#4a5063; --ink-3:#7a8094; --line:#e4e6ee; --bg:#f6f7fb; --card:#fff;
+  --ok:#1f8a4c; --ok-soft:#e5f5ec; --bad:#c62f3a; --bad-soft:#fdeaec; --warn:#a66a00; --warn-soft:#fff4dc;
+  --code-bg:#fbfbfd; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;font-size:17px;word-break:keep-all}
+code,pre,.mono{font-family:'Nanum Gothic Coding',ui-monospace,monospace}
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 20px;flex-wrap:wrap}
+.topbar .unit{background:var(--accent);color:#fff;font-weight:700;border-radius:999px;padding:3px 12px;font-size:14px;white-space:nowrap}
+.topbar h1{font-size:19px;margin:0;font-weight:900;white-space:nowrap}
+.topbar .grow{flex:1}
+.pill{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 12px;white-space:nowrap}
+main{max-width:980px;margin:0 auto;padding:24px 20px 100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:14px 0}
+.card.soft{background:var(--accent-soft);border-color:var(--accent-line)}
+h2{font-size:28px;font-weight:900;margin:4px 0 6px;line-height:1.3}
+.q-title{display:flex;align-items:baseline;gap:10px;margin:36px 0 8px;flex-wrap:wrap}
+.q-title .no{background:var(--ink);color:#fff;border-radius:8px;padding:2px 10px;font-weight:900;font-size:16px}
+.q-title h3{margin:0;font-size:22px;font-weight:900}
+.q-title .pt{color:var(--accent-strong);font-weight:800}
+.muted{color:var(--ink-3);font-size:15px}
+table.plain{border-collapse:collapse;width:100%;font-size:15px;background:#fff}
+table.plain th,table.plain td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.plain th{background:#f1f2f7}
+code.inl{background:#f1f2f7;border-radius:6px;padding:1px 6px;font-size:.92em}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--accent);color:#fff}
+.btn:hover{background:var(--accent-strong)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{padding:5px 12px;font-size:14px}
+.btn.big{padding:14px 28px;font-size:19px}
+.btn.stop{background:#c62f3a}
+#gate{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px}
+#gate label.f{display:block;font-weight:700;margin:14px 0 4px}
+#gate input[type=text]{width:100%;font:inherit;font-size:20px;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px}
+#gate input[type=text]:focus{outline:none;border-color:var(--accent)}
+#gate .pledge{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-size:15.5px;cursor:pointer}
+#gate .pledge input{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
+.msg{font-size:15px;border-radius:10px;padding:10px 14px;margin-top:10px;display:none}
+.msg.show{display:block}
+.msg.no{background:var(--bad-soft);color:#8a1f28}
+.msg.ok{background:var(--ok-soft);color:#14593a}
+.msg.info{background:var(--warn-soft);color:#6b4500}
+#paper{display:none}
+.mcq{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin:12px 0}
+.mcq .q{font-weight:700;margin:0 0 10px}
+.mcq label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:9px 14px;margin:7px 0;cursor:pointer;background:#fff}
+.mcq label:hover{border-color:var(--accent-line)}
+.mcq label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.mcq input{accent-color:var(--accent);width:18px;height:18px;margin-top:4px}
+textarea.essay{width:100%;min-height:110px;font:inherit;font-size:16.5px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;resize:vertical;background:#fff}
+textarea.essay:focus{outline:none;border-color:var(--accent)}
+.count{font-size:13px;color:var(--ink-3);text-align:right}
+.design{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.design .full{grid-column:1/-1}
+.design b{display:block;margin-bottom:4px}
+.scenario{background:#fff;border-left:5px solid var(--accent);border-radius:0 14px 14px 0;padding:14px 18px;margin:10px 0}
+.cond{background:#fff;border:3px solid var(--accent);border-radius:16px;padding:14px 18px;margin:12px 0}
+.cond .big{font-size:26px;font-weight:900;color:var(--accent-strong)}
+/* VPython 셀 */
+.vp{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin:14px 0;overflow:hidden}
+.vp-head{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);background:#fafbfd;flex-wrap:wrap}
+.vp-head .ttl{font-size:14px;color:var(--ink-2);flex:1;min-width:140px;font-weight:700}
+.vp .CodeMirror{height:auto;font-family:'Nanum Gothic Coding',monospace;font-size:15px;line-height:1.55;background:var(--code-bg)}
+.vp .CodeMirror-scroll{min-height:60px;max-height:640px}
+.vp .CodeMirror-gutters{background:#f3f4f8;border-right:1px solid var(--line)}
+.vp-out{border-top:1px solid var(--line);background:#f7f8fb;min-height:140px;display:flex;flex-direction:column;overflow-x:auto}
+.vp-out .placeholder{margin:auto;color:var(--ink-3);font-size:15px;text-align:center;padding:20px}
+.vp-out iframe{width:100%;border:0;display:block;background:#fff}
+.vp-err{background:var(--bad-soft);color:#7d1a23;padding:10px 14px;font-size:15px;display:none;border-top:1px solid #f3c5ca}
+.vp-err.show{display:block}
+.vp-err .hint{margin-top:4px}
+.cm-errline{background:#fde2e5!important}
+.submit-box{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:22px;margin-top:40px;text-align:center}
+.receipt{background:var(--ok-soft);border:2px solid var(--ok);border-radius:18px;padding:22px;margin-top:20px;text-align:center;display:none}
+.receipt.show{display:block}
+.receipt b.big{font-size:24px;color:#14593a;display:block}
+@media (max-width:700px){ body{font-size:16px} main{padding:16px 16px 80px} .design{grid-template-columns:1fr} .topbar h1{font-size:16px} h2{font-size:23px} }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="unit">Ⅳ 단원</span>
+  <h1>시뮬레이션 수행평가</h1>
+  <span class="grow"></span>
+  <span class="pill" id="who" style="display:none"></span>
+  <span class="pill" id="saveState" style="display:none">자동 저장</span>
+</header>
+
+<!-- ===================== 시작 화면 ===================== -->
+<section id="gate">
+  <div class="muted" style="font-weight:700;color:var(--accent-strong)">소프트웨어와 생활 · Ⅳ. 모의 실험하는 소프트웨어</div>
+  <h2>시뮬레이션 수행평가 <span style="color:var(--accent-strong)">(25점)</span></h2>
+  <p class="muted" style="margin:4px 0 10px">학번과 이름을 정확히 입력하세요. 입력한 학번에 따라 시뮬레이션 조건이 정해집니다.</p>
+  <label class="f" for="sid">학번 (5자리, 예: 10305)</label>
+  <input type="text" id="sid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="10305">
+  <label class="f" for="sname">이름</label>
+  <input type="text" id="sname" maxlength="20" autocomplete="off" placeholder="홍길동">
+  <label class="pledge"><input type="checkbox" id="pledge"> 다른 사람의 도움 없이 스스로 해결하겠습니다. 응시 중 다른 창이나 탭으로 이동하면 그 횟수가 기록된다는 것을 알고 있습니다.</label>
+  <button class="btn big" id="startBtn" style="width:100%">시작하기</button>
+  <div class="msg" id="gateMsg"></div>
+  <div class="msg" id="openState"></div>
+</section>
+
+<!-- ===================== 시험지 ===================== -->
+<main id="paper">
+  <div class="card soft">
+    <b>안내</b>
+    <ul style="margin:6px 0 0;padding-left:20px">
+      <li>작성한 내용은 이 컴퓨터에 <b>자동 저장</b>됩니다. 창을 닫아도 같은 학번으로 다시 들어오면 이어서 할 수 있어요.</li>
+      <li>VPython 코드는 <b>▶ 실행</b> 또는 <code class="inl">Shift+Enter</code>로 실행합니다. 화면을 오른쪽 드래그하면 회전, 휠로 확대·축소돼요.</li>
+      <li>모든 문항을 마친 뒤 맨 아래 <b>제출하기</b>를 누르세요. 다시 제출하면 마지막 제출이 최종 답안이 됩니다.</li>
+    </ul>
+  </div>
+  <table class="plain">
+    <tr><th>문항</th><th>내용</th><th style="width:70px">배점</th></tr>
+    <tr><td>1</td><td>시뮬레이션 개념 (객관식 4문항)</td><td>4점</td></tr>
+    <tr><td>2</td><td>모델 설계 — 교실 환기 시뮬레이션 기획 (서술)</td><td>6점</td></tr>
+    <tr><td>3</td><td>모델 구현 — 행성에서 공 튀기기 코드 수정</td><td>10점</td></tr>
+    <tr><td>4</td><td>모델 평가 — 결과 비교와 개선 방안 (서술)</td><td>5점</td></tr>
+  </table>
+
+  <!-- 문항 1 -->
+  <div class="q-title"><span class="no">1</span><h3>시뮬레이션 개념</h3><span class="pt">4점 (각 1점)</span></div>
+  <div id="mcqHost"></div>
+
+  <!-- 문항 2 -->
+  <div class="q-title"><span class="no">2</span><h3>모델 설계 — 교실 환기 시뮬레이션</h3><span class="pt">6점</span></div>
+  <div class="scenario">
+    <b>상황</b> 쉬는 시간에 교실 창문을 열어 환기를 하면, 교실 안의 오염된 공기 입자(이산화탄소, 미세 먼지 등)가 창문을 통해 밖으로 빠져나가 점점 줄어든다.
+    <b>열어 둔 창문의 개수</b>에 따라 교실 공기가 얼마나 빨리 깨끗해지는지를 시뮬레이션 프로그램으로 확인하려고 한다.
+  </div>
+  <p class="muted" style="margin:4px 0">시뮬레이션 제작 과정의 <b>1단계 문제 정의</b>와 <b>2단계 모델 설계</b>를 작성하세요. (교과서 158쪽 입자 운동 시뮬레이션을 떠올려 보세요.)</p>
+  <div class="design">
+    <div class="full"><b>① 문제 정의 (1점)</b><textarea class="essay" data-a="problem" maxlength="600" placeholder="시뮬레이션으로 무엇을 확인하려고 하나요? 질문 형태로 써 보세요."></textarea></div>
+    <div><b>② 필요한 자료 (1점)</b><textarea class="essay" data-a="data" maxlength="600" placeholder="모델을 만들려면 어떤 자료(수치, 조사 결과 등)가 필요한가요?"></textarea></div>
+    <div><b>③ 모델 구성 요소 — 객체 (1점)</b><textarea class="essay" data-a="objects" maxlength="600" placeholder="화면에 등장할 객체를 쓰세요."></textarea></div>
+    <div class="full"><b>④ 모델 구성 요소 — 규칙 (2점)</b><textarea class="essay" data-a="rules" maxlength="800" placeholder="객체들이 따르는 규칙을 2가지 이상 구체적으로 쓰세요."></textarea></div>
+    <div class="full"><b>⑤ 모델의 가정 (1점)</b><textarea class="essay" data-a="assume" maxlength="600" placeholder="모델을 단순하게 만들기 위해 무시하는 요소는 무엇인가요?"></textarea></div>
+  </div>
+
+  <!-- 문항 3 -->
+  <div class="q-title"><span class="no">3</span><h3>모델 구현 — 행성에서 공 튀기기</h3><span class="pt">10점</span></div>
+  <p style="margin:4px 0">교과서 156쪽의 <b>지구</b>에서 공 튀기기 코드를 고쳐, <b>나의 행성 조건</b>에 맞는 시뮬레이션을 구현하세요.</p>
+  <div class="cond"><div class="muted" style="font-weight:700">나의 행성 조건</div><div class="big" id="planetText">—</div></div>
+  <table class="plain" id="reqTable"></table>
+
+  <div class="vp" data-cell="mine" data-title="내 코드 (제출됨)"><textarea>Web VPython 3.2
+# 객체 설정
+ball = sphere(pos=vector(0,10,0), radius=1, color=color.red, make_trail=True,
+              trail_type="points", trail_radius=0.1, interval=10)
+scene.background = vector(1,1,1)     # 배경 색상을 흰색으로 설정
+floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)
+
+# 초기 변수 설정
+ball.velocity = vector(0,0,0)   # 공의 초기 속도
+dt = 0.01                       # 루프가 한 번 수행될 때의 시간 간격
+t = 0                           # 전체 수행 시간을 누적하는 변수
+g = -9.8                        # 중력가속도 (아래 방향이므로 -9.8)
+
+while t < 20:
+    rate(100)                                       # 1초당 루프 100번
+    ball.velocity.y = ball.velocity.y + (g*dt)      # 속도 = 현재 속도 + (중력가속도 × 시간 간격)
+    ball.pos = ball.pos + ball.velocity*dt          # 위치 = 현재 위치 + 속도 × 시간 간격
+    crash = floor.pos.y + (floor.size.y/2) + ball.radius   # 충돌이 일어나는 y좌표
+
+    if ball.pos.y < crash:                          # 공이 바닥에 닿으면
+        ball.velocity.y = -ball.velocity.y*0.8      # 방향을 바꾸고, 튀어 오르는 정도 조절
+        ball.pos.y = crash                          # 위치 보정: 바닥 표면 위로
+    t = t + dt                                      # 시간 업데이트</textarea></div>
+
+  <details class="card" style="padding:12px 18px">
+    <summary style="cursor:pointer;font-weight:700">비교용: 원래 코드(지구) 실행해 보기 — 문항 4에 활용 (제출되지 않음)</summary>
+    <div class="vp" data-cell="earth" data-title="원래 코드 · 지구 (비교용)"><textarea>Web VPython 3.2
+ball = sphere(pos=vector(0,10,0), radius=1, color=color.red, make_trail=True,
+              trail_type="points", trail_radius=0.1, interval=10)
+scene.background = vector(1,1,1)
+floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)
+ball.velocity = vector(0,0,0)
+dt = 0.01
+t = 0
+g = -9.8
+while t < 20:
+    rate(100)
+    ball.velocity.y = ball.velocity.y + (g*dt)
+    ball.pos = ball.pos + ball.velocity*dt
+    crash = floor.pos.y + (floor.size.y/2) + ball.radius
+    if ball.pos.y < crash:
+        ball.velocity.y = -ball.velocity.y*0.8
+        ball.pos.y = crash
+    t = t + dt</textarea></div>
+  </details>
+
+  <!-- 문항 4 -->
+  <div class="q-title"><span class="no">4</span><h3>모델 평가</h3><span class="pt">5점</span></div>
+  <p style="margin:4px 0"><b>4-1. (3점)</b> 원래 코드(지구)와 내 코드(행성)의 실행 결과를 비교하여, 공의 움직임이 어떻게 다른지와 <b>그 이유</b>를 쓰세요.</p>
+  <textarea class="essay" data-a="compare" maxlength="1000" placeholder="예) 지구에서는 … 내 행성에서는 … 그 이유는 …"></textarea><div class="count" data-count="compare"></div>
+  <p style="margin:14px 0 4px"><b>4-2. (2점)</b> 이 공 튀기기 모델이 <b>현실과 다른 점</b> 1가지와 이를 <b>개선하는 방법</b>을 쓰세요.</p>
+  <textarea class="essay" data-a="improve" maxlength="1000" placeholder="예) 이 모델은 … 을 고려하지 않았으므로 …"></textarea><div class="count" data-count="improve"></div>
+
+  <div class="submit-box">
+    <div style="font-weight:900;font-size:20px">모든 문항을 확인했나요?</div>
+    <p class="muted" style="margin:6px 0 14px">문항 3은 <b>내 코드</b> 칸의 코드가 제출됩니다. 제출 전에 한 번 더 실행해 오류가 없는지 확인하세요.</p>
+    <button class="btn big" id="submitBtn">제출하기</button>
+    <div class="msg" id="submitMsg"></div>
+    <div style="margin-top:12px"><button class="btn ghost small" id="backupBtn">답안을 파일로 저장 (제출이 안 될 때)</button></div>
+  </div>
+  <div class="receipt" id="receipt"></div>
+</main>
+
+<!-- VPython 실행용 iframe 문서 -->
+<script type="text/plain" id="runner-src">
+<!doctype html><html><head><meta charset="utf-8">
+<link type="text/css" href="https://www.glowscript.org/css/redmond/2.1/jquery-ui.custom.css" rel="stylesheet">
+<link type="text/css" href="https://www.glowscript.org/css/ide.css" rel="stylesheet">
+<style>html,body{margin:0;background:#fff;font-family:sans-serif} #wrap{padding:8px}
+textarea#print{width:calc(100% - 16px)!important;height:110px!important;margin:6px 8px 8px;font-size:14px!important;border:1px solid #e4e6ee;border-radius:8px;padding:6px 8px;box-sizing:border-box;background:#fafbfd}</style>
+</head><body><div id="wrap"><div id="glowscript" class="glowscript"></div></div>
+<script src="https://www.glowscript.org/lib/jquery/2.1/jquery.min.js"><\/script>
+<script src="https://www.glowscript.org/lib/jquery/2.1/jquery-ui.custom.min.js"><\/script>
+<script src="https://www.glowscript.org/package/glow.3.2.min.js" charset="UTF-8"><\/script>
+<script src="https://www.glowscript.org/package/RSrun.3.2.min.js"><\/script>
+<script src="https://www.glowscript.org/package/RScompiler.3.2.min.js"><\/script>
+<script>
+var KEY = '@@KEY@@';
+function send(o) { o.key = KEY; parent.postMessage(o, '*'); }
+function lineOf(err, prog) {
+  try {
+    var rawStack = typeof err.stack == 'string' ? err.stack.split('\n') : (err.stack || []);
+    var unpack = /[ ]*at[ ]([^ ]*)[^>]*>:(\d*):(\d*)/;
+    var lines = prog.split('\n');
+    for (var i = 0; i < rawStack.length; i++) {
+      var m = rawStack[i].match(unpack); if (m === null) continue;
+      if (m[1].slice(0, 3) == 'RS_') continue;
+      var jsline = +m[2], jschar = +m[3], line = lines[jsline - 1], L, end;
+      if (line === undefined) continue;
+      for (var c = jschar; c >= 0; c--) {
+        if (line[c] == ';') { if (c > 0 && line[c - 1] == '"') { end = c - 1; c--; } }
+        else if (line[c] == '"' && end !== undefined) { L = line.slice(c + 1, end); break; }
+        else if (c === 0) { jsline--; line = lines[jsline - 1]; if (line === undefined) break; c = line.length; }
+      }
+      if (L !== undefined) return Number(L);
+    }
+  } catch (e) {}
+  return null;
+}
+setInterval(function () { send({type: 'height', h: document.documentElement.scrollHeight}); }, 400);
+window.addEventListener('message', async function (e) {
+  if (!e.data || e.data.type !== 'run') return;
+  window.prompt = function () { return null; };
+  var prog;
+  try {
+    prog = window.glowscript_compile(e.data.code, {lang: 'vpython', version: '3.2'});
+  } catch (err) {
+    var msg = String(err), m = msg.match(/line(\s*)(\d+)/), n = m ? Number(m[2]) - 1 : null;
+    if (m) msg = msg.replace(m[0], 'line' + m[1] + n);
+    send({type: 'error', msg: msg, line: n});
+    return;
+  }
+  try {
+    window.__context = {glowscript_container: $('#glowscript').removeAttr('id')};
+    eval(prog);
+    send({type: 'started'});
+    await __main__();
+    send({type: 'done'});
+  } catch (err) {
+    send({type: 'error', msg: String(err), line: lineOf(err, prog)});
+  }
+});
+send({type: 'ready'});
+<\/script></body></html>
+</script>
+
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script>
+(() => {
+'use strict';
+const KIND = 'sim';
+const SUBMIT_URL = (window.SUBMIT_URL || '').trim();
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+
+/* 학번 끝 두 자리(번호)로 행성 조건을 정한다 */
+const VARIANTS = [
+  {planet: '화성', g: -3.7, e: 0.6, bc: 'orange', br: 0.5, by: 15, fx: 20, fc: 'red', T: 15},
+  {planet: '금성', g: -8.9, e: 0.7, bc: 'yellow', br: 1.5, by: 12, fx: 16, fc: 'green', T: 12},
+  {planet: '토성', g: -10.4, e: 0.5, bc: 'magenta', br: 0.8, by: 8, fx: 14, fc: 'black', T: 10},
+  {planet: '천왕성', g: -8.7, e: 0.9, bc: 'cyan', br: 1.2, by: 10, fx: 18, fc: 'orange', T: 18},
+];
+const COLOR_KO = {orange: '주황색', yellow: '노란색', magenta: '자홍색', cyan: '청록색', red: '빨간색', green: '초록색', black: '검은색'};
+const MCQ = [
+  {id: 'q1', q: '시뮬레이션의 뜻으로 가장 알맞은 것은?',
+    o: {a: '현실 세계에서 일어나는 일이나 시스템을 모방하는 실험', b: '수집한 데이터를 그래프로 나타내는 것', c: '컴퓨터 부품을 조립하는 과정', d: '프로그램의 오류를 찾아 고치는 것'}},
+  {id: 'q2', q: '시뮬레이션 프로그램 제작 단계를 순서대로 바르게 나열한 것은?',
+    o: {a: '모델 설계 → 문제 정의 → 모델 구현 → 모델 평가', b: '문제 정의 → 모델 구현 → 모델 설계 → 모델 평가', c: '문제 정의 → 모델 설계 → 모델 구현 → 모델 평가', d: '모델 구현 → 모델 설계 → 문제 정의 → 모델 평가'}},
+  {id: 'q3', q: '시뮬레이션 모델의 구성 요소를 바르게 짝지은 것은?',
+    o: {a: '입력과 출력', b: '객체와 규칙', c: '행과 열', d: '문제와 정답'}},
+  {id: 'q4', q: 'VPython 코드에서 rate(50)의 의미로 옳은 것은?',
+    o: {a: '객체를 50만큼 이동시킨다', b: '공의 반지름을 50으로 정한다', c: '시뮬레이션을 50초 동안 실행한다', d: '반복문을 1초에 최대 50번 실행한다'}},
+];
+
+let S = null, V = null;
+const cells = {};
+function seeded(seed) { let x = seed % 2147483647; if (x <= 0) x += 2147483646; return () => (x = x * 16807 % 2147483647) / 2147483647; }
+function shuffle(arr, rnd) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const draftKey = () => 'sw-assess-' + KIND + ':' + S.sid;
+
+/* ---------------- 시작 화면 ---------------- */
+async function checkOpen() {
+  const box = $('#openState');
+  if (!SUBMIT_URL) { box.className = 'msg show info'; box.textContent = '⚠ 제출 주소가 아직 설정되지 않았어요 (선생님 확인 필요). 풀이는 할 수 있지만 제출은 되지 않습니다.'; return; }
+  try { const j = await (await fetch(SUBMIT_URL)).json(); if (!j.open) { box.className = 'msg show no'; box.textContent = '지금은 제출 기간이 아닙니다. 선생님 안내를 기다리세요.'; } } catch (e) {}
+}
+$('#startBtn').addEventListener('click', () => {
+  const sid = $('#sid').value.trim(), name = $('#sname').value.trim().replace(/\s+/g, ' ');
+  const m = $('#gateMsg'); const fail = (t) => { m.className = 'msg show no'; m.textContent = t; };
+  if (!/^[1-3]\d{4}$/.test(sid)) return fail('학번은 5자리 숫자로 입력하세요. (예: 1학년 3반 5번 → 10305)');
+  if (Number(sid.slice(1, 3)) < 1 || Number(sid.slice(3)) < 1) return fail('반과 번호를 확인하세요.');
+  if (name.length < 2) return fail('이름을 입력하세요.');
+  if (!$('#pledge').checked) return fail('안내 문장을 읽고 체크하세요.');
+  begin(sid, name);
+});
+['sid', 'sname'].forEach((id) => $('#' + id).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#startBtn').click(); }));
+
+function begin(sid, name) {
+  S = {sid, name, startedAt: new Date().toLocaleString('ko-KR'), leave: 0, submitted: 0};
+  let draft = null; try { draft = JSON.parse(lsGet('sw-assess-' + KIND + ':' + sid) || 'null'); } catch (e) {}
+  if (draft) { S.startedAt = draft.startedAt || S.startedAt; S.leave = draft.leave || 0; S.submitted = draft.submitted || 0; }
+  V = VARIANTS[Number(sid.slice(3)) % 4];
+  $('#planetText').textContent = V.planet + '  (중력가속도 ' + Math.abs(V.g) + ' m/s²)';
+  $('#reqTable').innerHTML = '<tr><th style="width:52px">번호</th><th>요구 사항</th><th style="width:70px">배점</th></tr>' +
+    '<tr><td>①</td><td>' + V.planet + '의 중력가속도 <b>' + Math.abs(V.g) + ' m/s²</b>를 적용한다. (아래 방향)</td><td>2점</td></tr>' +
+    '<tr><td>②</td><td>공이 바닥에 닿으면 방향이 바뀌고 속도가 <b>' + V.e + '배</b>가 된다.</td><td>2점</td></tr>' +
+    '<tr><td>③</td><td>공의 반지름은 <b>' + V.br + '</b>, 색은 <b>' + COLOR_KO[V.bc] + '(color.' + V.bc + ')</b>, 처음 위치는 <b>(0, ' + V.by + ', 0)</b>이다.</td><td>2점</td></tr>' +
+    '<tr><td>④</td><td>바닥의 가로 크기(size의 x)는 <b>' + V.fx + '</b>, 색은 <b>' + COLOR_KO[V.fc] + '(color.' + V.fc + ')</b>이다.</td><td>2점</td></tr>' +
+    '<tr><td>⑤</td><td>시뮬레이션을 <b>' + V.T + '초</b> 동안 실행한다.</td><td>2점</td></tr>';
+  renderMcq(Number(sid));
+  if (draft) restore(draft);
+  $('#gate').style.display = 'none'; $('#paper').style.display = 'block';
+  const who = $('#who'); who.style.display = ''; who.textContent = sid + ' ' + name;
+  $('#saveState').style.display = '';
+  Object.values(cells).forEach((c) => c.cm.refresh());
+  window.scrollTo(0, 0); save();
+}
+function renderMcq(seed) {
+  const host = $('#mcqHost'); host.innerHTML = '';
+  const rnd = seeded(seed * 11 + 5);
+  MCQ.forEach((item, i) => {
+    const keys = shuffle(Object.keys(item.o), rnd);
+    const d = document.createElement('div'); d.className = 'mcq';
+    d.innerHTML = '<p class="q">' + (i + 1) + ') ' + esc(item.q) + '</p>' + keys.map((k, n) => '<label><input type="radio" name="' + item.id + '" value="' + k + '" data-a="' + item.id + '"><span>' + '①②③④'[n] + ' ' + esc(item.o[k]) + '</span></label>').join('');
+    host.appendChild(d);
+  });
+}
+
+/* ---------------- 자동 저장 ---------------- */
+function collectFields() {
+  const f = {};
+  $$('[data-a]').forEach((el) => {
+    if (el.type === 'radio') { if (el.checked) f[el.dataset.a] = el.value; else if (!(el.dataset.a in f)) f[el.dataset.a] = ''; }
+    else f[el.dataset.a] = el.value;
+  });
+  return f;
+}
+function save() {
+  if (!S) return;
+  lsSet(draftKey(), JSON.stringify({fields: collectFields(), code: cells.mine ? cells.mine.cm.getValue() : '', startedAt: S.startedAt, leave: S.leave, submitted: S.submitted}));
+  $('#saveState').textContent = '자동 저장 ' + new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+}
+function restore(d) {
+  Object.entries(d.fields || {}).forEach(([k, v]) => { $$('[data-a="' + k + '"]').forEach((el) => { if (el.type === 'radio') el.checked = el.value === v; else el.value = v; }); });
+  if (d.code && cells.mine) cells.mine.cm.setValue(d.code);
+  updateCounts();
+}
+let saveTimer = null;
+const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 600); };
+document.addEventListener('input', (e) => { if (e.target.closest('[data-a]')) { saveSoon(); updateCounts(); } });
+document.addEventListener('change', (e) => { if (e.target.closest('[data-a]')) save(); });
+function updateCounts() { $$('[data-count]').forEach((el) => { const t = $('[data-a="' + el.dataset.count + '"]'); el.textContent = t.value.length + ' / 1000자'; }); }
+document.addEventListener('visibilitychange', () => { if (S && document.hidden) { S.leave++; save(); } });
+
+/* ---------------- VPython 실행기 ---------------- */
+const RUNNER = $('#runner-src').textContent.replace(/<\\\/script>/g, '</' + 'script>');
+const HEADER = /^\s*(Web\s*VPython|GlowScript)\s*[0-9.]+/i;
+function hintFor(msg) {
+  if (/is not defined/i.test(msg)) return '정의되지 않은 이름이 있어요. 철자와 대소문자를 확인하세요.';
+  if (/parenthes|bracket|Unexpected|Missing|unterminated|EOF/i.test(msg)) return '괄호, 따옴표, 쉼표, 콜론(:)의 짝을 확인하세요.';
+  if (/indent/i.test(msg)) return '들여쓰기(줄 앞 빈칸)를 확인하세요.';
+  if (/Cannot read prop|of undefined|of null/i.test(msg)) return '속성 이름(pos, size, radius, color, velocity)의 철자를 확인하세요.';
+  return '오류가 난 줄과 그 위아래 줄을 살펴보세요.';
+}
+window.addEventListener('message', (e) => { const d = e.data; if (!d || !d.key) return; Object.values(cells).forEach((c) => { if (c.key === d.key) c.onMsg(d); }); });
+
+$$('.vp').forEach((el) => {
+  const ta = $('textarea', el), original = ta.value, name = el.dataset.cell;
+  const head = document.createElement('div'); head.className = 'vp-head';
+  head.innerHTML = '<span class="ttl">' + esc(el.dataset.title) + '</span><button class="btn small run">▶ 실행</button><button class="btn small stop" style="display:none">■ 멈춤</button><button class="btn ghost small reset">↺ 처음 코드로</button>';
+  const out = document.createElement('div'); out.className = 'vp-out';
+  const idle = '<div class="placeholder">▶ 실행을 누르면 여기에 시뮬레이션이 나타나요</div>';
+  out.innerHTML = idle;
+  const errBox = document.createElement('div'); errBox.className = 'vp-err';
+  el.insertBefore(head, ta);
+  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity,
+    extraKeys: {'Shift-Enter': () => run(), 'Ctrl-Enter': () => run(), Tab: (c) => c.replaceSelection('    ')}});
+  el.appendChild(out); el.appendChild(errBox);
+  const runBtn = $('.run', head), stopBtn = $('.stop', head);
+  const cell = {cm, key: null, onMsg, lastRun: '실행 안 함', lastCode: null};
+  cells[name] = cell;
+  if (name === 'mine') cm.on('change', saveSoon);
+  let frame = null, offset = 0, errLine = null;
+  function clearErr() { errBox.className = 'vp-err'; if (errLine !== null) { cm.removeLineClass(errLine, 'background', 'cm-errline'); errLine = null; } }
+  function showErr(msg, line) {
+    const src = cm.getValue().split('\n'), ul = line ? line - offset : null;
+    let where = '';
+    if (ul && ul >= 1 && ul <= src.length) { where = ul + '번째 줄: <code>' + esc(src[ul - 1].trim()) + '</code><br>'; errLine = ul - 1; cm.addLineClass(errLine, 'background', 'cm-errline'); }
+    errBox.innerHTML = '<b>⚠ 오류</b> ' + where + '<span class="mono" style="font-size:14px">' + esc(msg) + '</span><div class="hint">💡 ' + esc(hintFor(msg)) + '</div>';
+    errBox.className = 'vp-err show';
+    cell.lastRun = '오류: ' + (ul ? ul + '번째 줄 ' : '') + msg;
+  }
+  function run() {
+    stop(true); clearErr();
+    let code = cm.getValue(); offset = 0;
+    if (!HEADER.test(code.split('\n')[0] || '')) { code = 'Web VPython 3.2\n' + code; offset = 1; }
+    else code = code.replace(/^\s*[^\n]*/, 'Web VPython 3.2');
+    cell.key = 'k' + Date.now() + Math.random().toString(36).slice(2);
+    cell.lastCode = cm.getValue(); cell.lastRun = '실행 중';
+    out.innerHTML = '<div class="placeholder">VPython 준비 중… (처음에는 몇 초 걸려요)</div>';
+    frame = document.createElement('iframe'); frame.title = 'VPython 실행 화면'; frame.style.height = '0px';
+    frame.srcdoc = RUNNER.replace('@@KEY@@', cell.key);
+    out.appendChild(frame);
+    cell.pending = code;
+    runBtn.textContent = '▶ 다시 실행'; stopBtn.style.display = '';
+  }
+  function stop(silent) {
+    if (!frame) return;
+    frame.remove(); frame = null; cell.key = null;
+    stopBtn.style.display = 'none'; runBtn.textContent = '▶ 실행';
+    out.innerHTML = silent ? idle : '<div class="placeholder">■ 멈췄어요.</div>';
+  }
+  function onMsg(d) {
+    if (!frame) return;
+    if (d.type === 'ready') frame.contentWindow.postMessage({type: 'run', code: cell.pending}, '*');
+    else if (d.type === 'started') { const p = $('.placeholder', out); if (p) p.remove(); cell.lastRun = '실행됨(오류 없음)'; }
+    else if (d.type === 'height') frame.style.height = Math.min(Math.max(d.h, 120), 1400) + 'px';
+    else if (d.type === 'error') { const p = $('.placeholder', out); if (p) p.remove(); showErr(d.msg, d.line); }
+    else if (d.type === 'done') { stopBtn.style.display = 'none'; cell.lastRun = '끝까지 실행됨(오류 없음)'; }
+  }
+  runBtn.addEventListener('click', run);
+  stopBtn.addEventListener('click', () => stop(false));
+  $('.reset', head).addEventListener('click', () => { if (confirm('작성한 코드를 지우고 처음 코드로 되돌릴까요?')) { stop(true); clearErr(); cm.setValue(original); } });
+});
+
+$$('details').forEach((d) => d.addEventListener('toggle', () => Object.values(cells).forEach((c) => c.cm.refresh())));
+
+/* ---------------- 문항 3 자동 확인 (코드 분석) ---------------- */
+function callArgs(code, re) {
+  const m = re.exec(code); if (!m) return null;
+  let i = m.index + m[0].length, depth = 1, s = '';
+  for (; i < code.length && depth > 0; i++) { const ch = code[i]; if (ch === '(') depth++; else if (ch === ')') depth--; if (depth > 0) s += ch; }
+  return s;
+}
+const num = (s) => (s == null ? NaN : parseFloat(String(s).replace(/\s+/g, '')));
+const same = (a, b) => Math.abs(a - b) < 1e-9;
+function gradeCode(raw) {
+  const code = raw.split('\n').map((l) => l.replace(/#.*$/, '')).join('\n');
+  const notes = []; let score = 0;
+  // ① 중력가속도
+  const gm = code.match(/^\s*g\s*=\s*(-?\s*\d*\.?\d+)\s*$/m);
+  const r1 = gm && same(num(gm[1]), V.g) ? 2 : 0; score += r1; notes.push('①중력 ' + r1 + (gm ? '(g=' + gm[1].replace(/\s/g, '') + ')' : '(g 없음)'));
+  // ② 반발 정도
+  const em = code.match(/ball\.velocity\.y\s*=\s*-\s*ball\.velocity\.y\s*\*\s*(\d*\.?\d+)/) || code.match(/ball\.velocity\.y\s*=\s*-\s*(\d*\.?\d+)\s*\*\s*ball\.velocity\.y/);
+  const r2 = em && same(num(em[1]), V.e) ? 2 : 0; score += r2; notes.push('②반발 ' + r2 + (em ? '(' + em[1] + ')' : '(찾지 못함)'));
+  // ③ 공
+  const ba = callArgs(code, /ball\s*=\s*sphere\s*\(/) || '';
+  const rad = (ba.match(/radius\s*=\s*(\d*\.?\d+)/) || code.match(/^\s*ball\.radius\s*=\s*(\d*\.?\d+)/m) || [])[1];
+  const col = (ba.match(/color\s*=\s*color\.(\w+)/) || code.match(/^\s*ball\.color\s*=\s*color\.(\w+)/m) || [])[1];
+  const pm = ba.match(/pos\s*=\s*vector\s*\(\s*([^,]+),\s*([^,]+),/);
+  const k3 = (same(num(rad), V.br) ? 1 : 0) + (col === V.bc ? 1 : 0) + (pm && same(num(pm[1]), 0) && same(num(pm[2]), V.by) ? 1 : 0);
+  const r3 = k3 === 3 ? 2 : k3 === 2 ? 1 : 0; score += r3; notes.push('③공 ' + r3 + '(반지름 ' + (rad || '?') + ', 색 ' + (col || '?') + ', 높이 ' + (pm ? pm[2].trim() : '?') + ')');
+  // ④ 바닥
+  const fa = callArgs(code, /floor\s*=\s*box\s*\(/) || '';
+  const sx = (fa.match(/size\s*=\s*vector\s*\(\s*([^,]+),/) || [])[1];
+  const fc = (fa.match(/color\s*=\s*color\.(\w+)/) || code.match(/^\s*floor\.color\s*=\s*color\.(\w+)/m) || [])[1];
+  const k4 = (same(num(sx), V.fx) ? 1 : 0) + (fc === V.fc ? 1 : 0);
+  const r4 = k4 === 2 ? 2 : k4 === 1 ? 1 : 0; score += r4; notes.push('④바닥 ' + r4 + '(가로 ' + (sx ? sx.trim() : '?') + ', 색 ' + (fc || '?') + ')');
+  // ⑤ 시간
+  const tm = code.match(/while\s*\(?\s*t\s*<=?\s*(\d*\.?\d+)/);
+  const r5 = tm && same(num(tm[1]), V.T) ? 2 : 0; score += r5; notes.push('⑤시간 ' + r5 + (tm ? '(' + tm[1] + '초)' : '(찾지 못함)'));
+  return {score, detail: notes.join(' / ')};
+}
+
+/* ---------------- 제출 ---------------- */
+function missingList(f) {
+  const miss = [];
+  MCQ.forEach((m, i) => { if (!f[m.id]) miss.push('문항 1-' + (i + 1)); });
+  [['problem', '2-①'], ['data', '2-②'], ['objects', '2-③'], ['rules', '2-④'], ['assume', '2-⑤'], ['compare', '4-1'], ['improve', '4-2']].forEach(([k, n]) => { if (!(f[k] || '').trim()) miss.push('문항 ' + n); });
+  return miss;
+}
+function buildBase() {
+  const f = collectFields(), mine = cells.mine;
+  const code = mine.cm.getValue();
+  const lastRun = mine.lastCode === null ? '실행 안 함' : (mine.lastCode === code ? mine.lastRun : mine.lastRun + ' (이후 코드 수정됨)');
+  return {kind: KIND, sid: S.sid, name: S.name, variant: V.planet,
+    mcq: {q1: f.q1, q2: f.q2, q3: f.q3, q4: f.q4},
+    design: {problem: f.problem, data: f.data, objects: f.objects, rules: f.rules, assume: f.assume},
+    evalAns: {compare: f.compare, improve: f.improve},
+    code, lastRun, auto: gradeCode(code), leave: S.leave, startedAt: S.startedAt, client: navigator.userAgent};
+}
+// 응답을 받았지만 읽지 못한 경우에는 다시 보내지 않는다 (중복 제출 방지)
+async function sendPayload(payload) {
+  const body = JSON.stringify(payload);
+  let r;
+  try { r = await fetch(SUBMIT_URL, {method: 'POST', body}); }
+  catch (e) {
+    try { await fetch(SUBMIT_URL, {method: 'POST', mode: 'no-cors', body}); return {ok: true, unsure: true}; }
+    catch (e2) { return {ok: false, msg: '인터넷 연결을 확인하고 다시 제출하세요.'}; }
+  }
+  try { return await r.json(); } catch (e) { return r.ok ? {ok: true, unsure: true} : {ok: false, msg: '제출하지 못했어요 (' + r.status + '). 다시 시도하세요.'}; }
+}
+$('#submitBtn').addEventListener('click', async () => {
+  const msg = $('#submitMsg'), btn = $('#submitBtn');
+  const show = (cls, t) => { msg.className = 'msg show ' + cls; msg.innerHTML = t; };
+  const miss = missingList(collectFields());
+  const mine = cells.mine;
+  const runNote = mine.lastCode === null ? '\n※ 내 코드를 한 번도 실행하지 않았어요.' : (mine.lastCode !== mine.cm.getValue() ? '\n※ 마지막 실행 뒤에 코드를 고쳤어요. 실행해서 확인했나요?' : '');
+  if (!confirm((miss.length ? '아직 답하지 않은 문항: ' + miss.join(', ') + '\n' : '') + runNote + '\n\n제출할까요? (다시 제출하면 마지막 제출이 최종 답안이 됩니다)')) return;
+  if (!SUBMIT_URL) { show('no', '제출 주소가 설정되지 않았어요. 선생님께 알리고, 아래 <b>답안을 파일로 저장</b>을 눌러 두세요.'); return; }
+  btn.disabled = true; save();
+  try {
+    const payload = buildBase();
+    show('info', '제출하는 중…');
+    const res = await sendPayload(payload);
+    if (!res.ok) { show('no', esc(res.msg || '제출하지 못했어요. 다시 시도하세요.')); return; }
+    S.submitted++; save(); msg.className = 'msg';
+    const rc = $('#receipt'); rc.className = 'receipt show';
+    rc.innerHTML = '<b class="big">✔ 제출 완료</b><div style="margin-top:6px">' + esc(S.sid + ' ' + S.name) + (res.time ? ' · ' + esc(res.time) : '') + (res.count ? ' · ' + res.count + '번째 제출' : '') + '</div>' +
+      (res.unsure ? '<div class="muted" style="margin-top:6px">네트워크 때문에 접수 확인 응답을 받지 못했어요. 선생님께 제출 여부를 확인하세요.</div>' : '<div class="muted" style="margin-top:6px">수정하고 다시 제출하면 마지막 제출이 최종 답안이 됩니다.</div>');
+    rc.scrollIntoView({behavior: 'smooth', block: 'center'});
+  } finally { btn.disabled = false; }
+});
+$('#backupBtn').addEventListener('click', () => {
+  if (!S) return;
+  const b = buildBase();
+  const txt = '[시뮬레이션 수행평가 답안]\n학번: ' + b.sid + '\n이름: ' + b.name + '\n행성: ' + b.variant + '\n\n[문항 1] ' + JSON.stringify(b.mcq) +
+    '\n\n[문항 2]\n문제 정의: ' + b.design.problem + '\n필요한 자료: ' + b.design.data + '\n객체: ' + b.design.objects + '\n규칙: ' + b.design.rules + '\n가정: ' + b.design.assume +
+    '\n\n[문항 3 코드]\n' + b.code + '\n\n[문항 4-1]\n' + b.evalAns.compare + '\n\n[문항 4-2]\n' + b.evalAns.improve + '\n';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], {type: 'text/plain;charset=utf-8'}));
+  a.download = '시뮬레이션_' + b.sid + '_' + b.name + '.txt'; a.click();
+});
+
+checkOpen();
+})();
+</script>
+</body>
+</html>
