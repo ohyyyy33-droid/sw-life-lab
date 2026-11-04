@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시뮬레이션 수행평가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<style>
+:root{
+  --accent:#3f8f3a; --accent-strong:#2c6e28; --accent-soft:#eef7e8; --accent-line:#c7e3bd;
+  --ink:#1f2330; --ink-2:#4a5063; --ink-3:#7a8094; --line:#e4e6ee; --bg:#f6f7fb; --card:#fff;
+  --ok:#1f8a4c; --ok-soft:#e5f5ec; --bad:#c62f3a; --bad-soft:#fdeaec; --warn:#a66a00; --warn-soft:#fff4dc;
+  --code-bg:#fbfbfd; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;font-size:17px;word-break:keep-all}
+code,pre,.mono{font-family:'Nanum Gothic Coding',ui-monospace,monospace}
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 20px;flex-wrap:wrap}
+.topbar .unit{background:var(--accent);color:#fff;font-weight:700;border-radius:999px;padding:3px 12px;font-size:14px;white-space:nowrap}
+.topbar h1{font-size:19px;margin:0;font-weight:900;white-space:nowrap}
+.topbar .grow{flex:1}
+.pill{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-2);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 12px;white-space:nowrap}
+main{max-width:980px;margin:0 auto;padding:24px 20px 100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:14px 0}
+.card.soft{background:var(--accent-soft);border-color:var(--accent-line)}
+h2{font-size:28px;font-weight:900;margin:4px 0 6px;line-height:1.3}
+.q-title{display:flex;align-items:baseline;gap:10px;margin:36px 0 8px;flex-wrap:wrap}
+.q-title .no{background:var(--ink);color:#fff;border-radius:8px;padding:2px 10px;font-weight:900;font-size:16px}
+.q-title h3{margin:0;font-size:22px;font-weight:900}
+.q-title .pt{color:var(--accent-strong);font-weight:800}
+.muted{color:var(--ink-3);font-size:15px}
+table.plain{border-collapse:collapse;width:100%;font-size:15px;background:#fff}
+table.plain th,table.plain td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.plain th{background:#f1f2f7}
+code.inl{background:#f1f2f7;border-radius:6px;padding:1px 6px;font-size:.92em}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--accent);color:#fff}
+.btn:hover{background:var(--accent-strong)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{padding:5px 12px;font-size:14px}
+.btn.big{padding:14px 28px;font-size:19px}
+.btn.stop{background:#c62f3a}
+#gate{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px}
+#gate label.f{display:block;font-weight:700;margin:14px 0 4px}
+#gate input[type=text]{width:100%;font:inherit;font-size:20px;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px}
+#gate input[type=text]:focus{outline:none;border-color:var(--accent)}
+#gate .pledge{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-size:15.5px;cursor:pointer}
+#gate .pledge input{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
+.msg{font-size:15px;border-radius:10px;padding:10px 14px;margin-top:10px;display:none}
+.msg.show{display:block}
+.msg.no{background:var(--bad-soft);color:#8a1f28}
+.msg.ok{background:var(--ok-soft);color:#14593a}
+.msg.info{background:var(--warn-soft);color:#6b4500}
+#paper{display:none}
+.mcq{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin:12px 0}
+.mcq .q{font-weight:700;margin:0 0 10px}
+.mcq label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:9px 14px;margin:7px 0;cursor:pointer;background:#fff}
+.mcq label:hover{border-color:var(--accent-line)}
+.mcq label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.mcq input{accent-color:var(--accent);width:18px;height:18px;margin-top:4px;flex:none}
+.mcq label.code{font-family:'Nanum Gothic Coding',monospace;font-size:15.5px;word-break:break-all}
+textarea.essay{width:100%;min-height:110px;font:inherit;font-size:16.5px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;resize:vertical;background:#fff}
+textarea.essay:focus{outline:none;border-color:var(--accent)}
+.count{font-size:13px;color:var(--ink-3);text-align:right}
+.scenario{background:#fff;border-left:5px solid var(--accent);border-radius:0 14px 14px 0;padding:14px 18px;margin:18px 0 6px}
+.blank-tip{font-size:14.5px;color:var(--ink-2);margin:2px 0 8px}
+/* VPython 셀 */
+.vp{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin:12px 0 0;overflow:hidden}
+.vp-head{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);background:#fafbfd;flex-wrap:wrap}
+.vp-head .ttl{font-size:14px;color:var(--ink-2);flex:1;min-width:140px;font-weight:700}
+.vp .CodeMirror{height:auto;font-family:'Nanum Gothic Coding',monospace;font-size:15px;line-height:1.55;background:var(--code-bg)}
+.vp .CodeMirror-scroll{min-height:60px;max-height:640px}
+.vp .CodeMirror-gutters{background:#f3f4f8;border-right:1px solid var(--line)}
+.vp .cm-blank{background:#fff1c2;border-radius:3px;font-weight:700}
+.vp .cm-filled{background:#e3f3dc;border-radius:3px;font-weight:700}
+.vp-out{border-top:1px solid var(--line);background:#f7f8fb;min-height:120px;display:flex;flex-direction:column;overflow-x:auto}
+.vp-out .placeholder{margin:auto;color:var(--ink-3);font-size:15px;text-align:center;padding:20px}
+.vp-out iframe{width:100%;border:0;display:block;background:#fff}
+.vp-err{background:var(--bad-soft);color:#7d1a23;padding:10px 14px;font-size:15px;display:none;border-top:1px solid #f3c5ca}
+.vp-err.show{display:block}
+.vp-err .hint{margin-top:4px}
+.cm-errline{background:#fde2e5!important}
+.submit-box{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:22px;margin-top:40px;text-align:center}
+.receipt{background:var(--ok-soft);border:2px solid var(--ok);border-radius:18px;padding:22px;margin-top:20px;text-align:center;display:none}
+.receipt.show{display:block}
+.receipt b.big{font-size:24px;color:#14593a;display:block}
+.notice{background:var(--warn-soft);border-radius:12px;padding:12px 16px;margin:16px 0 4px;font-size:14.5px;line-height:1.6}
+.notice ul{margin:4px 0 0;padding-left:18px} .notice li{margin:2px 0}
+.tag-sl{display:inline-block;background:#3446a0;color:#fff;font-size:12.5px;font-weight:700;border-radius:999px;padding:1px 10px;vertical-align:middle}
+.career-note{background:#f0f3ff;border:1.5px solid #b9c3ea;border-radius:12px;padding:12px 16px;font-size:15.5px}
+.career-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.career-grid .full{grid-column:1/-1}
+.career-grid label{display:flex;flex-direction:column;gap:3px;font-weight:700;font-size:14.5px}
+.career-grid input{font:inherit;font-weight:400;font-size:16.5px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px}
+.career-grid input:focus{outline:none;border-color:var(--accent)}
+.guide{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:8px 0;font-size:15px}
+.guide ol{margin:4px 0 0;padding-left:20px}
+@media (max-width:700px){ body{font-size:16px} main{padding:16px 16px 80px} .career-grid{grid-template-columns:1fr} .topbar h1{font-size:16px} h2{font-size:23px} }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="unit">Ⅳ 단원</span>
+  <h1>시뮬레이션 수행평가</h1>
+  <span class="grow"></span>
+  <span class="pill" id="who" style="display:none"></span>
+  <span class="pill" id="saveState" style="display:none">자동 저장</span>
+</header>
+
+<!-- ===================== 시작 화면 ===================== -->
+<section id="gate">
+  <div class="muted" style="font-weight:700;color:var(--accent-strong)">소프트웨어와 생활 · Ⅳ. 모의 실험하는 소프트웨어</div>
+  <h2>시뮬레이션 수행평가 <span style="color:var(--accent-strong)">(25점)</span></h2>
+  <p class="muted" style="margin:4px 0 10px">학번과 이름을 정확히 입력하세요.</p>
+  <label class="f" for="sid">학번 (5자리, 예: 10305)</label>
+  <input type="text" id="sid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="10305">
+  <label class="f" for="sname">이름</label>
+  <input type="text" id="sname" maxlength="20" autocomplete="off" placeholder="홍길동">
+  <div class="notice">
+    <b>유의사항</b>
+    <ul>
+      <li><b>학번과 이름을 정확히</b> 입력하세요.</li>
+      <li>1번·2번은 <b>객관식</b>입니다. 2번 코드 문항은 보기를 고르면 코드가 완성되고, <b>▶ 실행</b>으로 직접 확인해 볼 수 있습니다.</li>
+      <li><b>3번 문항은 과목별 세부능력 및 특기사항(세특) 기록의 참고 자료</b>로 활용됩니다. 본인의 희망 진로·학과와 관련지어 구체적으로 쓰세요. 진로가 정해지지 않았다면 관심 있는 분야로 써도 됩니다.</li>
+      <li>서술 답안은 <b>본인의 생각</b>으로 작성해야 합니다. 다른 사람의 글이나 인터넷·생성형 AI의 결과를 그대로 옮긴 경우 점수와 기록에 반영되지 않습니다.</li>
+      <li>응시 중 다른 창이나 탭으로 이동하면 그 횟수가 기록됩니다.</li>
+      <li>다시 제출할 수 있으며, <b>마지막 제출</b>이 최종 답안이 됩니다.</li>
+    </ul>
+  </div>
+  <label class="pledge"><input type="checkbox" id="pledge"> 위 유의사항을 읽었으며, 다른 사람의 도움 없이 스스로 해결하고 서술 답안은 본인의 생각으로 작성하겠습니다.</label>
+  <button class="btn big" id="startBtn" style="width:100%">시작하기</button>
+  <div class="msg" id="gateMsg"></div>
+  <div class="msg" id="openState"></div>
+</section>
+
+<!-- ===================== 시험지 ===================== -->
+<main id="paper">
+  <div class="card soft">
+    <b>안내</b>
+    <ul style="margin:6px 0 0;padding-left:20px">
+      <li>고른 답은 이 컴퓨터에 <b>자동 저장</b>됩니다. 창을 닫아도 같은 학번으로 다시 들어오면 이어서 할 수 있어요.</li>
+      <li>2번 코드 문항은 <b>보기를 고르면 노란 빈칸이 채워집니다</b>. <b>▶ 실행</b>을 눌러 결과를 확인하고, 다른 보기도 골라 실행해 비교해 보세요. 화면을 오른쪽 드래그하면 회전, 휠로 확대·축소돼요.</li>
+      <li><b>3번 문항은 세특(과목별 세부능력 및 특기사항) 기록에 참고</b>됩니다. 희망 진로·학과와 관련지어 본인의 생각으로 구체적으로 쓰세요.</li>
+      <li>모든 문항을 마친 뒤 맨 아래 <b>제출하기</b>를 누르세요. 다시 제출하면 마지막 제출이 최종 답안이 됩니다.</li>
+    </ul>
+  </div>
+  <table class="plain">
+    <tr><th>문항</th><th>내용</th><th style="width:70px">배점</th></tr>
+    <tr><td>1</td><td>시뮬레이션 이론 — 사례를 읽고 알맞은 개념 고르기 (객관식 12문항)</td><td>12점</td></tr>
+    <tr><td>2</td><td>VPython 코드 — 빈칸에 알맞은 코드 고르고 실행하기 (객관식 8문항)</td><td>8점</td></tr>
+    <tr><td>3</td><td>진로 연계 시뮬레이션 계획 — 서술 <span class="tag-sl">세특 반영</span></td><td>5점</td></tr>
+  </table>
+
+  <!-- 문항 1 -->
+  <div class="q-title"><span class="no">1</span><h3>시뮬레이션 이론</h3><span class="pt">12점 (각 1점)</span></div>
+  <p class="muted" style="margin:0">사례를 읽고 알맞은 것을 고르세요.</p>
+  <div id="theoryHost"></div>
+
+  <!-- 문항 2 -->
+  <div class="q-title"><span class="no">2</span><h3>VPython 코드</h3><span class="pt">8점 (각 1점)</span></div>
+  <p class="muted" style="margin:0">요구 사항에 맞게 <b>노란 빈칸 <code class="inl">____</code></b>에 들어갈 코드를 고르세요. 고른 뒤 <b>▶ 실행</b>으로 확인할 수 있어요.</p>
+  <div id="codeHost"></div>
+
+  <!-- 문항 3 -->
+  <div class="q-title"><span class="no">3</span><h3>진로 연계 시뮬레이션 계획</h3><span class="pt">5점</span><span class="tag-sl">세특 반영</span></div>
+  <div class="career-note">✍ 이 문항은 <b>과목별 세부능력 및 특기사항(세특)</b> 기록의 참고 자료로 활용됩니다. 본인의 희망 진로·학과와 관련지어 <b>본인의 생각</b>으로 구체적으로 쓰세요. 다른 사람의 글이나 인터넷·생성형 AI의 결과를 그대로 옮긴 경우 반영되지 않습니다.</div>
+  <p style="margin:16px 0 4px">나의 희망 진로·학과 분야에서 <b>시뮬레이션으로 확인하거나 해결하고 싶은 문제</b>를 하나 정하고, 시뮬레이션 제작 과정에 따라 계획을 쓰세요.</p>
+  <div class="career-grid">
+    <label>희망 진로(직업)<input data-a="job" maxlength="40" placeholder="예) 건축가"></label>
+    <label>희망 학과(계열)<input data-a="major" maxlength="40" placeholder="예) 건축공학과"></label>
+    <label class="full">시뮬레이션 주제 (한 줄)<input data-a="topic" maxlength="80" placeholder="예) 건물 배치에 따른 아파트 단지의 바람길 시뮬레이션"></label>
+  </div>
+  <div class="guide">
+    <b>꼭 들어가야 할 내용</b>
+    <ol>
+      <li><b>문제 정의</b>: 이 주제가 희망 진로·학과와 어떤 관련이 있고, 시뮬레이션으로 무엇을 확인하려고 하는가?</li>
+      <li><b>모델 설계</b>: 필요한 자료, 모델의 <b>객체</b>와 <b>규칙</b>은 무엇인가?</li>
+      <li><b>모델 구현</b>: 어떤 VPython 객체(sphere, box 등)와 코드(반복문, 조건문)로 나타낼 수 있는가?</li>
+      <li><b>모델 평가</b>: 현실에서 직접 하는 것보다 좋은 점과, 현실과 다를 수 있는 점(한계)은 무엇인가?</li>
+    </ol>
+  </div>
+  <textarea class="essay" data-a="plan" maxlength="1500" style="min-height:200px" placeholder="위 1~4의 내용이 모두 들어가도록 문장으로 쓰세요."></textarea><div class="count" data-count="plan" data-max="1500"></div>
+
+  <div class="submit-box">
+    <div style="font-weight:900;font-size:20px">모든 문항을 확인했나요?</div>
+    <p class="muted" style="margin:6px 0 14px">고른 답과 서술 답안이 함께 제출됩니다.</p>
+    <button class="btn big" id="submitBtn">제출하기</button>
+    <div class="msg" id="submitMsg"></div>
+    <div style="margin-top:12px"><button class="btn ghost small" id="backupBtn">답안을 파일로 저장 (제출이 안 될 때)</button></div>
+  </div>
+  <div class="receipt" id="receipt"></div>
+</main>
+
+<!-- VPython 실행용 iframe 문서 -->
+<script type="text/plain" id="runner-src">
+<!doctype html><html><head><meta charset="utf-8">
+<link type="text/css" href="https://www.glowscript.org/css/redmond/2.1/jquery-ui.custom.css" rel="stylesheet">
+<link type="text/css" href="https://www.glowscript.org/css/ide.css" rel="stylesheet">
+<style>html,body{margin:0;background:#fff;font-family:sans-serif} #wrap{padding:8px}
+textarea#print{width:calc(100% - 16px)!important;height:80px!important;margin:6px 8px 8px;font-size:14px!important;border:1px solid #e4e6ee;border-radius:8px;padding:6px 8px;box-sizing:border-box;background:#fafbfd}</style>
+</head><body><div id="wrap"><div id="glowscript" class="glowscript"></div></div>
+<script src="https://www.glowscript.org/lib/jquery/2.1/jquery.min.js"><\/script>
+<script src="https://www.glowscript.org/lib/jquery/2.1/jquery-ui.custom.min.js"><\/script>
+<script src="https://www.glowscript.org/package/glow.3.2.min.js" charset="UTF-8"><\/script>
+<script src="https://www.glowscript.org/package/RSrun.3.2.min.js"><\/script>
+<script src="https://www.glowscript.org/package/RScompiler.3.2.min.js"><\/script>
+<script>
+var KEY = '@@KEY@@';
+function send(o) { o.key = KEY; parent.postMessage(o, '*'); }
+function lineOf(err, prog) {
+  try {
+    var rawStack = typeof err.stack == 'string' ? err.stack.split('\n') : (err.stack || []);
+    var unpack = /[ ]*at[ ]([^ ]*)[^>]*>:(\d*):(\d*)/;
+    var lines = prog.split('\n');
+    for (var i = 0; i < rawStack.length; i++) {
+      var m = rawStack[i].match(unpack); if (m === null) continue;
+      if (m[1].slice(0, 3) == 'RS_') continue;
+      var jsline = +m[2], jschar = +m[3], line = lines[jsline - 1], L, end;
+      if (line === undefined) continue;
+      for (var c = jschar; c >= 0; c--) {
+        if (line[c] == ';') { if (c > 0 && line[c - 1] == '"') { end = c - 1; c--; } }
+        else if (line[c] == '"' && end !== undefined) { L = line.slice(c + 1, end); break; }
+        else if (c === 0) { jsline--; line = lines[jsline - 1]; if (line === undefined) break; c = line.length; }
+      }
+      if (L !== undefined) return Number(L);
+    }
+  } catch (e) {}
+  return null;
+}
+setInterval(function () { send({type: 'height', h: document.documentElement.scrollHeight}); }, 400);
+window.addEventListener('message', async function (e) {
+  if (!e.data || e.data.type !== 'run') return;
+  window.prompt = function () { return null; };
+  var prog;
+  try {
+    prog = window.glowscript_compile(e.data.code, {lang: 'vpython', version: '3.2'});
+  } catch (err) {
+    var msg = String(err), m = msg.match(/line(\s*)(\d+)/), n = m ? Number(m[2]) : null;
+    send({type: 'error', msg: msg, line: n});
+    return;
+  }
+  try {
+    window.__context = {glowscript_container: $('#glowscript').removeAttr('id')};
+    eval(prog);
+    send({type: 'started'});
+    await __main__();
+    send({type: 'done'});
+  } catch (err) {
+    send({type: 'error', msg: String(err), line: lineOf(err, prog)});
+  }
+});
+send({type: 'ready'});
+<\/script></body></html>
+</script>
+
+<script src="config-sim-easy.js?v=20261104"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script>
+(() => {
+'use strict';
+const KIND = 'sim-easy';
+const SUBMIT_URL = (window.SUBMIT_URL_SIM_EASY || '').trim();
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const NUM = '①②③④';
+
+/* ---------- 1번: 사례 → 이론 고르기 (정답은 서버에서 채점, 보기 순서는 학번에 따라 섞임) ---------- */
+const CASE_PARK = '민준이는 <b>“놀이 기구 앞 대기 줄이 시간에 따라 얼마나 길어질까?”</b>를 확인하는 시뮬레이션 프로그램을 만들고 있다.';
+const CASE_FIRE = '산불이 번지는 모습을 확인하는 시뮬레이션이다. 숲에 <b>나무</b>가 바둑판 모양으로 서 있고 <b>불</b>이 한 곳에서 시작된다. <b>불이 붙은 나무 바로 옆에 있는 나무는 1초 뒤에 불이 붙는다.</b> 모델을 단순하게 하려고 <b>바람과 비는 생각하지 않는다.</b>';
+const THEORY = [
+  {id: 't1', ctx: '항공사에서 조종사 훈련생이 실제 비행기 대신 컴퓨터 프로그램으로 <b>엔진 고장 상황</b>에 대처하는 연습을 한다.',
+    q: '이처럼 시뮬레이션 프로그램을 쓰는 까닭으로 가장 알맞은 것은?',
+    o: {a: '실행 결과가 현실과 언제나 똑같기 때문에', b: '코드를 전혀 쓰지 않아도 만들 수 있기 때문에', c: '위험한 상황을 안전하게, 적은 비용으로 연습할 수 있기 때문에', d: '수집한 자료를 표로 깔끔하게 정리해 주기 때문에'}},
+  {id: 't2', ctx: '연구소에서 해수면 상승 프로그램에 수치를 넣어 <b>50년 뒤 해안 도시의 모습</b>을 확인했다.',
+    q: '이 사례는 시뮬레이션 프로그램의 역할 중 무엇에 해당하는가?',
+    o: {a: '미래 예측', b: '문제 파악', c: '다양한 대안 적용·확인', d: '자료 수집'}},
+  {id: 't3', ctx: '스마트팜 연구원이 <b>물 주는 양과 햇빛 시간을 여러 가지로 바꿔 가며</b> 토마토가 자라는 결과를 프로그램에서 바로 비교했다.',
+    q: '이 사례는 시뮬레이션 프로그램의 역할 중 무엇에 해당하는가?',
+    o: {a: '미래 예측', b: '문제 파악', c: '객체와 규칙 정하기', d: '다양한 대안 적용·확인'}},
+  {id: 't4', ctx: '운전 연습 프로그램으로 여러 번 주차를 해 보며, <b>내가 어느 위치에서 자주 부딪히는지</b> 찾아냈다.',
+    q: '이 사례는 시뮬레이션 프로그램의 역할 중 무엇에 해당하는가?',
+    o: {a: '미래 예측', b: '문제 파악', c: '다양한 대안 적용·확인', d: '모델 구현'}},
+  {id: 't5', q: '다음 중 시뮬레이션 프로그램을 활용하기에 가장 알맞지 <b>않은</b> 상황은?',
+    o: {a: '큰 지진이 났을 때 새 건물이 버틸 수 있는지 확인한다.', b: '오늘 우리 반 시간표를 확인한다.', c: '산불이 바람에 따라 어떻게 번지는지 살펴본다.', d: '놀이공원 대기 줄이 시간에 따라 어떻게 늘어나는지 알아본다.'}},
+  {id: 't6', group: CASE_PARK, q: '민준이가 “1분마다 몇 명이 줄에 서는지”, “놀이 기구에 한 번에 몇 명이 탈 수 있는지”를 조사했다. 시뮬레이션 제작 단계 중 어디에 해당하는가?',
+    o: {a: '문제 정의', b: '모델 구현', c: '모델 설계 (자료 수집)', d: '모델 평가'}},
+  {id: 't7', group: CASE_PARK, q: '민준이가 VPython으로 사람(구)과 놀이 기구(상자)를 만들고, while 반복문으로 줄이 움직이는 코드를 썼다. 어느 단계에 해당하는가?',
+    o: {a: '모델 구현', b: '문제 정의', c: '모델 설계', d: '모델 평가'}},
+  {id: 't8', group: CASE_PARK, q: '민준이가 실행 결과의 대기 시간을 <b>실제 놀이공원 안내판의 대기 시간과 비교</b>하여 다른 점을 찾았다. 어느 단계에 해당하는가?',
+    o: {a: '문제 정의', b: '모델 설계', c: '모델 구현', d: '모델 평가'}},
+  {id: 't9', group: CASE_FIRE, q: '이 모델의 <b>객체</b>에 해당하는 것은?',
+    o: {a: '불이 붙은 나무 바로 옆의 나무는 1초 뒤에 불이 붙는다.', b: '나무, 불', c: '바람과 비는 생각하지 않는다.', d: '실제 산불 기록과 결과를 비교한다.'}},
+  {id: 't10', group: CASE_FIRE, q: '이 모델의 <b>규칙</b>에 해당하는 것은?',
+    o: {a: '불이 붙은 나무 바로 옆의 나무는 1초 뒤에 불이 붙는다.', b: '나무, 불', c: '바람과 비는 생각하지 않는다.', d: '산불은 어떻게 번질까?'}},
+  {id: 't11', group: CASE_FIRE, q: '“바람과 비는 생각하지 않는다.”는 무엇에 해당하는가?',
+    o: {a: '모델의 객체', b: '모델의 규칙', c: '모델의 가정 (모델을 단순하게 만들기)', d: '모델 구현'}},
+  {id: 't12', ctx: '공 튀기기 시뮬레이션을 실행했더니, 공이 바닥에 닿을 때마다 <b>이전보다 더 높이</b> 튀어 올랐다. (튀는 정도를 1.2로 정했음)',
+    q: '모델 평가 단계에서 내릴 판단으로 가장 알맞은 것은?',
+    o: {a: '시뮬레이션 결과이므로 그대로 믿는다.', b: '공의 색을 바꾸면 해결된다.', c: 'rate() 안의 값을 크게 하면 현실과 같아진다.', d: '현실에서는 일어날 수 없으므로 규칙(튀는 정도)을 고쳐야 한다.'}},
+];
+
+/* ---------- 2번: 짧은 코드의 빈칸 고르기 (모두 지구 조건) ---------- */
+const BALL_BOUNCE = (blankLine) => 'Web VPython 3.2\nscene.background = color.white\nball = sphere(pos=vector(0,8,0), radius=1, color=color.red, make_trail=True)\nfloor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)\nball.velocity = vector(0,0,0)\ndt = 0.01\nt = 0\ng = -9.8\nwhile t < 8:\n    rate(100)\n    ball.velocity.y = ball.velocity.y + g*dt\n    ball.pos = ball.pos + ball.velocity*dt\n    crash = floor.pos.y + floor.size.y/2 + ball.radius\n    if ball.pos.y < crash:\n' + blankLine + '\n        ball.pos.y = crash\n    t = t + dt';
+const CODEQ = [
+  {id: 'k1', ask: '공의 색을 <b>빨간색</b>으로 만들려고 한다. 빈칸에 알맞은 것은?',
+    code: 'Web VPython 3.2\nscene.background = color.white\nball = sphere(pos=vector(0,0,0), radius=1, color=____)',
+    o: {a: 'color.blue', b: 'color.red', c: '"빨간색"', d: 'red'}},
+  {id: 'k2', ask: '공의 <b>반지름을 2</b>로 만들려고 한다. 빈칸에 알맞은 것은? (바닥과 크기를 비교해 보세요)',
+    code: 'Web VPython 3.2\nscene.background = color.white\nfloor = box(pos=vector(0,-3,0), size=vector(10,0.5,4), color=color.blue)\nball = sphere(pos=vector(0,0,0), ____, color=color.red)',
+    o: {a: 'radius=0.2', b: 'size=2', c: 'radius=2', d: 'color=2'}},
+  {id: 'k3', ask: '공을 처음에 <b>위쪽(y = 5)</b>에 놓으려고 한다. 빈칸에 알맞은 것은?',
+    code: 'Web VPython 3.2\nscene.background = color.white\nfloor = box(pos=vector(0,-3,0), size=vector(10,0.5,4), color=color.blue)\nball = sphere(pos=____, radius=0.5, color=color.red)',
+    o: {a: 'vector(0,5,0)', b: 'vector(5,0,0)', c: 'vector(0,0,5)', d: 'vector(0,-5,0)'}},
+  {id: 'k4', ask: '공이 <b>오른쪽으로</b> 움직이게 하려고 한다. 반복문 안 빈칸에 알맞은 줄은?',
+    code: 'Web VPython 3.2\nscene.background = color.white\nball = sphere(pos=vector(-5,0,0), radius=0.5, color=color.red, make_trail=True)\nt = 0\nwhile t < 3:\n    rate(100)\n    ____\n    t = t + 0.01',
+    o: {a: 'ball.pos.x = ball.pos.x - 0.03', b: 'ball.pos.y = ball.pos.y + 0.03', c: 'ball.pos.x = 0.03', d: 'ball.pos.x = ball.pos.x + 0.03'}},
+  {id: 'k5', ask: '반복문을 1초에 <b>가장 많이</b> 실행해서 공이 <b>가장 빠르게</b> 움직이게 하려고 한다. 빈칸에 알맞은 값은?',
+    code: 'Web VPython 3.2\nscene.background = color.white\nball = sphere(pos=vector(-5,0,0), radius=0.5, color=color.red, make_trail=True)\nt = 0\nwhile t < 3:\n    rate(____)\n    ball.pos.x = ball.pos.x + 0.15\n    t = t + 0.05',
+    o: {a: '10', b: '60', c: '30', d: '1'}},
+  {id: 'k6', ask: '시뮬레이션을 <b>5초 동안만</b> 실행하려고 한다. 빈칸에 알맞은 것은?',
+    code: 'Web VPython 3.2\nscene.background = color.white\nball = sphere(pos=vector(-5,0,0), radius=0.5, color=color.red, make_trail=True)\ndt = 0.01\nt = 0\nwhile ____:\n    rate(100)\n    ball.pos.x = ball.pos.x + 0.02\n    t = t + dt\nprint("끝! 실행 시간:", round(t), "초")',
+    o: {a: 't < 5', b: 't > 5', c: 't < 500', d: 't = 5'}},
+  {id: 'k7', ask: '지구의 중력가속도 <b>9.8 m/s²</b>가 <b>아래 방향</b>으로 작용하게 하려고 한다. 빈칸에 알맞은 것은?',
+    code: 'Web VPython 3.2\nscene.background = color.white\nball = sphere(pos=vector(0,5,0), radius=0.5, color=color.red, make_trail=True)\nfloor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)\nball.velocity = vector(0,0,0)\ndt = 0.01\nt = 0\ng = ____\nwhile t < 1.3:\n    rate(100)\n    ball.velocity.y = ball.velocity.y + g*dt\n    ball.pos = ball.pos + ball.velocity*dt\n    t = t + dt',
+    o: {a: '9.8', b: '0', c: '-9.8', d: '98'}},
+  {id: 'k8', ask: '공이 바닥에 닿으면 <b>위로 튀어 오르고</b>, 튈 때마다 <b>조금씩 낮아지게</b> 하려고 한다. 빈칸에 알맞은 것은?',
+    code: BALL_BOUNCE('        ball.velocity.y = ____'),
+    o: {a: '-ball.velocity.y*0.8', b: 'ball.velocity.y*0.8', c: '-ball.velocity.y*1.2', d: '0'}},
+];
+
+let S = null;
+const cells = {};
+function seeded(seed) { let x = seed % 2147483647; if (x <= 0) x += 2147483646; return () => (x = x * 16807 % 2147483647) / 2147483647; }
+function shuffle(arr, rnd) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const draftKey = () => 'sw-assess-' + KIND + ':' + S.sid;
+const picked = (id) => { const el = $('input[name="' + id + '"]:checked'); return el ? el.value : null; };
+
+/* 1번 문항 그리기 */
+function renderTheory(seed) {
+  const host = $('#theoryHost'); host.innerHTML = '';
+  const rnd = seeded(seed * 11 + 5);
+  let lastGroup = null;
+  THEORY.forEach((item, i) => {
+    if (item.group && item.group !== lastGroup) {
+      const g = document.createElement('div'); g.className = 'scenario';
+      g.innerHTML = '<b>사례</b> (' + (i + 1) + '~' + (i + THEORY.filter((x) => x.group === item.group).length) + '번) ' + item.group;
+      host.appendChild(g);
+    }
+    lastGroup = item.group || null;
+    const keys = shuffle(Object.keys(item.o), rnd);
+    const d = document.createElement('div'); d.className = 'mcq';
+    d.innerHTML = (item.ctx ? '<div class="scenario" style="margin:0 0 10px"><b>사례</b> ' + item.ctx + '</div>' : '') +
+      '<p class="q">' + (i + 1) + ') ' + item.q + '</p>' +
+      keys.map((k, n) => '<label><input type="radio" name="' + item.id + '" value="' + k + '" data-a="' + item.id + '"><span>' + NUM[n] + ' ' + esc(item.o[k]) + '</span></label>').join('');
+    host.appendChild(d);
+  });
+}
+
+/* 2번 문항 틀 (실행 셀은 페이지가 열릴 때 만들고, 보기 순서는 시작할 때 섞는다) */
+(function buildCodeQ() {
+  const host = $('#codeHost');
+  CODEQ.forEach((item, i) => {
+    const d = document.createElement('div'); d.className = 'mcq'; d.id = 'kq-' + item.id;
+    d.innerHTML = '<p class="q">' + (i + 1) + ') ' + item.ask + '</p><div class="opts"></div>' +
+      '<div class="vp" data-cell="' + item.id + '" data-title="코드 — 보기를 고르면 빈칸이 채워져요"><textarea>' + esc(item.code) + '</textarea></div>';
+    host.appendChild(d);
+  });
+})();
+function renderCodeOpts(seed) {
+  const rnd = seeded(seed * 17 + 9);
+  CODEQ.forEach((item) => {
+    const box = $('#kq-' + item.id + ' .opts');
+    box.innerHTML = shuffle(Object.keys(item.o), rnd).map((k, n) =>
+      '<label class="code"><input type="radio" name="' + item.id + '" value="' + k + '" data-a="' + item.id + '"><span>' + NUM[n] + ' ' + esc(item.o[k]) + '</span></label>').join('');
+  });
+}
+function fillCode(id) {
+  const item = CODEQ.find((x) => x.id === id), c = cells[id]; if (!item || !c) return;
+  const k = picked(id), val = k ? item.o[k] : '____';
+  const code = item.code.replace('____', val);
+  if (c.cm.getValue() !== code) c.cm.setValue(code);
+  // 빈칸(또는 채워진 부분) 강조
+  const lines = item.code.split('\n'), ln = lines.findIndex((l) => l.includes('____')), ch = lines[ln].indexOf('____');
+  c.cm.getAllMarks().forEach((m) => m.clear());
+  c.cm.markText({line: ln, ch}, {line: ln, ch: ch + val.length}, {className: k ? 'cm-filled' : 'cm-blank'});
+}
+const fillAll = () => CODEQ.forEach((x) => fillCode(x.id));
+document.addEventListener('change', (e) => { if (e.target.matches('#codeHost input')) fillCode(e.target.name); });
+
+// 다른 수행평가에서 적은 희망 진로·학과가 있으면 미리 채운다
+function prefillCareer(sid) {
+  ['data', 'sim'].forEach((kind) => {
+    try {
+      const o = JSON.parse(lsGet('sw-assess-' + kind + ':' + sid) || 'null');
+      if (o && o.fields) ['job', 'major'].forEach((k) => { const el = $('[data-a="' + k + '"]'); if (el && !el.value && o.fields[k]) el.value = o.fields[k]; });
+    } catch (e) {}
+  });
+}
+
+/* ---------------- 시작 화면 ---------------- */
+async function checkOpen() {
+  const box = $('#openState');
+  if (!SUBMIT_URL) { box.className = 'msg show info'; box.textContent = '⚠ 제출 주소가 아직 설정되지 않았어요 (선생님 확인 필요). 풀이는 할 수 있지만 제출은 되지 않습니다.'; return; }
+  try { const j = await (await fetch(SUBMIT_URL)).json(); if (!j.open) { box.className = 'msg show no'; box.textContent = '지금은 제출 기간이 아닙니다. 선생님 안내를 기다리세요.'; } } catch (e) {}
+}
+$('#startBtn').addEventListener('click', () => {
+  const sid = $('#sid').value.trim(), name = $('#sname').value.trim().replace(/\s+/g, ' ');
+  const m = $('#gateMsg'); const fail = (t) => { m.className = 'msg show no'; m.textContent = t; };
+  if (!/^[1-3]\d{4}$/.test(sid)) return fail('학번은 5자리 숫자로 입력하세요. (예: 1학년 3반 5번 → 10305)');
+  if (Number(sid.slice(1, 3)) < 1 || Number(sid.slice(3)) < 1) return fail('반과 번호를 확인하세요.');
+  if (name.length < 2) return fail('이름을 입력하세요.');
+  if (!$('#pledge').checked) return fail('안내 문장을 읽고 체크하세요.');
+  begin(sid, name);
+});
+['sid', 'sname'].forEach((id) => $('#' + id).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#startBtn').click(); }));
+
+function begin(sid, name) {
+  S = {sid, name, startedAt: new Date().toLocaleString('ko-KR'), leave: 0, submitted: 0};
+  let draft = null; try { draft = JSON.parse(lsGet(draftKey()) || 'null'); } catch (e) {}
+  if (draft) { S.startedAt = draft.startedAt || S.startedAt; S.leave = draft.leave || 0; S.submitted = draft.submitted || 0; }
+  renderTheory(Number(sid));
+  renderCodeOpts(Number(sid));
+  if (draft) restore(draft);
+  else prefillCareer(sid);
+  $('#gate').style.display = 'none'; $('#paper').style.display = 'block';
+  fillAll();
+  const who = $('#who'); who.style.display = ''; who.textContent = sid + ' ' + name;
+  $('#saveState').style.display = '';
+  Object.values(cells).forEach((c) => c.cm.refresh());
+  window.scrollTo(0, 0); save();
+}
+
+/* ---------------- 자동 저장 ---------------- */
+function collectFields() {
+  const f = {};
+  $$('[data-a]').forEach((el) => {
+    if (el.type === 'radio') { if (el.checked) f[el.dataset.a] = el.value; else if (!(el.dataset.a in f)) f[el.dataset.a] = ''; }
+    else f[el.dataset.a] = el.value;
+  });
+  return f;
+}
+function save() {
+  if (!S) return;
+  lsSet(draftKey(), JSON.stringify({fields: collectFields(), startedAt: S.startedAt, leave: S.leave, submitted: S.submitted}));
+  $('#saveState').textContent = '자동 저장 ' + new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+}
+function restore(d) {
+  Object.entries(d.fields || {}).forEach(([k, v]) => { $$('[data-a="' + k + '"]').forEach((el) => { if (el.type === 'radio') el.checked = el.value === v; else el.value = v; }); });
+  updateCounts();
+}
+let saveTimer = null;
+const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 600); };
+document.addEventListener('input', (e) => { if (e.target.closest('[data-a]')) { saveSoon(); updateCounts(); } });
+document.addEventListener('change', (e) => { if (e.target.closest('[data-a]')) save(); });
+function updateCounts() { $$('[data-count]').forEach((el) => { const t = $('[data-a="' + el.dataset.count + '"]'); el.textContent = t.value.length + ' / ' + (el.dataset.max || 1000) + '자'; }); }
+document.addEventListener('visibilitychange', () => { if (S && document.hidden) { S.leave++; save(); } });
+
+/* ---------------- VPython 실행기 ---------------- */
+const RUNNER = $('#runner-src').textContent.replace(/<\\\/script>/g, '</' + 'script>');
+const HEADER = /^\s*(Web\s*VPython|GlowScript)\s*[0-9.]+/i;
+function hintFor(msg) {
+  if (/is not defined/i.test(msg)) return '정의되지 않은 이름이 있어요. 이 보기가 맞는 코드인지 다시 생각해 보세요.';
+  if (/parenthes|bracket|Unexpected|Missing|unterminated|EOF|invalid|syntax|Assignment/i.test(msg)) return '문법에 맞지 않는 코드예요. 이 보기가 맞는 코드인지 다시 생각해 보세요.';
+  if (/Cannot read prop|of undefined|of null/i.test(msg)) return '속성 이름이나 값이 알맞지 않아요.';
+  return '이 보기로는 실행되지 않아요. 다른 보기와 비교해 보세요.';
+}
+window.addEventListener('message', (e) => { const d = e.data; if (!d || !d.key) return; Object.values(cells).forEach((c) => { if (c.key === d.key) c.onMsg(d); }); });
+
+$$('.vp').forEach((el) => {
+  const ta = $('textarea', el), name = el.dataset.cell;
+  const head = document.createElement('div'); head.className = 'vp-head';
+  head.innerHTML = '<span class="ttl">' + esc(el.dataset.title) + '</span><button class="btn small run">▶ 실행</button><button class="btn small stop" style="display:none">■ 멈춤</button>';
+  const out = document.createElement('div'); out.className = 'vp-out';
+  const idle = '<div class="placeholder">보기를 고른 뒤 ▶ 실행을 누르면 여기에 결과가 나타나요</div>';
+  out.innerHTML = idle;
+  const errBox = document.createElement('div'); errBox.className = 'vp-err';
+  el.insertBefore(head, ta);
+  const cm = CodeMirror.fromTextArea(ta, {mode: 'python', lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity, readOnly: true,
+    extraKeys: {'Shift-Enter': () => run(), 'Ctrl-Enter': () => run()}});
+  el.appendChild(out); el.appendChild(errBox);
+  const runBtn = $('.run', head), stopBtn = $('.stop', head);
+  const cell = {cm, key: null, onMsg, ran: 0};
+  cells[name] = cell;
+  let frame = null, offset = 0, errLine = null;
+  function clearErr() { errBox.className = 'vp-err'; if (errLine !== null) { cm.removeLineClass(errLine, 'background', 'cm-errline'); errLine = null; } }
+  function showErr(msg, line) {
+    const src = cm.getValue().split('\n'), ul = line ? line - offset : null;
+    let where = '';
+    if (ul && ul >= 1 && ul <= src.length) { where = ul + '번째 줄: <code>' + esc(src[ul - 1].trim()) + '</code><br>'; errLine = ul - 1; cm.addLineClass(errLine, 'background', 'cm-errline'); }
+    errBox.innerHTML = '<b>⚠ 오류</b> ' + where + '<span class="mono" style="font-size:14px">' + esc(msg) + '</span><div class="hint">💡 ' + esc(hintFor(msg)) + '</div>';
+    errBox.className = 'vp-err show';
+  }
+  function run() {
+    stop(true); clearErr();
+    let code = cm.getValue(); offset = 0;
+    if (code.includes('____')) { errBox.innerHTML = '<b>먼저 위에서 보기를 하나 고르세요.</b> 고르면 노란 빈칸이 채워지고 실행할 수 있어요.'; errBox.className = 'vp-err show'; return; }
+    if (!HEADER.test(code.split('\n')[0] || '')) { code = 'Web VPython 3.2\n' + code; offset = 1; }
+    else code = code.replace(/^\s*[^\n]*/, 'Web VPython 3.2');
+    cell.key = 'k' + Date.now() + Math.random().toString(36).slice(2);
+    cell.ran++;
+    out.innerHTML = '<div class="placeholder">VPython 준비 중… (처음에는 몇 초 걸려요)</div>';
+    frame = document.createElement('iframe'); frame.title = 'VPython 실행 화면'; frame.style.height = '0px';
+    frame.srcdoc = RUNNER.replace('@@KEY@@', cell.key);
+    out.appendChild(frame);
+    cell.pending = code;
+    runBtn.textContent = '▶ 다시 실행'; stopBtn.style.display = '';
+  }
+  function stop(silent) {
+    if (!frame) return;
+    frame.remove(); frame = null; cell.key = null;
+    stopBtn.style.display = 'none'; runBtn.textContent = '▶ 실행';
+    out.innerHTML = silent ? idle : '<div class="placeholder">■ 멈췄어요.</div>';
+  }
+  cell.stop = stop;
+  function onMsg(d) {
+    if (!frame) return;
+    if (d.type === 'ready') frame.contentWindow.postMessage({type: 'run', code: cell.pending}, '*');
+    else if (d.type === 'started') { const p = $('.placeholder', out); if (p) p.remove(); }
+    else if (d.type === 'height') frame.style.height = Math.min(Math.max(d.h, 120), 1400) + 'px';
+    else if (d.type === 'error') { const p = $('.placeholder', out); if (p) p.remove(); showErr(d.msg, d.line); }
+    else if (d.type === 'done') { stopBtn.style.display = 'none'; }
+  }
+  runBtn.addEventListener('click', run);
+  stopBtn.addEventListener('click', () => stop(false));
+});
+// 보기를 바꾸면 이전 실행 화면은 정리한다
+document.addEventListener('change', (e) => { if (e.target.matches('#codeHost input')) { const c = cells[e.target.name]; if (c) c.stop(true); } });
+
+/* ---------------- 제출 ---------------- */
+function missingList(f) {
+  const miss = [];
+  THEORY.forEach((m, i) => { if (!f[m.id]) miss.push('1-' + (i + 1)); });
+  CODEQ.forEach((m, i) => { if (!f[m.id]) miss.push('2-' + (i + 1)); });
+  [['job', '3번 희망 진로'], ['major', '3번 희망 학과'], ['topic', '3번 주제'], ['plan', '3번 계획']].forEach(([k, n]) => { if (!(f[k] || '').trim()) miss.push(n); });
+  return miss;
+}
+function buildBase() {
+  const f = collectFields(), theory = {}, code = {}, runs = {};
+  THEORY.forEach((m) => { theory[m.id] = f[m.id] || ''; });
+  CODEQ.forEach((m) => { code[m.id] = f[m.id] || ''; runs[m.id] = cells[m.id] ? cells[m.id].ran : 0; });
+  return {kind: KIND, sid: S.sid, name: S.name, theory, code, runs,
+    career: {job: f.job, major: f.major, topic: f.topic, plan: f.plan},
+    leave: S.leave, startedAt: S.startedAt, client: navigator.userAgent};
+}
+// 응답을 받았지만 읽지 못한 경우에는 다시 보내지 않는다 (중복 제출 방지)
+async function sendPayload(payload) {
+  const body = JSON.stringify(payload);
+  let r;
+  try { r = await fetch(SUBMIT_URL, {method: 'POST', body}); }
+  catch (e) {
+    try { await fetch(SUBMIT_URL, {method: 'POST', mode: 'no-cors', body}); return {ok: true, unsure: true}; }
+    catch (e2) { return {ok: false, msg: '인터넷 연결을 확인하고 다시 제출하세요.'}; }
+  }
+  try { return await r.json(); } catch (e) { return r.ok ? {ok: true, unsure: true} : {ok: false, msg: '제출하지 못했어요 (' + r.status + '). 다시 시도하세요.'}; }
+}
+$('#submitBtn').addEventListener('click', async () => {
+  const msg = $('#submitMsg'), btn = $('#submitBtn');
+  const show = (cls, t) => { msg.className = 'msg show ' + cls; msg.innerHTML = t; };
+  const miss = missingList(collectFields());
+  if (!confirm((miss.length ? '아직 답하지 않은 문항: ' + miss.join(', ') + '\n\n' : '') + '제출할까요? (다시 제출하면 마지막 제출이 최종 답안이 됩니다)')) return;
+  if (!SUBMIT_URL) { show('no', '제출 주소가 설정되지 않았어요. 선생님께 알리고, 아래 <b>답안을 파일로 저장</b>을 눌러 두세요.'); return; }
+  btn.disabled = true; save();
+  try {
+    const payload = buildBase();
+    show('info', '제출하는 중…');
+    const res = await sendPayload(payload);
+    if (!res.ok) { show('no', esc(res.msg || '제출하지 못했어요. 다시 시도하세요.')); return; }
+    S.submitted++; save(); msg.className = 'msg';
+    const rc = $('#receipt'); rc.className = 'receipt show';
+    rc.innerHTML = '<b class="big">✔ 제출 완료</b><div style="margin-top:6px">' + esc(S.sid + ' ' + S.name) + (res.time ? ' · ' + esc(res.time) : '') + (res.count ? ' · ' + res.count + '번째 제출' : '') + '</div>' +
+      (res.unsure ? '<div class="muted" style="margin-top:6px">네트워크 때문에 접수 확인 응답을 받지 못했어요. 선생님께 제출 여부를 확인하세요.</div>' : '<div class="muted" style="margin-top:6px">수정하고 다시 제출하면 마지막 제출이 최종 답안이 됩니다.</div>');
+    rc.scrollIntoView({behavior: 'smooth', block: 'center'});
+  } finally { btn.disabled = false; }
+});
+$('#backupBtn').addEventListener('click', () => {
+  if (!S) return;
+  const b = buildBase();
+  const shown = (list, ans) => list.map((m, i) => (i + 1) + ') ' + (ans[m.id] ? m.o[ans[m.id]].replace(/<[^>]+>/g, '') : '(답 없음)')).join('\n');
+  const txt = '[시뮬레이션 수행평가 답안]\n학번: ' + b.sid + '\n이름: ' + b.name +
+    '\n\n[문항 1 이론]\n' + shown(THEORY, b.theory) + '\n\n[문항 2 코드]\n' + shown(CODEQ, b.code) +
+    '\n\n[문항 3]\n희망 진로: ' + b.career.job + '\n희망 학과: ' + b.career.major + '\n주제: ' + b.career.topic + '\n' + b.career.plan +
+    '\n\n[코드값] ' + JSON.stringify({theory: b.theory, code: b.code}) + '\n';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], {type: 'text/plain;charset=utf-8'}));
+  a.download = '시뮬레이션_' + b.sid + '_' + b.name + '.txt'; a.click();
+});
+
+checkOpen();
+})();
+</script>
+</body>
+</html>
