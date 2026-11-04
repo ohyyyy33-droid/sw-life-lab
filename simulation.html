@@ -136,6 +136,15 @@ textarea.note:focus{outline:none;border-color:var(--accent)}
 .callout{border-left:5px solid var(--accent);background:#fff;padding:12px 16px;border-radius:0 12px 12px 0;margin:14px 0}
 .checklist label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line);cursor:pointer}
 .checklist input{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
+.oxrow{border-top:1px dashed var(--line);padding:10px 0}
+.oxrow:first-of-type{border-top:0}
+.oxrow .oxq{margin-bottom:6px}
+.oxb{display:flex;gap:8px}
+.oxb button{font:inherit;font-weight:900;font-size:18px;width:56px;height:40px;border:1.5px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;color:var(--ink)}
+.oxb button:hover{border-color:var(--accent-line)}
+.oxb button.right{border-color:var(--ok);background:var(--ok-soft)}
+.oxb button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.oxrow .fb{margin-top:6px}
 .model{display:grid;grid-template-columns:120px 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;margin:12px 0}
 .model > div{padding:10px 14px;border-bottom:1px solid var(--line)}
 .model > div:nth-last-child(-n+2){border-bottom:0}
@@ -242,6 +251,11 @@ textarea.note:focus{outline:none;border-color:var(--accent)}
       <button data-k="d">④ 착륙 날짜를 달력에서 찾아보기 위해서</button>
     </div>
     <div class="fb" data-exp="탐사선을 실제로 수백 번 보낼 수는 없죠. 비용·위험·시간 때문에 현실에서 하기 어려운 실험을 컴퓨터로 대신하는 거예요. 단, 시뮬레이션 결과가 현실과 언제나 같은 것은 아니에요."></div>
+  </div>
+
+  <div class="quiz ox">
+    <div class="qh"><span class="badge">OX</span><b>맞으면 O, 틀리면 X를 누르세요</b></div>
+    <div class="oxrow" data-ans="X"><div class="oxq">영화 상영 시간을 알아보는 일은 시뮬레이션 프로그램이 꼭 필요한 일이다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="상영 시간은 이미 정해진 정보라 찾아보면 돼요. “해 보면 어떻게 될까?”를 확인할 일이 아니에요."></div></div>
   </div>
 
   <h3>시뮬레이션 프로그램의 3가지 역할 — 구별 단서</h3>
@@ -396,11 +410,21 @@ ball = sphere(pos=vector(0, 0, 0), radius=0.5, color=color.green)            # �
       <tr><td>바닥 <code>size</code>의 첫째 숫자를 <code>14</code>로</td><td><input data-save="o6p"></td><td><input data-save="o6"></td></tr>
     </tbody>
   </table>
-  <div class="mission">
-    <div class="mt"><span class="m">정리</span>내가 찾은 규칙</div>
-    <p style="margin:6px 0">실험 결과를 보고 한 줄씩 써 보세요.</p>
-    <textarea class="note" data-save="r1" placeholder="vector(x, y, z)에서 첫째 숫자는 … , 둘째 숫자는 … , 음수(-)이면 …"></textarea>
-    <textarea class="note" data-save="r1b" style="margin-top:8px" placeholder="radius를 크게 하면 … / 색은 … 처럼 써야 한다"></textarea>
+<div class="mission">
+    <div class="mt"><span class="m">체크</span>실험으로 확인했나요?</div>
+    <div class="checklist">
+      <label><input type="checkbox" data-save="c1_1"> 공의 pos 세 숫자를 하나씩 바꿔 보고, 각 자리가 어느 방향인지 확인했다.</label>
+      <label><input type="checkbox" data-save="c1_2"> 음수(-) 값을 넣으면 어느 쪽으로 가는지 확인했다.</label>
+      <label><input type="checkbox" data-save="c1_3"> radius와 color를 바꿔 보았다.</label>
+      <label><input type="checkbox" data-save="c1_4"> 바닥(box)의 size를 바꿔 보았다.</label>
+    </div>
+  </div>
+  <div class="quiz ox">
+    <div class="qh"><span class="badge">OX</span><b>맞으면 O, 틀리면 X를 누르세요</b></div>
+    <div class="oxrow" data-ans="O"><div class="oxq">vector(x, y, z)에서 <b>둘째 숫자</b>를 크게 하면 물체가 위쪽으로 간다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="둘째 자리는 y, 위아래 방향이에요. 위쪽이 +예요."></div></div>
+    <div class="oxrow" data-ans="X"><div class="oxq"><code>vector(0, -3, 0)</code>은 원점보다 <b>오른쪽</b>에 있다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="-3은 둘째 자리(y)에 있으니 원점보다 아래쪽이에요. 오른쪽은 첫째 자리(x)가 +일 때예요."></div></div>
+    <div class="oxrow" data-ans="O"><div class="oxq">구(sphere)의 크기는 <b>radius</b>로 바꾼다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="구는 반지름(radius)으로 크기를 정해요. 상자(box)는 size를 써요."></div></div>
+    <div class="oxrow" data-ans="O"><div class="oxq">색은 <b>color.</b> 뒤에 색 이름을 붙여 쓴다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="color.green, color.yellow처럼 써요."></div></div>
   </div>
 </section>
 
@@ -448,10 +472,21 @@ print("반복이 끝났어요. t =", round(t, 2))</textarea></div>
     </tbody>
   </table>
   <div class="think"><b>생각해 보기</b> <code>rate()</code>의 숫자를 바꾸면 공이 <b>움직이는 거리</b>도 달라질까요, <b>걸리는 시간</b>만 달라질까요? 실행 결과의 궤적(꼬리) 길이를 비교해 보세요.</div>
-  <div class="mission">
-    <div class="mt"><span class="m">정리</span>내가 찾은 규칙</div>
-    <textarea class="note" data-save="r2" placeholder="dx의 부호(+, -)는 … 을 정한다 / pos.x와 pos.y는 …"></textarea>
-    <textarea class="note" data-save="r2b" style="margin-top:8px" placeholder="rate() 숫자가 커지면 … / while 조건은 … 일 때 멈춘다"></textarea>
+<div class="mission">
+    <div class="mt"><span class="m">체크</span>실험으로 확인했나요?</div>
+    <div class="checklist">
+      <label><input type="checkbox" data-save="c2_1"> dx의 부호를 바꿔 움직이는 방향을 비교했다.</label>
+      <label><input type="checkbox" data-save="c2_2"> pos.x를 pos.y로 바꿔 움직이는 방향을 비교했다.</label>
+      <label><input type="checkbox" data-save="c2_3"> rate() 숫자를 작게, 크게 바꿔 빠르기를 비교했다.</label>
+      <label><input type="checkbox" data-save="c2_4"> while 조건을 바꿔 언제 멈추는지 확인했다.</label>
+    </div>
+  </div>
+  <div class="quiz ox">
+    <div class="qh"><span class="badge">OX</span><b>맞으면 O, 틀리면 X를 누르세요</b></div>
+    <div class="oxrow" data-ans="O"><div class="oxq">더하는 값(dx)을 <b>음수</b>로 바꾸면 공이 반대 방향으로 움직인다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="더하는 값이 음수이면 좌표가 점점 작아지므로 반대쪽(왼쪽)으로 가요."></div></div>
+    <div class="oxrow" data-ans="O"><div class="oxq"><code>pos.x</code> 대신 <code>pos.y</code>를 바꾸면 공이 위아래로 움직인다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="y는 위아래 방향이에요."></div></div>
+    <div class="oxrow" data-ans="X"><div class="oxq"><code>rate()</code> 숫자를 크게 하면 공이 더 <b>느리게</b> 움직인다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="rate()는 1초에 반복하는 최대 횟수예요. 숫자가 크면 1초에 더 많이 움직여서 더 빨라 보여요."></div></div>
+    <div class="oxrow" data-ans="X"><div class="oxq"><code>while t &gt; 2:</code>로 바꾸면 공이 더 <b>오래</b> 움직인다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="처음 t는 0이라 t &gt; 2가 처음부터 거짓이에요. 반복문이 한 번도 실행되지 않고 바로 끝나요."></div></div>
   </div>
 </section>
 
@@ -502,16 +537,29 @@ while t < 20:
     <tbody>
       <tr><td><code>g = -1.6</code> (달)</td><td><input data-save="g1p"></td><td><input data-save="g1"></td></tr>
       <tr><td><code>g = -24.8</code> (목성)</td><td><input data-save="g2p"></td><td><input data-save="g2"></td></tr>
+      <tr><td><code>g = -9.8</code> → <code>g = 9.8</code> (부호 바꾸기)</td><td><input data-save="g7p"></td><td><input data-save="g7"></td></tr>
       <tr><td><code>*0.8</code> → <code>*0.5</code></td><td><input data-save="g3p"></td><td><input data-save="g3"></td></tr>
       <tr><td><code>*0.8</code> → <code>*1.0</code></td><td><input data-save="g4p"></td><td><input data-save="g4"></td></tr>
       <tr><td><code>*0.8</code> → <code>*1.2</code></td><td><input data-save="g5p"></td><td><input data-save="g5"></td></tr>
       <tr><td><code>-ball.velocity.y*0.8</code>에서 <b>맨 앞 - 지우기</b></td><td><input data-save="g6p"></td><td><input data-save="g6"></td></tr>
     </tbody>
   </table>
-  <div class="mission">
-    <div class="mt"><span class="m">정리</span>내가 찾은 규칙 + 모델 평가</div>
-    <textarea class="note" data-save="r3" placeholder="g의 크기가 커지면 … / 튀는 정도 숫자가 커지면 … / 맨 앞 - 기호는 …"></textarea>
-    <textarea class="note" data-save="r3b" style="margin-top:8px" placeholder="위 실험 중 현실에서 일어날 수 없는 결과는? 왜 그렇게 생각하나요?"></textarea>
+<div class="mission">
+    <div class="mt"><span class="m">체크</span>실험으로 확인했나요?</div>
+    <div class="checklist">
+      <label><input type="checkbox" data-save="c3_1"> g의 크기를 바꿔 떨어지는 빠르기를 비교했다.</label>
+      <label><input type="checkbox" data-save="c3_2"> g의 부호를 바꿔 보았다.</label>
+      <label><input type="checkbox" data-save="c3_3"> 튀는 정도 숫자(0.5, 1.0, 1.2)를 바꿔 비교했다.</label>
+      <label><input type="checkbox" data-save="c3_4"> 맨 앞의 - 기호를 지우고 실행해 보았다.</label>
+    </div>
+  </div>
+  <div class="quiz ox">
+    <div class="qh"><span class="badge">OX</span><b>맞으면 O, 틀리면 X를 누르세요</b></div>
+    <div class="oxrow" data-ans="O"><div class="oxq"><code>g = -24.8</code>이면 <code>g = -9.8</code>일 때보다 더 빨리 떨어진다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="중력가속도의 크기가 클수록 속도가 빨리 변해요."></div></div>
+    <div class="oxrow" data-ans="O"><div class="oxq"><code>g = 9.8</code>처럼 부호를 +로 바꾸면 공이 위로 올라간다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="y는 위쪽이 +예요. 중력이 아래로 작용하게 하려면 음수로 써야 해요."></div></div>
+    <div class="oxrow" data-ans="X"><div class="oxq">튀는 정도 숫자를 <b>1.2</b>로 하면 점점 낮게 튄다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="1보다 크면 튈 때마다 속도가 커져서 점점 높이 튀어요."></div></div>
+    <div class="oxrow" data-ans="O"><div class="oxq"><code>-ball.velocity.y*0.8</code>에서 맨 앞의 <b>-</b>는 공의 움직이는 방향을 반대로 바꾼다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="아래로 가던 공의 속도를 위쪽으로 바꿔서 튀어 오르게 해요."></div></div>
+    <div class="oxrow" data-ans="O"><div class="oxq">튈수록 높아지는 결과는 현실과 다르므로, 모델 평가에서 규칙을 고쳐야 한다.</div><div class="oxb"><button data-v="O">O</button><button data-v="X">X</button></div><div class="fb" data-exp="현실에서 공은 튈 때마다 에너지를 잃어요. 현실과 다른 결과는 규칙을 의심해야 해요."></div></div>
   </div>
 </section>
 
@@ -686,6 +734,18 @@ $$('.quiz.mcq').forEach((q) => {
     b.classList.add(ok ? 'right' : 'wrong');
     fb.className = 'fb show ' + (ok ? 'ok' : 'no');
     fb.textContent = ok ? '정답! ' + (fb.dataset.exp || '') : '다시 생각해 보세요.';
+  }));
+});
+
+/* ---------------- OX ---------------- */
+$$('.oxrow').forEach((r) => {
+  const fb = $('.fb', r);
+  $$('.oxb button', r).forEach((b) => b.addEventListener('click', () => {
+    const ok = b.dataset.v === r.dataset.ans;
+    $$('.oxb button', r).forEach((x) => x.classList.remove('right', 'wrong'));
+    b.classList.add(ok ? 'right' : 'wrong');
+    fb.className = 'fb show ' + (ok ? 'ok' : 'no');
+    fb.textContent = ok ? '정답! ' + (fb.dataset.exp || '') : '다시 생각해 보세요. 위 실험을 다시 실행해 확인해도 좋아요.';
   }));
 });
 
