@@ -163,7 +163,7 @@ textarea.note:focus{outline:none;border-color:var(--accent)}
 <body>
 <header class="topbar">
   <span class="unit">Ⅳ 단원</span>
-  <h1>시뮬레이션 실습실 · 수행평가 대비 연습</h1>
+  <h1>시뮬레이션 실습실 · 개념 다지기</h1>
   <span class="grow"></span>
   <span class="gs">Web VPython 3.2 내장</span>
 </header>
@@ -175,143 +175,179 @@ textarea.note:focus{outline:none;border-color:var(--accent)}
 <!-- ===================== 0. 시작 ===================== -->
 <section class="step" id="start" data-nav="시작하기" data-group="안내">
   <div class="step-head">
-    <div class="kicker">수행평가 대비 연습 · 2차시</div>
-    <h2>현실을 본뜬 모델을 코드로 만들고 실험하기</h2>
-    <p>교과서 Ⅳ단원의 시뮬레이션 개념과 제작 과정을 복습하고, 브이파이썬(VPython) 코드를 직접 고쳐 가며 실험합니다.</p>
+    <div class="kicker">개념 다지기 · 1차시</div>
+    <h2>현실을 본뜬 모델을 이해하고 코드로 실험하기</h2>
+    <p>시뮬레이션의 개념을 <b>구별하는 방법</b>을 익히고, VPython 코드의 값을 직접 바꿔 보며 <b>무엇이 달라지는지</b> 스스로 규칙을 찾습니다.</p>
   </div>
 
   <div class="card soft">
-    <b>이 페이지에서 바로 VPython이 실행돼요.</b> glowscript.org에 로그인하지 않아도 교과서와 똑같은 코드를 <kbd>▶ 실행</kbd>할 수 있습니다.
-    코드를 고친 뒤 다시 실행하면 처음부터 새로 시작합니다. 화면을 마우스로 <b>오른쪽 드래그하면 회전</b>, <b>휠로 확대·축소</b>할 수 있어요.
+    <b>이 페이지에서 바로 VPython이 실행돼요.</b> 코드를 고친 뒤 <kbd>▶ 실행</kbd>을 누르면 처음부터 다시 시작합니다.
+    화면을 마우스로 <b>오른쪽 드래그하면 회전</b>, <b>휠로 확대·축소</b>할 수 있어요. 망가뜨려도 괜찮아요. <kbd>↺ 되돌리기</kbd>로 처음 코드로 돌아갈 수 있어요.
   </div>
 
   <h3>오늘의 목표</h3>
   <div class="grid3">
-    <div class="card"><span class="tag">이론</span><h4>시뮬레이션의 이해</h4><p class="muted">시뮬레이션의 개념과 필요성, 역할을 설명할 수 있다.</p></div>
-    <div class="card"><span class="tag">과정</span><h4>제작 4단계</h4><p class="muted">문제 정의 → 모델 설계 → 모델 구현 → 모델 평가 과정을 적용할 수 있다.</p></div>
-    <div class="card"><span class="tag">코드</span><h4>모델 수정과 실험</h4><p class="muted">VPython 코드의 변수와 규칙을 바꾸어 실험하고 결과를 해석할 수 있다.</p></div>
+    <div class="card"><span class="tag">이론</span><h4>역할 구별하기</h4><p class="muted">사례를 보고 시뮬레이션의 3가지 역할 중 무엇인지 판단할 수 있다.</p></div>
+    <div class="card"><span class="tag">과정</span><h4>단계와 모델 요소 구별하기</h4><p class="muted">사례 속 활동이 제작 4단계 중 어디인지, 객체·규칙·가정이 무엇인지 찾을 수 있다.</p></div>
+    <div class="card"><span class="tag">코드</span><h4>값과 결과의 관계 찾기</h4><p class="muted">코드의 값을 바꿨을 때 위치·방향·빠르기·시간·움직임이 어떻게 달라지는지 설명할 수 있다.</p></div>
   </div>
 
-  <h3>진행 순서</h3>
+  <h3>진행 순서 <span class="muted" style="font-weight:400">(1차시 · 약 50분)</span></h3>
   <div class="timeline">
-    <div class="row"><div class="when">1차시 · 15분</div><div><b>이론 복습</b> — 시뮬레이션의 개념·역할, 제작 4단계, 모델 구성 요소</div></div>
-    <div class="row"><div class="when">1차시 · 35분</div><div><b>VPython 기초 + 중력 공 튀기기</b> — 객체·좌표·rate·반복문, 중력 값과 반발 정도를 바꾸며 실험</div></div>
-    <div class="row"><div class="when">2차시 · 30분</div><div><b>입자 운동 · 횡단보도 프로젝트</b> — 무작위 이동, 입력값에 따라 달라지는 결과 확인</div></div>
-    <div class="row"><div class="when">2차시 · 20분</div><div><b>정리</b> — 나만의 시뮬레이션 기획서 연습, 수행평가 체크리스트</div></div>
+    <div class="row"><div class="when">10분</div><div><b>이론 ①</b> 시뮬레이션의 뜻과 3가지 역할 — 구별하는 단서 익히기</div></div>
+    <div class="row"><div class="when">10분</div><div><b>이론 ②</b> 제작 4단계와 모델(객체·규칙·가정) — 구별하는 단서 익히기</div></div>
+    <div class="row"><div class="when">20분</div><div><b>코드 실험</b> 객체와 좌표 → 움직임과 반복 → 중력과 튀어 오르기</div></div>
+    <div class="row"><div class="when">10분</div><div><b>정리</b> 나만의 시뮬레이션 기획서, 스스로 점검</div></div>
   </div>
 
-  <h3>수행평가 미리보기 <span class="tag">25점</span></h3>
+  <h3>수행평가 안내 <span class="tag">25점</span></h3>
   <div class="card">
-    <p style="margin-top:0">수행평가에서는 오늘 연습한 <b>시뮬레이션 제작 4단계</b>에 따라 주어진 문제 상황을 <b>모델로 설계</b>하고, VPython 코드를 <b>수정·실행</b>하여 결과를 <b>해석</b>합니다. 웹페이지에 학번과 이름을 입력한 뒤 바로 참여합니다.</p>
-    <ul class="tight">
-      <li>문제를 정의하고, 모델 구성 요소(<b>객체</b>, <b>규칙</b>)와 필요한 <b>자료</b>를 정리하기</li>
-      <li>VPython 코드에서 객체의 속성과 변수 값, 조건을 바꾸어 <b>모델 구현</b>하기</li>
-      <li>실행 결과를 관찰하고 현실과 비교하여 <b>모델 평가</b>하기</li>
-    </ul>
-    <p class="muted" style="margin-bottom:0">※ 세부 문항과 채점 기준은 수행평가 시간에 안내합니다.</p>
+    <p style="margin-top:0">학번과 이름을 입력한 뒤 웹페이지에서 바로 참여합니다. 오늘 익힌 <b>개념을 구별하는 힘</b>과 <b>코드를 읽는 힘</b>이 있으면 풀 수 있어요.</p>
+    <table class="plain">
+      <tr><th style="width:56px">문항</th><th>형식</th><th style="width:80px">관련 활동</th></tr>
+      <tr><td>1</td><td><b>객관식</b> — 처음 보는 사례를 읽고, 알맞은 개념(역할, 제작 단계, 객체·규칙·가정, 모델 평가)을 고르기</td><td>이론 ①②</td></tr>
+      <tr><td>2</td><td><b>객관식</b> — 요구 사항에 맞게 짧은 VPython 코드의 빈칸을 고르고, 직접 실행해서 확인하기</td><td>코드 실험</td></tr>
+      <tr><td>3</td><td><b>서술</b> — 나의 희망 진로와 관련된 시뮬레이션을 4단계로 계획하기 <span class="muted">(세특 반영)</span></td><td>정리</td></tr>
+    </table>
+    <p class="muted" style="margin-bottom:0">※ 수행평가 사례와 코드는 오늘 실습과 다릅니다. 답을 외우기보다 <b>왜 그런지</b>를 이해해 두세요.</p>
   </div>
 </section>
 
-<!-- ===================== 1. 시뮬레이션의 이해 ===================== -->
-<section class="step" id="theory1" data-nav="이론 ① 시뮬레이션의 이해" data-group="이론 복습">
+<!-- ===================== 1. 시뮬레이션과 역할 ===================== -->
+<section class="step" id="theory1" data-nav="이론 ① 시뮬레이션과 역할" data-group="이론">
   <div class="step-head">
-    <div class="kicker">이론 복습 ①</div>
-    <h2>시뮬레이션이란?</h2>
+    <div class="kicker">이론 ① · 10분</div>
+    <h2>시뮬레이션이란? 언제 쓸까?</h2>
     <p>현실 세계에서 일어나는 일이나 시스템을 <b>모방하는 실험</b>을 시뮬레이션이라고 합니다.</p>
   </div>
 
   <div class="grid2">
-    <div class="card"><h4 style="margin-top:0">시뮬레이션</h4><p class="muted" style="margin:0">현실의 일이나 시스템을 모방하는 실험<br>예) 과학 실험, 운동 선수의 모의 경기 연습</p></div>
-    <div class="card"><h4 style="margin-top:0">시뮬레이션 프로그램</h4><p class="muted" style="margin:0">컴퓨터에서 모의 실험을 할 수 있도록 만든 프로그램<br>예) 운전 연습 프로그램, 해수면 상승 예측 프로그램</p></div>
+    <div class="card"><h4 style="margin-top:0">시뮬레이션</h4><p class="muted" style="margin:0">현실의 일이나 시스템을 모방하는 실험<br>예) 과학 실험, 운동 선수의 모의 경기</p></div>
+    <div class="card"><h4 style="margin-top:0">시뮬레이션 프로그램</h4><p class="muted" style="margin:0">컴퓨터에서 모의 실험을 할 수 있도록 만든 프로그램<br>예) 운전 연습 프로그램, 기후 변화 예측 프로그램</p></div>
   </div>
-  <div class="callout"><b>왜 시뮬레이션 프로그램을 쓸까?</b> 시간·공간의 한계 때문에 확인하기 어려운 상황을 간단히 설정할 수 있고, 결과를 바로 확인할 수 있으며, 현실에서 직접 하는 것보다 <b>시간과 비용</b>이 적게 들고 <b>안전</b>합니다.</div>
 
-  <h3>시뮬레이션 프로그램의 3가지 역할</h3>
-  <div class="grid3">
-    <div class="card"><span class="tag">역할 1</span><h4>문제 파악</h4><p class="muted" style="margin:0">현실의 문제 상황을 프로그램에서 확인하고, 결과를 기록·누적해 경험적으로 해석</p></div>
-    <div class="card"><span class="tag">역할 2</span><h4>다양한 대안 적용·확인</h4><p class="muted" style="margin:0">여러 상황이나 요소를 현실보다 간단히 바꿔 적용하고 결과를 바로 확인</p></div>
-    <div class="card"><span class="tag">역할 3</span><h4>미래 예측</h4><p class="muted" style="margin:0">실제 시간의 흐름에 구애받지 않고 결과를 확인하여 미래를 예측</p></div>
+  <h3>왜 시뮬레이션 프로그램을 쓸까?</h3>
+  <div class="callout">
+    현실에서 직접 해 보기 <b>어렵거나</b>(시간·공간의 한계), <b>위험하거나</b>, <b>비용이 많이 드는</b> 일을 컴퓨터 안에서 간단히 설정하고 결과를 바로 확인할 수 있기 때문이에요.
   </div>
+  <div class="think"><b>구별 단서</b> 이미 정해져 있어서 <b>찾아보기만 하면 되는 정보</b>(예: 영화 상영 시간)는 모의 실험이 필요 없어요. “<b>해 보면 어떻게 될까?</b>”를 확인해야 할 때 시뮬레이션을 씁니다.</div>
+
+  <div class="quiz mcq" data-ans="c">
+    <div class="qh"><span class="badge">확인</span></div>
+    <p class="q">우주 기관이 화성 탐사선이 착륙하는 과정을 실제로 보내기 전에 컴퓨터에서 수백 번 시험해 본다. 시뮬레이션 프로그램을 쓰는 까닭으로 가장 알맞은 것은?</p>
+    <div class="opts">
+      <button data-k="a">① 컴퓨터 화면이 실제보다 더 보기 좋아서</button>
+      <button data-k="b">② 실행할 때마다 결과가 현실과 반드시 똑같아서</button>
+      <button data-k="c">③ 실제로 여러 번 해 보기에는 비용이 너무 크고 실패하면 되돌릴 수 없어서</button>
+      <button data-k="d">④ 착륙 날짜를 달력에서 찾아보기 위해서</button>
+    </div>
+    <div class="fb" data-exp="탐사선을 실제로 수백 번 보낼 수는 없죠. 비용·위험·시간 때문에 현실에서 하기 어려운 실험을 컴퓨터로 대신하는 거예요. 단, 시뮬레이션 결과가 현실과 언제나 같은 것은 아니에요."></div>
+  </div>
+
+  <h3>시뮬레이션 프로그램의 3가지 역할 — 구별 단서</h3>
+  <table class="plain">
+    <thead><tr><th style="width:25%">역할</th><th>하는 일</th><th style="width:34%">이런 말이 나오면</th></tr></thead>
+    <tbody>
+      <tr><td><b>문제 파악</b></td><td>현실의 문제 상황을 프로그램에서 확인하고, 결과를 기록·누적해 해석</td><td>“여러 번 해 보며 <b>어디가 문제인지 찾는다</b>”</td></tr>
+      <tr><td><b>다양한 대안 적용·확인</b></td><td>여러 상황이나 요소를 바꿔 적용하고 결과를 바로 비교</td><td>“A, B, C로 <b>바꿔 가며 비교한다</b>”</td></tr>
+      <tr><td><b>미래 예측</b></td><td>실제 시간을 기다리지 않고 앞으로의 결과를 확인</td><td>“<b>○○년 뒤</b>, 앞으로 어떻게 될지 확인한다”</td></tr>
+    </tbody>
+  </table>
 
   <div class="quiz sorter" data-name="role">
-    <div class="qh"><span class="badge">활동</span><b>주차 연습 시뮬레이션 — 어떤 역할에 해당할까?</b></div>
+    <div class="qh"><span class="badge">활동</span><b>어떤 역할에 해당할까? 위의 구별 단서를 써 보세요.</b></div>
     <div class="items" style="grid-template-columns:1fr">
-      <div class="item" data-ans="문제 파악">여러 번 주차를 해 보며 주차 상황의 문제점을 찾는다<select></select></div>
-      <div class="item" data-ans="다양한 대안 적용·확인">비·눈이 오는 날 등 원하는 날씨를 골라 연습한다<select></select></div>
-      <div class="item" data-ans="미래 예측">연습 결과를 바탕으로 실제 도로에서 생길 문제 상황을 미리 예측한다<select></select></div>
-      <div class="item" data-ans="미래 예측">해수면 상승 프로그램에 수치를 넣어 50년 뒤 해안 도시의 모습을 확인한다<select></select></div>
-      <div class="item" data-ans="다양한 대안 적용·확인">건물 배치를 여러 가지로 바꿔 가며 바람길이 어떻게 달라지는지 확인한다<select></select></div>
+      <div class="item" data-ans="문제 파악">마트 계산대 상황을 여러 번 돌려 보며 손님이 특히 오래 기다리는 시간대를 찾는다<select></select></div>
+      <div class="item" data-ans="다양한 대안 적용·확인">버스 배차 간격을 5분, 10분, 15분으로 바꿔 가며 승객 대기 시간을 비교한다<select></select></div>
+      <div class="item" data-ans="미래 예측">지금의 인구 변화 추세를 넣어 20년 뒤 우리 마을 인구를 확인한다<select></select></div>
+      <div class="item" data-ans="다양한 대안 적용·확인">교실 책상 배치를 세 가지로 바꿔 보며 쉬는 시간 이동이 어떻게 달라지는지 비교한다<select></select></div>
+      <div class="item" data-ans="문제 파악">학교 복도 이동을 재현해 보며 점심시간에 어느 계단이 막히는지 찾아낸다<select></select></div>
+      <div class="item" data-ans="미래 예측">태풍의 현재 위치와 속도를 넣어 이틀 뒤 태풍이 어디에 있을지 확인한다<select></select></div>
+    </div>
+    <div class="row-btns"><button class="btn grade">채점하기</button><button class="btn ghost reset">다시 하기</button></div>
+    <div class="fb"></div>
+  </div>
+  <div class="think"><b>짝과 이야기하기</b> 틀린 칸이 있었다면, 문장 속 어떤 말을 보고 판단했는지 짝에게 설명해 보세요.</div>
+</section>
+
+<!-- ===================== 2. 제작 4단계와 모델 ===================== -->
+<section class="step" id="theory2" data-nav="이론 ② 제작 4단계와 모델" data-group="이론">
+  <div class="step-head">
+    <div class="kicker">이론 ② · 10분</div>
+    <h2>제작 4단계와 모델의 구성</h2>
+    <p>복잡한 현상을 시뮬레이션 모델로 표현하면 쉽고 효율적으로 탐구할 수 있습니다. <span class="muted">카드를 눌러 보세요</span></p>
+  </div>
+  <div class="stages">
+    <button class="stage st1"><div class="no">1단계</div><div class="nm">문제 정의하기</div><div class="hint">눌러서 펼치기</div><div class="dt">무엇을 확인할지 <b>질문으로</b> 정한다.<br><i>단서: “~을 확인할 수 있을까?”</i></div></button>
+    <button class="stage st2"><div class="no">2단계</div><div class="nm">모델 설계하기</div><div class="hint">눌러서 펼치기</div><div class="dt">필요한 <b>자료를 조사</b>하고, <b>객체와 규칙</b>을 정한다.<br><i>단서: 조사한다, 정한다</i></div></button>
+    <button class="stage st3"><div class="no">3단계</div><div class="nm">모델 구현하기</div><div class="hint">눌러서 펼치기</div><div class="dt">설계한 모델을 <b>코드로</b> 만든다.<br><i>단서: VPython, 코드, 반복문</i></div></button>
+    <button class="stage st4"><div class="no">4단계</div><div class="nm">모델 평가하기</div><div class="hint">눌러서 펼치기</div><div class="dt">실행 결과를 <b>현실과 비교</b>해 고칠 점을 찾는다.<br><i>단서: 실제와 비교한다, 고친다</i></div></button>
+  </div>
+
+  <div class="quiz sorter" data-name="stage-sort">
+    <div class="qh"><span class="badge">활동</span><b>엘리베이터 대기 시간 시뮬레이션 — 몇 단계에서 하는 일일까?</b></div>
+    <div class="items">
+      <div class="item" data-ans="1">“엘리베이터를 한 대 더 놓으면 대기 시간이 줄어들까?”로 목표를 정한다<select></select></div>
+      <div class="item" data-ans="2">출근 시간에 1분마다 몇 명이 오는지 조사한다<select></select></div>
+      <div class="item" data-ans="2">객체를 사람·엘리베이터로, 규칙을 ‘한 번에 10명까지 탄다’로 정한다<select></select></div>
+      <div class="item" data-ans="3">VPython으로 사람(구)과 엘리베이터(상자)를 만들고 while 문으로 움직인다<select></select></div>
+      <div class="item" data-ans="4">실행 결과의 대기 시간을 실제로 재 본 대기 시간과 비교한다<select></select></div>
+      <div class="item" data-ans="4">결과가 실제보다 너무 짧아서, 문이 열리고 닫히는 시간을 규칙에 더한다<select></select></div>
     </div>
     <div class="row-btns"><button class="btn grade">채점하기</button><button class="btn ghost reset">다시 하기</button></div>
     <div class="fb"></div>
   </div>
 
-  <div class="quiz mcq" data-ans="c">
-    <div class="qh"><span class="badge">퀴즈</span></div>
-    <p class="q">다음 중 시뮬레이션 프로그램을 활용하기에 가장 알맞지 <u>않은</u> 상황은?</p>
-    <div class="opts">
-      <button data-k="a">① 비행기 조종사가 엔진 고장 상황에 대처하는 훈련을 한다.</button>
-      <button data-k="b">② 새 다리를 짓기 전에 강한 바람에도 버틸 수 있는지 확인한다.</button>
-      <button data-k="c">③ 오늘 점심 급식 메뉴가 무엇인지 확인한다.</button>
-      <button data-k="d">④ 호흡기 전염병이 거리에 따라 얼마나 빨리 퍼지는지 살펴본다.</button>
-    </div>
-    <div class="fb" data-exp="③은 이미 정해진 정보를 확인하는 일이라 모의 실험이 필요하지 않아요. 나머지는 위험하거나, 비용이 크거나, 눈으로 보기 어려운 현상이라 시뮬레이션이 유용합니다."></div>
-  </div>
-</section>
-
-<!-- ===================== 2. 제작 4단계 ===================== -->
-<section class="step" id="theory2" data-nav="이론 ② 제작 4단계와 모델" data-group="이론 복습">
-  <div class="step-head">
-    <div class="kicker">이론 복습 ②</div>
-    <h2>시뮬레이션 프로그램 제작 4단계</h2>
-    <p>복잡한 문제나 현상의 원리를 시뮬레이션 모델로 표현하면 쉽고 효율적으로 탐구할 수 있습니다. <span class="muted">카드를 눌러 보세요</span></p>
-  </div>
-  <div class="stages">
-    <button class="stage st1"><div class="no">1단계</div><div class="nm">문제 정의하기</div><div class="hint">눌러서 펼치기</div><div class="dt">시뮬레이션으로 무엇을 확인할지 정한다.<br><i>예) 중력에 의한 공의 낙하를 확인할 수 있을까?</i></div></button>
-    <button class="stage st2"><div class="no">2단계</div><div class="nm">모델 설계하기</div><div class="hint">눌러서 펼치기</div><div class="dt">• 자료 수집<br>• 모델 구성 요소: <b>객체</b>와 <b>규칙</b><br><i>예) 공·바닥, 중력가속도 9.8m/s²</i></div></button>
-    <button class="stage st3"><div class="no">3단계</div><div class="nm">모델 구현하기</div><div class="hint">눌러서 펼치기</div><div class="dt">알고리즘과 코드를 이용해 시뮬레이션 프로그램으로 구현한다.<br><i>화면 구성 + 구현 기능</i></div></button>
-    <button class="stage st4"><div class="no">4단계</div><div class="nm">모델 평가하기</div><div class="hint">눌러서 펼치기</div><div class="dt">실행 결과가 처음 목표에 맞는지, 현실을 잘 표현하는지 확인한다.</div></button>
-  </div>
-
-  <h3>예시 — 공 튀기기 모델 설계</h3>
+  <h3>모델은 무엇으로 이루어질까? — 객체 · 규칙 · 가정</h3>
+  <table class="plain">
+    <thead><tr><th style="width:18%">구성</th><th>뜻</th><th style="width:38%">구별 단서</th></tr></thead>
+    <tbody>
+      <tr><td><b>객체</b></td><td>시뮬레이션에 <b>등장하는 대상</b></td><td>사람, 공, 바닥처럼 <b>‘무엇’</b>에 해당하는 이름</td></tr>
+      <tr><td><b>규칙</b></td><td>객체가 <b>따르는 법칙</b>이나 행동 방식</td><td>“<b>~하면 ~한다</b>”, “~씩 움직인다”</td></tr>
+      <tr><td><b>가정</b></td><td>모델을 단순하게 만들려고 <b>일부러 빼는 것</b></td><td>“<b>~는 생각하지 않는다</b>”, “~는 무시한다”</td></tr>
+    </tbody>
+  </table>
   <div class="model">
-    <div class="k">문제 정의</div><div>시뮬레이션 프로그램을 활용하여 중력의 작용에 따른 농구공의 낙하 현상을 확인할 수 있을까?</div>
-    <div class="k">자료 수집</div><div>• 물체는 중력에 의해 일정한 가속도(중력가속도, 약 9.8 m/s²)로 떨어진다.<br>• v(현재 속도) = v₀(처음 속도) + a × t (가속도 × 시간)</div>
+    <div class="k">예시</div><div><b>교과서 공 튀기기 모델</b></div>
     <div class="k">객체</div><div>공, 바닥</div>
-    <div class="k">규칙</div><div>공은 중력의 영향으로 일정한 가속도로 떨어진다. 바닥에 닿으면 속도의 방향이 반대로 바뀌어 튀어 오르고, 에너지 손실로 이전보다 낮게 튄다.</div>
-    <div class="k">가정</div><div>현실에는 공기 저항 등 많은 요소가 있지만, 이 모델은 <b>중력가속도에만 초점</b>을 맞추고 나머지는 무시한다.</div>
+    <div class="k">규칙</div><div>공은 중력 때문에 일정한 가속도로 떨어진다. 바닥에 닿으면 방향이 바뀌어 튀어 오르고, 이전보다 낮게 튄다.</div>
+    <div class="k">가정</div><div>공기 저항 등은 무시하고 중력에만 초점을 맞춘다.</div>
   </div>
 
-  <div class="quiz sorter" data-name="stage-sort">
-    <div class="qh"><span class="badge">활동</span><b>횡단보도 시뮬레이션 — 몇 단계에서 하는 일일까?</b></div>
+  <div class="quiz sorter" data-name="model-sort">
+    <div class="qh"><span class="badge">활동</span><b>교실 환기 시뮬레이션 — 객체일까, 규칙일까, 가정일까?</b></div>
+    <p class="muted" style="margin:0 0 8px">교실 안의 오염된 공기 입자가 열린 창문으로 빠져나가는 모습을 확인하는 시뮬레이션이에요.</p>
     <div class="items">
-      <div class="item" data-ans="2">노인의 보행 속도가 초당 약 0.85m라는 자료를 찾는다<select></select></div>
-      <div class="item" data-ans="1">“횡단보도에서의 보행 상황을 확인해 볼 수 있을까?”로 목표를 정한다<select></select></div>
-      <div class="item" data-ans="3">VPython으로 신호등, 보행자, 횡단보도를 만들고 이동 코드를 쓴다<select></select></div>
-      <div class="item" data-ans="4">실행 결과가 실제 보행 상황을 잘 나타내는지 확인한다<select></select></div>
-      <div class="item" data-ans="2">객체를 신호등·보행자·횡단보도로, 규칙을 ‘초록불일 때 1초당 0.8m 이동’으로 정한다<select></select></div>
-      <div class="item" data-ans="4">신호 시간 안에 건너지 못한 경우가 현실과 비슷한지 비교하고 고칠 점을 찾는다<select></select></div>
+      <div class="item" data-ans="객체">공기 입자<select></select></div>
+      <div class="item" data-ans="객체">창문<select></select></div>
+      <div class="item" data-ans="규칙">입자는 교실 안에서 무작위로 움직인다<select></select></div>
+      <div class="item" data-ans="규칙">열린 창문에 닿은 입자는 밖으로 나간다<select></select></div>
+      <div class="item" data-ans="가정">바깥에서 불어 들어오는 바람은 생각하지 않는다<select></select></div>
+      <div class="item" data-ans="가정">교실 안 사람이 숨 쉬어 새로 생기는 입자는 무시한다<select></select></div>
     </div>
     <div class="row-btns"><button class="btn grade">채점하기</button><button class="btn ghost reset">다시 하기</button></div>
     <div class="fb"></div>
   </div>
 
   <div class="quiz mcq" data-ans="b">
-    <div class="qh"><span class="badge">퀴즈</span></div>
-    <p class="q">시뮬레이션 모델의 ‘구성 요소’를 바르게 짝지은 것은?</p>
+    <div class="qh"><span class="badge">모델 평가</span></div>
+    <p class="q">환기 시뮬레이션에서 <b>창문을 모두 닫았는데도</b> 교실 안 입자 수가 계속 줄어들었다. 이 결과를 보고 할 일로 가장 알맞은 것은?</p>
     <div class="opts">
-      <button data-k="a">① 입력과 출력</button><button data-k="b">② 객체와 규칙</button><button data-k="c">③ 데이터와 그래프</button><button data-k="d">④ 문제와 정답</button>
+      <button data-k="a">① 시뮬레이션이니까 결과를 그대로 받아들인다.</button>
+      <button data-k="b">② 현실에서는 일어날 수 없는 결과이므로, 입자가 사라지는 규칙에 잘못이 있는지 찾아 고친다.</button>
+      <button data-k="c">③ 입자의 색을 바꿔서 다시 실행한다.</button>
+      <button data-k="d">④ 창문 개수를 늘려서 결과를 더 빠르게 만든다.</button>
     </div>
-    <div class="fb" data-exp="모델은 화면에 등장하는 대상(객체)과 그 객체가 따르는 규칙으로 구성돼요. 예) 객체: 공·바닥 / 규칙: 일정한 가속도로 떨어지고 바닥에서 튀어 오름"></div>
+    <div class="fb" data-exp="모델 평가는 실행 결과가 현실을 잘 나타내는지 확인하는 단계예요. 현실에서 불가능한 결과가 나오면 겉모양이 아니라 ‘규칙’을 의심해야 해요."></div>
   </div>
 </section>
 
-<!-- ===================== 3. VPython 기초 ===================== -->
-<section class="step" id="vp1" data-nav="VPython 기초" data-group="코드 실습">
+<!-- ===================== 3. 객체와 좌표 ===================== -->
+<section class="step" id="vp1" data-nav="코드 ① 객체와 좌표" data-group="코드 실험">
   <div class="step-head">
-    <div class="kicker">실습 ① · 교과서 131쪽 움직이는 원 만들기</div>
-    <h2>VPython 기초 — 객체를 만들고 움직이기</h2>
-    <p>VPython은 파이썬 코드로 3D 객체를 만들고 움직여 시뮬레이션하는 소프트웨어입니다.</p>
+    <div class="kicker">코드 실험 ① · 7분</div>
+    <h2>객체를 만들고 위치·크기·색 바꾸기</h2>
+    <p>값을 하나씩 바꿔 실행하고, <b>무엇이 달라졌는지</b> 관찰해서 규칙을 스스로 찾아보세요.</p>
   </div>
 
   <div class="coord card">
@@ -327,427 +363,192 @@ textarea.note:focus{outline:none;border-color:var(--accent)}
     </svg>
     <div>
       <b>VPython의 3차원 좌표</b>
-      <ul class="tight"><li><b>x</b>: 오른쪽이 +, <b>y</b>: 위쪽이 +, <b>z</b>: 화면 밖(나를 향하는 쪽)이 +</li>
-      <li>위치·크기·방향은 <code class="inl">vector(x, y, z)</code>로 나타냅니다.</li>
-      <li>VPython은 cm, m 같은 정해진 단위가 아니라 <b>좌표값</b>을 쓰므로, 만드는 사람이 기준을 정해야 해요.</li></ul>
+      <ul class="tight"><li>위치·크기·방향은 <code class="inl">vector(x, y, z)</code>로 나타냅니다.</li>
+      <li>세 숫자 중 <b>어느 자리가 어느 방향</b>인지는 아래 실험으로 직접 확인해 보세요.</li>
+      <li>VPython은 cm, m 같은 단위가 아니라 <b>좌표값</b>을 써요.</li></ul>
     </div>
   </div>
 
   <table class="plain">
-    <thead><tr><th style="width:44%">코드</th><th>뜻</th></tr></thead>
+    <thead><tr><th style="width:46%">코드</th><th>뜻</th></tr></thead>
     <tbody>
-      <tr><td><code>Web VPython 3.2</code></td><td>첫 줄에 꼭 쓰는 문장 (Web VPython 환경에서 실행)</td></tr>
-      <tr><td><code>sphere(pos=vector(0,0,0), radius=0.25, color=color.green)</code></td><td>구 만들기 — 위치(pos), 반지름(radius), 색(color)</td></tr>
-      <tr><td><code>box(pos=..., size=vector(10,0.5,10), color=color.blue)</code></td><td>상자 만들기 — 크기(size)는 가로·세로·깊이</td></tr>
-      <tr><td><code>cylinder(pos=..., axis=vector(0,2,0), radius=0.1)</code></td><td>원기둥 만들기 — axis는 방향과 길이</td></tr>
-      <tr><td><code>color.red</code> · <code>color.white</code> · <code>vector(1,1,1)</code></td><td>색 지정 (vector(빨강, 초록, 파랑), 각 0~1)</td></tr>
-      <tr><td><code>rate(10)</code></td><td>반복문을 1초에 최대 10번 실행 (애니메이션 속도 조절)</td></tr>
-      <tr><td><code>my_sphere.pos.x = my_sphere.pos.x + dx</code></td><td>객체의 x 위치를 dx만큼 바꾸기 (움직이기)</td></tr>
+      <tr><td><code>Web VPython 3.2</code></td><td>첫 줄에 꼭 쓰는 문장</td></tr>
+      <tr><td><code>sphere(pos=..., radius=..., color=...)</code></td><td>구 만들기 — 위치(pos), 반지름(radius), 색(color)</td></tr>
+      <tr><td><code>box(pos=..., size=vector(가로, 세로, 깊이), color=...)</code></td><td>상자 만들기 — 크기(size)</td></tr>
+      <tr><td><code>color.이름</code></td><td>정해진 색 이름 쓰기 (예: <code>color.green</code>, <code>color.yellow</code>, <code>color.cyan</code>)</td></tr>
     </tbody>
   </table>
 
-  <div class="explain"><div class="num">1</div><div><h4>움직이는 구 만들기</h4><p>실행해 보고, 구가 어느 방향으로 움직이는지 관찰하세요.</p></div></div>
-  <div class="vp" data-title="교과서 131쪽 · 움직이는 구"><textarea>Web VPython 3.2
-
-# 구 객체 생성
-my_sphere = sphere(pos=vector(0, 0, 0), radius=0.25, color=color.green)
-
-# 루프가 한 번 실행할 때마다 이동할 거리
-dx = 0.01
-
-# 시뮬레이션 반복 수행
-while(True):
-    rate(10)                                  # 1초당 루프를 약 10회 실행
-    my_sphere.pos.x = my_sphere.pos.x + dx    # 구의 x 위치에 dx를 더하면서 갱신</textarea></div>
-
-  <div class="quiz mcq" data-ans="b">
-    <div class="qh"><span class="badge">예측</span></div>
-    <p class="q"><code>rate(10)</code>을 <code>rate(100)</code>으로 바꾸면 구는 어떻게 될까요? 먼저 예측한 뒤 코드를 고쳐 실행해 확인하세요.</p>
-    <div class="opts"><button data-k="a">① 더 느리게 움직인다</button><button data-k="b">② 더 빠르게 움직인다</button><button data-k="c">③ 반대 방향으로 움직인다</button><button data-k="d">④ 움직이지 않는다</button></div>
-    <div class="fb" data-exp="1초에 반복하는 횟수가 10번 → 100번으로 늘어나 같은 시간 동안 dx를 10배 더 많이 더하므로 더 빠르게 움직여요."></div>
-  </div>
-
-  <div class="mission">
-    <div class="mt"><span class="m">연습</span>위 코드를 고쳐 보세요</div>
-    <ol style="margin:8px 0 0;padding-left:22px">
-      <li>구의 색을 <b>빨간색</b>, 반지름을 <b>0.5</b>로 바꾸기</li>
-      <li>구가 <b>왼쪽</b>으로 움직이게 하기</li>
-      <li>구가 <b>위쪽</b>으로 움직이게 하기</li>
-    </ol>
-    <details class="answer"><summary>정답 보기</summary>
-      <p style="margin:2px 0">① <code>sphere(pos=vector(0, 0, 0), radius=0.5, color=color.red)</code><br>
-      ② <code>dx = -0.01</code> (음수로 바꾸기)<br>
-      ③ <code>my_sphere.pos.y = my_sphere.pos.y + dx</code> (x 대신 y를 바꾸기)</p>
-    </details>
-  </div>
-
-  <div class="explain"><div class="num">2</div><div><h4>객체 만들기 연습장</h4><p>공 튀기기·횡단보도에 쓰이는 객체들입니다. 위치와 크기를 바꿔 보며 좌표에 익숙해지세요.</p></div></div>
-  <div class="vp" data-title="객체 연습장"><textarea>Web VPython 3.2
+  <div class="vp" data-title="실험 ① · 객체와 좌표"><textarea>Web VPython 3.2
 scene.background = color.white
 
-floor = box(pos=vector(0, -2, 0), size=vector(8, 0.3, 4), color=color.blue)       # 바닥(상자)
-ball = sphere(pos=vector(0, 1, 0), radius=0.6, color=color.red)                    # 공(구)
-pole = cylinder(pos=vector(-3, -2, 0), axis=vector(0, 3, 0), radius=0.1, color=color.gray(0.5))  # 기둥(원기둥)
-light = box(pos=vector(-3, 1.5, 0), size=vector(0.5, 1, 0.5), color=color.green)    # 신호등(상자)
+floor = box(pos=vector(0, -2, 0), size=vector(8, 0.3, 4), color=color.blue)    # 바닥(상자)
+ball = sphere(pos=vector(0, 0, 0), radius=0.5, color=color.green)            # 공(구)</textarea></div>
 
-print("공의 위치:", ball.pos)
-print("바닥 윗면의 y좌표:", floor.pos.y + floor.size.y / 2)</textarea></div>
-  <div class="think"><b>생각해 보기</b> 공을 바닥 바로 위에 딱 붙여 놓으려면 공의 y좌표는 얼마여야 할까요? (바닥 윗면 y좌표 + 공의 반지름)
-    <details class="answer"><summary>확인</summary>바닥 윗면은 -2 + 0.3/2 = -1.85, 여기에 반지름 0.6을 더하면 <b>-1.25</b>예요. <code>ball = sphere(pos=vector(0, -1.25, 0), ...)</code>로 바꿔 확인해 보세요.</details></div>
+  <table class="plain">
+    <thead><tr><th style="width:38%">바꿔 볼 것</th><th style="width:25%">예측</th><th>관찰 결과</th></tr></thead>
+    <tbody>
+      <tr><td>공의 <code>pos</code>를 <code>vector(3, 0, 0)</code>으로</td><td><input data-save="o1p"></td><td><input data-save="o1"></td></tr>
+      <tr><td>공의 <code>pos</code>를 <code>vector(0, 3, 0)</code>으로</td><td><input data-save="o2p"></td><td><input data-save="o2"></td></tr>
+      <tr><td>공의 <code>pos</code>를 <code>vector(0, -3, 0)</code>으로</td><td><input data-save="o3p"></td><td><input data-save="o3"></td></tr>
+      <tr><td>공의 <code>radius</code>를 <code>1.5</code>로</td><td><input data-save="o4p"></td><td><input data-save="o4"></td></tr>
+      <tr><td>공의 <code>color</code>를 <code>color.yellow</code>로</td><td><input data-save="o5p"></td><td><input data-save="o5"></td></tr>
+      <tr><td>바닥 <code>size</code>의 첫째 숫자를 <code>14</code>로</td><td><input data-save="o6p"></td><td><input data-save="o6"></td></tr>
+    </tbody>
+  </table>
+  <div class="mission">
+    <div class="mt"><span class="m">정리</span>내가 찾은 규칙</div>
+    <p style="margin:6px 0">실험 결과를 보고 한 줄씩 써 보세요.</p>
+    <textarea class="note" data-save="r1" placeholder="vector(x, y, z)에서 첫째 숫자는 … , 둘째 숫자는 … , 음수(-)이면 …"></textarea>
+    <textarea class="note" data-save="r1b" style="margin-top:8px" placeholder="radius를 크게 하면 … / 색은 … 처럼 써야 한다"></textarea>
+  </div>
 </section>
 
-<!-- ===================== 4. 공 튀기기 ===================== -->
-<section class="step" id="vp2" data-nav="중력 · 공 튀기기" data-group="코드 실습">
+<!-- ===================== 4. 움직임과 반복 ===================== -->
+<section class="step" id="vp2" data-nav="코드 ② 움직임과 반복" data-group="코드 실험">
   <div class="step-head">
-    <div class="kicker">실습 ② · 교과서 156쪽 시뮬레이션을 활용한 중력 작용 확인</div>
+    <div class="kicker">코드 실험 ② · 7분</div>
+    <h2>반복문으로 움직이기 — 방향 · 빠르기 · 멈추는 때</h2>
+    <p>시뮬레이션은 <b>반복문(while)</b> 안에서 위치를 조금씩 바꿔 움직임을 만들어요.</p>
+  </div>
+
+  <table class="plain">
+    <thead><tr><th style="width:46%">코드</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td><code>while 조건:</code></td><td>조건이 <b>참인 동안</b> 아래 들여쓴 줄을 반복</td></tr>
+      <tr><td><code>rate(숫자)</code></td><td>반복문을 1초에 <b>최대 몇 번</b> 실행할지 정함</td></tr>
+      <tr><td><code>ball.pos.x = ball.pos.x + dx</code></td><td>공의 x 위치에 dx를 더해 새 위치로 바꿈</td></tr>
+      <tr><td><code>t = t + 0.01</code></td><td>반복할 때마다 시간을 0.01씩 늘림</td></tr>
+    </tbody>
+  </table>
+
+  <div class="vp" data-title="실험 ② · 움직이는 공"><textarea>Web VPython 3.2
+scene.background = color.white
+ball = sphere(pos=vector(0, 0, 0), radius=0.4, color=color.green, make_trail=True)
+
+dx = 0.05       # 한 번 반복할 때 움직이는 거리
+t = 0           # 시간
+
+while t < 2:
+    rate(50)
+    ball.pos.x = ball.pos.x + dx
+    t = t + 0.01
+
+print("반복이 끝났어요. t =", round(t, 2))</textarea></div>
+
+  <table class="plain">
+    <thead><tr><th style="width:38%">바꿔 볼 것</th><th style="width:25%">예측</th><th>관찰 결과</th></tr></thead>
+    <tbody>
+      <tr><td><code>dx = 0.05</code> → <code>dx = -0.05</code></td><td><input data-save="m1p"></td><td><input data-save="m1"></td></tr>
+      <tr><td><code>ball.pos.x = ball.pos.x + dx</code>의 <b>x를 모두 y로</b></td><td><input data-save="m2p"></td><td><input data-save="m2"></td></tr>
+      <tr><td><code>rate(50)</code> → <code>rate(10)</code></td><td><input data-save="m3p"></td><td><input data-save="m3"></td></tr>
+      <tr><td><code>rate(50)</code> → <code>rate(200)</code></td><td><input data-save="m4p"></td><td><input data-save="m4"></td></tr>
+      <tr><td><code>while t &lt; 2:</code> → <code>while t &lt; 4:</code></td><td><input data-save="m5p"></td><td><input data-save="m5"></td></tr>
+      <tr><td><code>while t &lt; 2:</code> → <code>while t &gt; 2:</code></td><td><input data-save="m6p"></td><td><input data-save="m6"></td></tr>
+    </tbody>
+  </table>
+  <div class="think"><b>생각해 보기</b> <code>rate()</code>의 숫자를 바꾸면 공이 <b>움직이는 거리</b>도 달라질까요, <b>걸리는 시간</b>만 달라질까요? 실행 결과의 궤적(꼬리) 길이를 비교해 보세요.</div>
+  <div class="mission">
+    <div class="mt"><span class="m">정리</span>내가 찾은 규칙</div>
+    <textarea class="note" data-save="r2" placeholder="dx의 부호(+, -)는 … 을 정한다 / pos.x와 pos.y는 …"></textarea>
+    <textarea class="note" data-save="r2b" style="margin-top:8px" placeholder="rate() 숫자가 커지면 … / while 조건은 … 일 때 멈춘다"></textarea>
+  </div>
+</section>
+
+<!-- ===================== 5. 중력과 튀어 오르기 ===================== -->
+<section class="step" id="vp3" data-nav="코드 ③ 중력과 튀어 오르기" data-group="코드 실험">
+  <div class="step-head">
+    <div class="kicker">코드 실험 ③ · 교과서 156쪽 · 6분</div>
     <h2>중력에 따라 떨어지고 튀어 오르는 공</h2>
-    <p>3단계 <b>모델 구현하기</b>입니다. 모델 설계에서 정한 규칙이 코드의 어디에 들어 있는지 찾아보세요.</p>
+    <p>이론 ②에서 본 <b>공 튀기기 모델의 규칙</b>이 코드의 어디에 들어 있는지 찾고, 값을 바꿔 실험해요.</p>
   </div>
 
   <div class="vp" data-title="교과서 156쪽 · 공 튀기기" data-stack="1"><textarea>Web VPython 3.2
-# 객체 설정
-ball = sphere(pos=vector(0,10,0), radius=1, color=color.red, make_trail=True,
+ball = sphere(pos=vector(0,10,0), radius=1, color=color.green, make_trail=True,
               trail_type="points", trail_radius=0.1, interval=10)
-scene.background = vector(1,1,1)     # 배경 색상을 흰색으로 설정
+scene.background = vector(1,1,1)
 floor = box(pos=vector(0,-5,0), size=vector(10,0.5,10), color=color.blue)
 
-# 초기 변수 설정
-ball.velocity = vector(0,0,0)   # 공의 초기 속도
-dt = 0.01                       # 루프가 한 번 수행될 때의 시간 간격
-t = 0                           # 전체 수행 시간을 누적하는 변수
-g = -9.8                        # 중력가속도 (아래 방향이므로 -9.8)
-
-while t < 20:
-    rate(100)                                       # 1초당 루프 100번
-    ball.velocity.y = ball.velocity.y + (g*dt)      # 속도 = 현재 속도 + (중력가속도 × 시간 간격)
-    ball.pos = ball.pos + ball.velocity*dt          # 위치 = 현재 위치 + 속도 × 시간 간격
-    crash = floor.pos.y + (floor.size.y/2) + ball.radius   # 충돌이 일어나는 y좌표
-
-    if ball.pos.y < crash:                          # 공이 바닥에 닿으면
-        ball.velocity.y = -ball.velocity.y*0.8      # 방향을 바꾸고, 튀어 오르는 정도 조절
-        ball.pos.y = crash                          # 위치 보정: 바닥 표면 위로
-    t = t + dt                                      # 시간 업데이트</textarea></div>
-
-  <h3>코드 읽기</h3>
-  <table class="lines">
-    <tr><td>ball.velocity.y = ball.velocity.y + (g*dt)</td><td><b>v = v₀ + a·t</b>를 코드로 쓴 것. 0.01초마다 속도가 g×0.01만큼 바뀌어요.</td></tr>
-    <tr><td>ball.pos = ball.pos + ball.velocity*dt</td><td>0.01초 동안 이동한 거리(속도 × 시간)만큼 위치를 바꿔요.</td></tr>
-    <tr><td>crash = floor.pos.y + (floor.size.y/2) + ball.radius</td><td>바닥의 중심 y + 바닥 두께의 절반 + 공 반지름 = 공이 바닥에 닿는 높이</td></tr>
-    <tr><td>ball.velocity.y = -ball.velocity.y*0.8</td><td><b>-</b>는 방향을 반대로(위로), <b>0.8</b>은 에너지 손실로 속도가 80%로 줄어드는 것</td></tr>
-    <tr><td>while t &lt; 20:</td><td>시뮬레이션 시간 20초 동안 반복</td></tr>
-  </table>
-
-  <div class="quiz mcq" data-ans="c">
-    <div class="qh"><span class="badge">계산</span></div>
-    <p class="q">바닥 pos.y = -5, 바닥 size.y = 0.5, 공 radius = 1일 때 crash 값은?</p>
-    <div class="opts"><button data-k="a">① -5</button><button data-k="b">② -4.5</button><button data-k="c">③ -3.75</button><button data-k="d">④ -3.5</button></div>
-    <div class="fb" data-exp="-5 + 0.5/2 + 1 = -5 + 0.25 + 1 = -3.75. 공의 중심이 -3.75보다 아래로 내려가면 바닥에 닿은 거예요."></div>
-  </div>
-
-  <h3>실험 — 값을 바꾸면 어떻게 될까?</h3>
-  <p class="muted" style="margin-top:0">위 코드에서 값을 하나씩 바꿔 실행하고, 결과를 표에 기록하세요. (기록은 이 브라우저에 저장돼요)</p>
-  <table class="plain">
-    <thead><tr><th style="width:30%">바꿀 값</th><th style="width:25%">예측</th><th>관찰 결과</th></tr></thead>
-    <tbody>
-      <tr><td><code>g = -1.6</code> (달)</td><td><input data-save="e1p" placeholder="예측"></td><td><input data-save="e1" placeholder="관찰한 것"></td></tr>
-      <tr><td><code>g = -24.8</code> (목성)</td><td><input data-save="e2p"></td><td><input data-save="e2"></td></tr>
-      <tr><td><code>*0.8</code> → <code>*1.0</code></td><td><input data-save="e3p"></td><td><input data-save="e3"></td></tr>
-      <tr><td><code>*0.8</code> → <code>*0.5</code></td><td><input data-save="e4p"></td><td><input data-save="e4"></td></tr>
-      <tr><td><code>*0.8</code> → <code>*1.2</code></td><td><input data-save="e5p"></td><td><input data-save="e5"></td></tr>
-    </tbody>
-  </table>
-  <details class="answer"><summary>실험 결과 정리</summary>
-    <ul class="tight" style="margin:0">
-      <li><b>달(-1.6)</b>: 천천히 떨어지고 천천히 튄다. <b>목성(-24.8)</b>: 매우 빠르게 떨어지고 빠르게 튄다. 중력가속도가 클수록 속도가 빨리 변한다.</li>
-      <li><b>1.0</b>: 에너지 손실이 없어 처음 높이까지 계속 튄다. <b>0.5</b>: 금방 낮아져 멈춘다.</li>
-      <li><b>1.2</b>: 튈수록 더 높이 올라간다 → 현실에서는 일어날 수 없는 결과! <b>모델 평가</b>에서 이런 값은 잘못된 규칙임을 찾아내야 해요.</li>
-    </ul>
-  </details>
-
-  <div class="mission">
-    <div class="mt"><span class="m">미션</span>지구와 달에서 동시에 공 떨어뜨리기</div>
-    <p>두 공을 나란히 놓고 같은 높이에서 떨어뜨려 비교하는 시뮬레이션입니다. 빈칸 <code>____</code>을 채워 완성하세요.</p>
-    <div class="vp" data-title="미션 · 지구 vs 달" data-stack="1"><textarea>Web VPython 3.2
-scene.background = vector(1,1,1)
-floor = box(pos=vector(0,-5,0), size=vector(16,0.5,6), color=color.blue)
-earth = sphere(pos=vector(-4,10,0), radius=1, color=color.red, make_trail=True)       # 지구의 공
-moon = sphere(pos=vector(4,10,0), radius=1, color=color.orange, make_trail=True)      # 달의 공
-
-earth.velocity = vector(0,0,0)
-moon.velocity = vector(0,0,0)
-g_earth = -9.8          # 지구의 중력가속도
-g_moon = ____           # 달의 중력가속도 (약 1.6, 아래 방향)
-dt = 0.01
+ball.velocity = vector(0,0,0)   # 공의 처음 속도
+dt = 0.01                       # 한 번 반복할 때의 시간 간격
 t = 0
+g = -9.8                        # 중력가속도
 
 while t < 20:
     rate(100)
-    crash = floor.pos.y + (floor.size.y/2) + 1      # 두 공의 반지름이 1
+    ball.velocity.y = ball.velocity.y + (g*dt)      # 중력 때문에 속도가 바뀜
+    ball.pos = ball.pos + ball.velocity*dt          # 속도만큼 위치가 바뀜
+    crash = floor.pos.y + (floor.size.y/2) + ball.radius   # 공이 바닥에 닿는 높이
 
-    # 지구의 공
-    earth.velocity.y = earth.velocity.y + (g_earth*dt)
-    earth.pos = earth.pos + earth.velocity*dt
-    if earth.pos.y < crash:
-        earth.velocity.y = -earth.velocity.y*0.8
-        earth.pos.y = crash
-
-    # 달의 공 — 지구의 공 코드를 참고하여 빈칸을 채우세요
-    moon.velocity.y = moon.velocity.y + (____*dt)
-    moon.pos = moon.pos + moon.velocity*dt
-    if moon.pos.y < crash:
-        moon.velocity.y = ____
-        moon.pos.y = crash
-
-    t = t + dt</textarea></div>
-    <details class="answer"><summary>정답 보기</summary>
-      <pre>g_moon = -1.6
-moon.velocity.y = moon.velocity.y + (g_moon*dt)
-moon.velocity.y = -moon.velocity.y*0.8</pre>
-      <p style="margin:4px 0"><b>해석</b> 같은 높이에서 떨어뜨려도 달의 공은 훨씬 천천히 떨어져 바닥에 늦게 닿고, 튀어 오르는 움직임도 느리다. 중력가속도가 작을수록 속도가 느리게 변하기 때문이다.</p>
-    </details>
-  </div>
-
-  <div class="mission" style="border-style:dashed">
-    <div class="mt"><span class="m" style="background:#8b62c9">도전</span>튀어 오른 횟수 세기</div>
-    <p>원래 공 튀기기 코드에 <code>count</code> 변수를 만들어, 공이 바닥에 닿을 때마다 1씩 늘리고 화면 아래(<code>scene.caption</code>)에 표시해 보세요.</p>
-    <details class="answer"><summary>힌트 / 정답</summary>
-      <pre>count = 0                                   # while 문 위에 추가
-...
-    if ball.pos.y &lt; crash:
+    if ball.pos.y < crash:                          # 공이 바닥에 닿으면
         ball.velocity.y = -ball.velocity.y*0.8
         ball.pos.y = crash
-        if ball.velocity.y &gt; 0.5:            # 거의 멈춘 공은 세지 않기
-            count = count + 1
-            scene.caption = "튀어 오른 횟수: " + count</pre>
-      <p class="muted" style="margin:4px 0">💡 <code>if ball.velocity.y &gt; 0.5</code>가 없으면 어떻게 될까요? 공이 거의 멈춘 뒤에도 0.01초마다 ‘닿았다’고 계산되어 숫자가 계속 커져요. 이렇게 결과가 현실과 다른 점을 찾아 고치는 것이 <b>모델 평가</b>입니다.</p>
-    </details>
-  </div>
-</section>
-
-<!-- ===================== 5. 입자 운동 ===================== -->
-<section class="step" id="vp3" data-nav="입자 운동 (랜덤워크)" data-group="코드 실습">
-  <div class="step-head">
-    <div class="kicker">실습 ③ · 교과서 158쪽 입자의 운동 현상 확인</div>
-    <h2>무작위로 움직이는 입자들</h2>
-    <p>공기 중의 입자처럼 위치가 <b>무작위로</b> 바뀌는 현상(랜덤워크)을 시뮬레이션합니다. 리스트, 함수, 반복문이 함께 쓰여요.</p>
-  </div>
-
-  <div class="vp" data-title="교과서 158쪽 · 입자 운동"><textarea>Web VPython 3.2
-# 화면 및 초기 입자 설정
-width = 600
-height = 600
-scene = canvas(width=width, height=height, background=color.white, center=vector(width/2, height/2, 0))
-
-num_particles = 100          # 화면에 생성할 입자의 개수
-particle_objects = []        # 생성된 입자 객체들을 담을 리스트(저장소)
-
-for i in range(0, num_particles):    # 입자 생성 및 초기화
-    particle_objects.append(sphere(pos=vector(random()*width, random()*height, 0), color=color.green, radius=10))
-
-# 입자 이동 함수
-def move_particles():
-    for particle in particle_objects:
-        particle.pos.x += (random() - 0.5)*40    # x, y 위치를 무작위로 수정
-        particle.pos.y += (random() - 0.5)*40    # random()은 0.0~1.0 → -0.5를 하면 - 방향 이동도 가능
-
-        if particle.pos.x < 0:                  # 경계에 닿으면 위치 조정
-            particle.pos.x = 0
-        elif particle.pos.x > width:
-            particle.pos.x = width
-        if particle.pos.y < 0:
-            particle.pos.y = 0
-        elif particle.pos.y > height:
-            particle.pos.y = height
-
-while True:
-    rate(100)                # 1초에 루프 100번
-    move_particles()         # 모든 입자를 이동시키는 함수 호출</textarea></div>
+    t = t + dt</textarea></div>
 
   <div class="quiz mcq" data-ans="d">
-    <div class="qh"><span class="badge">퀴즈</span></div>
-    <p class="q"><code>(random() - 0.5)*40</code>이 만들 수 있는 값의 범위는? (random()은 0.0 이상 1.0 미만)</p>
-    <div class="opts"><button data-k="a">① 0 ~ 40</button><button data-k="b">② -0.5 ~ 0.5</button><button data-k="c">③ 0 ~ 20</button><button data-k="d">④ -20 ~ 20</button></div>
-    <div class="fb" data-exp="random() - 0.5는 -0.5 ~ 0.5, 여기에 40을 곱하면 -20 ~ 20이에요. 그래서 입자가 왼쪽·오른쪽, 위·아래로 모두 움직일 수 있어요."></div>
-  </div>
-  <div class="quiz mcq" data-ans="a">
-    <div class="qh"><span class="badge">퀴즈</span></div>
-    <p class="q">입자가 화면 밖으로 나가지 않도록 하는 코드는 어느 부분일까요?</p>
-    <div class="opts"><button data-k="a">① if particle.pos.x &lt; 0: … elif particle.pos.y &gt; height: 부분</button><button data-k="b">② particle_objects = []</button><button data-k="c">③ rate(100)</button><button data-k="d">④ for i in range(0, num_particles):</button></div>
-    <div class="fb" data-exp="x, y 좌표가 0보다 작거나 width·height보다 크면 경계 값으로 되돌려 화면 안에 머물게 해요."></div>
-  </div>
-
-  <table class="plain">
-    <thead><tr><th style="width:36%">실험</th><th>관찰 결과</th></tr></thead>
-    <tbody>
-      <tr><td><code>num_particles = 300</code></td><td><input data-save="p1"></td></tr>
-      <tr><td><code>*40</code> → <code>*10</code></td><td><input data-save="p2"></td></tr>
-      <tr><td><code>*40</code> → <code>*100</code></td><td><input data-save="p3"></td></tr>
-      <tr><td>처음 위치를 모두 가운데로: <code>pos=vector(width/2, height/2, 0)</code></td><td><input data-save="p4"></td></tr>
-    </tbody>
-  </table>
-  <details class="answer"><summary>생각 정리</summary>마지막 실험처럼 한곳에 모여 있던 입자들이 시간이 지나면서 사방으로 퍼져 나가요. 냄새나 잉크가 퍼지는 <b>확산</b> 현상을 이렇게 시뮬레이션으로 관찰할 수 있어요.</details>
-
-  <h3>심화 — 호흡기 전염병 예방 수칙 시뮬레이션 <span class="tag">탐구 활동</span></h3>
-  <p class="muted" style="margin-top:0">빨간 입자(감염자)와 가까이(<code>infect_dist</code> 이내) 있는 파란 입자는 감염됩니다. 거리(밀집도)와 움직임에 따라 감염이 얼마나 빨리 퍼지는지 확인해 보세요.</p>
-  <div class="vp" data-title="심화 · 감염 확산"><textarea>Web VPython 3.2
-width = 600
-height = 600
-scene = canvas(width=width, height=height, background=color.white, center=vector(width/2, height/2, 0))
-
-num_people = 80          # 사람 수 (늘리면 더 밀집)
-step = 20                # 한 번에 움직이는 정도
-infect_dist = 20         # 이 거리보다 가까우면 감염
-
-people = []
-for i in range(num_people):
-    p = sphere(pos=vector(random()*width, random()*height, 0), radius=8, color=color.blue)
-    p.infected = False
-    people.append(p)
-people[0].color = color.red          # 첫 번째 사람이 감염자
-people[0].infected = True
-
-t = 0
-while t < 600:
-    rate(30)
-    for p in people:                                 # 모든 사람 무작위 이동
-        p.pos.x = min(max(p.pos.x + (random()-0.5)*step, 0), width)
-        p.pos.y = min(max(p.pos.y + (random()-0.5)*step, 0), height)
-    for a in people:                                 # 감염자 가까이 있으면 감염
-        if a.infected:
-            for b in people:
-                if (not b.infected) and mag(a.pos - b.pos) < infect_dist:
-                    b.infected = True
-                    b.color = color.red
-    count = 0
-    for p in people:
-        if p.infected:
-            count = count + 1
-    scene.caption = "시간: " + t + "   감염자 수: " + count + " / " + num_people
-    t = t + 1</textarea></div>
-  <div class="think"><b>실험</b> ① <code>num_people</code>를 30과 150으로 바꿔 보기(밀집도) ② <code>infect_dist</code>를 10으로 줄여 보기(거리 두기). 모두 감염되기까지 걸리는 시간이 어떻게 달라지나요?
-    <details class="answer"><summary>생각 정리</summary>사람이 많아(밀집) 서로 가까울수록 감염이 빨리 퍼지고, 감염 거리를 줄이면(거리 두기·마스크) 퍼지는 속도가 느려져요. 눈에 보이지 않는 감염원의 확산을 시뮬레이션으로 확인할 수 있습니다.</details></div>
-</section>
-
-<!-- ===================== 6. 횡단보도 ===================== -->
-<section class="step" id="vp4" data-nav="프로젝트 · 횡단보도" data-group="코드 실습">
-  <div class="step-head">
-    <div class="kicker">실습 ④ · 교과서 162~163쪽 시뮬레이션 프로젝트</div>
-    <h2>횡단보도 보행 시간은 충분할까?</h2>
-    <p>“횡단보도에서의 보행 환경 개선”을 주제로 시뮬레이션 프로젝트 4단계를 따라가 봅니다.</p>
-  </div>
-
-  <div class="model">
-    <div class="k">1단계<br>문제 정의</div><div>시뮬레이션 프로그램을 활용해 횡단보도에서의 보행 상황을 확인해 볼 수 있을까?</div>
-    <div class="k">2단계<br>자료 수집</div><div>• 현재 보행 시간: 보행 진입 시간 <b>7초</b> + 횡단보도 <b>1m당 1초</b> (고령자 등 교통 약자 밀집 지역은 <b>0.8m당 1초</b>)<br>• 65세 이상 노인의 보행 속도: 1초당 약 <b>0.85m</b>, 지팡이 등 보조 장치를 쓰면 <b>0.7m</b> 이하</div>
-    <div class="k">2단계<br>모델 구성</div><div><b>객체</b>: 신호등, 보행자, 횡단보도<br><b>규칙</b>: ① 신호등은 정해진 보행 시간이 지나면 신호를 바꾼다. ② 보행자는 초록불인 동안 1초당 입력한 거리만큼 이동한다.</div>
-    <div class="k">3단계<br>모델 구현</div><div>VPython으로 화면(횡단보도·신호등·보행자)을 구성하고, 입력받은 신호 시간과 보행 속도로 이동을 구현</div>
-    <div class="k">4단계<br>모델 평가</div><div>시뮬레이션의 보행 상황이 실제 보행 상황을 잘 표현하는지 확인</div>
-  </div>
-
-  <div class="vp" data-title="교과서 163쪽 · 횡단보도 (노란 칸에 신호 시간과 보행 속도를 적고 실행)" data-stack="1"><textarea>Web VPython 3.2
-# 초기 설정
-scene = canvas(width=800, height=300, background=color.white)     # 화면 설정
-crosswalk = box(pos=vector(0, -1, 0), size=vector(6, 0.1, 1), color=color.white)     # 횡단보도 생성
-human = sphere(pos=vector(-3, -0.5, 0), size=vector(0.2, 0.2, 0.1), color=color.green)  # 보행자 생성
-
-traffic_light_pole = cylinder(pos=vector(-4, -2, 0), axis=vector(0, 2, 0), radius=0.1, color=color.gray(0.5))
-traffic_light_box = box(pos=vector(-4, 0, 0), size=vector(0.5, 1, 0.5), color=color.red)
-
-print("현재 횡단보도 길이는 :", crosswalk.size.x)
-crosswalk_time = float(input("신호등 제한 시간을 입력하세요(초): "))
-print(f"신호길이 : {crosswalk_time} 초")
-
-human_walk = float(input("보행자가 1초당 건너는 m를 입력하세요: 1m인 경우 1로 입력"))   # 1초당 횡단 거리
-print(f"신호등 제한시간 : {crosswalk_time:.2f} 초")
-print(f"1초당 보행자 횡단거리 : {human_walk:.4f} m")
-
-# 보행자 이동 함수
-def simulation():
-    time = 0
-    dt = 0.01
-    while time < crosswalk_time:
-        rate(100)
-        traffic_light_box.color = color.green      # 초록불로 변경
-        human.pos.x += (human_walk*dt)
-        time += dt
-        if human.pos.x >= crosswalk.size.x/2:     # 오른쪽 끝에 도착하면 종료
-            break
-
-    # 보행 상황 판별
-    if human.pos.x >= crosswalk.size.x/2:
-        traffic_light_box.color = color.green
-        print("보행자가 신호 안에 횡단보도를 건넜습니다.")
-    else:
-        traffic_light_box.color = color.red
-        print("보행자가 신호 안에 횡단보도를 건너지 못했습니다")
-
-simulation()</textarea></div>
-
-  <h3>예측하고 실행하기</h3>
-  <p class="muted" style="margin-top:0">횡단보도 길이는 6m(보행자는 x = -3에서 +3까지 이동). <b>필요한 시간 = 6 ÷ 보행 속도</b>로 먼저 계산한 뒤, 실행해서 확인하세요.</p>
-  <table class="plain">
-    <thead><tr><th>신호 시간(초)</th><th>보행 속도(m/s)</th><th>필요한 시간 계산</th><th>예측(건넘/못 건넘)</th><th>실행 결과</th></tr></thead>
-    <tbody>
-      <tr><td>13 <span class="muted">(7+6×1)</span></td><td>0.85 <span class="muted">(노인)</span></td><td><input data-save="c1a"></td><td><input data-save="c1b"></td><td><input data-save="c1c"></td></tr>
-      <tr><td>8</td><td>1</td><td><input data-save="c2a"></td><td><input data-save="c2b"></td><td><input data-save="c2c"></td></tr>
-      <tr><td>8</td><td>0.7 <span class="muted">(보조 장치)</span></td><td><input data-save="c3a"></td><td><input data-save="c3b"></td><td><input data-save="c3c"></td></tr>
-      <tr><td>5</td><td>0.85</td><td><input data-save="c4a"></td><td><input data-save="c4b"></td><td><input data-save="c4c"></td></tr>
-    </tbody>
-  </table>
-  <details class="answer"><summary>정답 확인</summary>
-    <ul class="tight" style="margin:0">
-      <li>13초, 0.85m/s → 6÷0.85 ≈ 7.1초 필요 → <b>건넘</b></li>
-      <li>8초, 1m/s → 6초 필요 → <b>건넘</b></li>
-      <li>8초, 0.7m/s → 6÷0.7 ≈ 8.6초 필요 → <b>못 건넘</b></li>
-      <li>5초, 0.85m/s → 약 7.1초 필요 → <b>못 건넘</b></li>
-    </ul>
-  </details>
-
-  <div class="quiz mcq" data-ans="c">
-    <div class="qh"><span class="badge">모델 평가</span></div>
-    <p class="q">이 시뮬레이션을 실제 상황과 비교할 때, <b>모델을 개선</b>할 점으로 가장 알맞은 것은?</p>
-    <div class="opts">
-      <button data-k="a">① 신호등 기둥의 색을 회색에서 검은색으로 바꾼다.</button>
-      <button data-k="b">② 화면의 배경색을 바꾼다.</button>
-      <button data-k="c">③ 실제로는 초록불이 켜진 뒤 바로 출발하지 못하는 경우가 있으므로, 출발이 늦어지는 시간을 규칙에 넣는다.</button>
-      <button data-k="d">④ print 문의 문장을 더 길게 쓴다.</button>
+    <div class="qh"><span class="badge">코드 읽기</span></div>
+    <p class="q">공 튀기기 모델의 규칙 “바닥에 닿으면 <b>방향이 바뀌어</b> 튀어 오른다”를 코드로 나타낸 부분은?</p>
+    <div class="opts code">
+      <button data-k="a">① g = -9.8</button>
+      <button data-k="b">② rate(100)</button>
+      <button data-k="c">③ ball.pos = ball.pos + ball.velocity*dt</button>
+      <button data-k="d">④ if ball.pos.y &lt; crash: 아래의 두 줄</button>
     </div>
-    <div class="fb" data-exp="모델 평가는 실행 결과가 현실을 잘 나타내는지 확인하는 단계예요. 겉모양보다 규칙(출발 지연, 보행 속도의 차이, 신호 깜빡임 등)이 현실과 다른 점을 찾아 개선해야 해요."></div>
+    <div class="fb" data-exp="if 문이 ‘바닥에 닿으면’이라는 조건이고, 그 아래 줄이 속도를 바꿔 튀어 오르게 해요. 그 줄의 - 기호와 숫자가 각각 무슨 역할을 하는지는 아래 실험으로 확인해 보세요."></div>
+  </div>
+
+  <table class="plain">
+    <thead><tr><th style="width:38%">바꿔 볼 것</th><th style="width:25%">예측</th><th>관찰 결과</th></tr></thead>
+    <tbody>
+      <tr><td><code>g = -1.6</code> (달)</td><td><input data-save="g1p"></td><td><input data-save="g1"></td></tr>
+      <tr><td><code>g = -24.8</code> (목성)</td><td><input data-save="g2p"></td><td><input data-save="g2"></td></tr>
+      <tr><td><code>*0.8</code> → <code>*0.5</code></td><td><input data-save="g3p"></td><td><input data-save="g3"></td></tr>
+      <tr><td><code>*0.8</code> → <code>*1.0</code></td><td><input data-save="g4p"></td><td><input data-save="g4"></td></tr>
+      <tr><td><code>*0.8</code> → <code>*1.2</code></td><td><input data-save="g5p"></td><td><input data-save="g5"></td></tr>
+      <tr><td><code>-ball.velocity.y*0.8</code>에서 <b>맨 앞 - 지우기</b></td><td><input data-save="g6p"></td><td><input data-save="g6"></td></tr>
+    </tbody>
+  </table>
+  <div class="mission">
+    <div class="mt"><span class="m">정리</span>내가 찾은 규칙 + 모델 평가</div>
+    <textarea class="note" data-save="r3" placeholder="g의 크기가 커지면 … / 튀는 정도 숫자가 커지면 … / 맨 앞 - 기호는 …"></textarea>
+    <textarea class="note" data-save="r3b" style="margin-top:8px" placeholder="위 실험 중 현실에서 일어날 수 없는 결과는? 왜 그렇게 생각하나요?"></textarea>
   </div>
 </section>
 
-<!-- ===================== 7. 정리 ===================== -->
-<section class="step" id="wrap" data-nav="정리 · 수행평가 대비" data-group="정리">
+<!-- ===================== 6. 정리 ===================== -->
+<section class="step" id="wrap" data-nav="정리 · 기획서 연습" data-group="정리">
   <div class="step-head">
-    <div class="kicker">정리</div>
+    <div class="kicker">정리 · 10분</div>
     <h2>나만의 시뮬레이션 기획서 연습</h2>
-    <p>우리 주변의 문제(환경, 주거, 교통 등)를 하나 골라 시뮬레이션 제작 4단계로 기획해 보세요. 수행평가의 설계 문항 연습입니다.</p>
+    <p>나의 <b>희망 진로나 관심 분야</b>에서 시뮬레이션으로 확인하고 싶은 문제를 하나 골라 4단계로 기획해 보세요. 수행평가 3번(진로 연계 서술) 연습입니다.</p>
   </div>
 
   <div class="grid2">
-    <div class="card"><span class="tag" style="background:#f6e3ef;color:var(--s1)">1단계</span><b>문제 정의하기</b><textarea class="note" data-save="w1" placeholder="시뮬레이션으로 무엇을 확인하고 싶나요?"></textarea></div>
+    <div class="card" style="grid-column:1/-1"><span class="tag">진로</span><b>희망 진로·관심 분야와 주제</b><textarea class="note" data-save="w0" placeholder="예) 희망 진로: … / 주제: … 시뮬레이션"></textarea></div>
+    <div class="card"><span class="tag" style="background:#f6e3ef;color:var(--s1)">1단계</span><b>문제 정의하기</b><textarea class="note" data-save="w1" placeholder="진로와 어떤 관련이 있고, 무엇을 확인하고 싶나요? 질문으로 써 보세요."></textarea></div>
     <div class="card"><span class="tag" style="background:#eef5e2;color:#5b7d21">2단계</span><b>모델 설계하기 — 자료 수집</b><textarea class="note" data-save="w2" placeholder="어떤 자료(수치, 법칙, 조사 결과)가 필요한가요?"></textarea></div>
-    <div class="card"><span class="tag" style="background:#eef5e2;color:#5b7d21">2단계</span><b>모델 설계하기 — 객체와 규칙</b><textarea class="note" data-save="w3" placeholder="객체: … / 규칙: …"></textarea></div>
+    <div class="card"><span class="tag" style="background:#eef5e2;color:#5b7d21">2단계</span><b>모델 설계하기 — 객체·규칙·가정</b><textarea class="note" data-save="w3" placeholder="객체: … / 규칙: ~하면 ~한다 / 가정: ~는 생각하지 않는다"></textarea></div>
     <div class="card"><span class="tag" style="background:#e5effb;color:var(--s3)">3단계</span><b>모델 구현하기</b><textarea class="note" data-save="w4" placeholder="어떤 VPython 객체(sphere, box…)와 코드(while, if…)를 쓸까요?"></textarea></div>
-    <div class="card" style="grid-column:1/-1"><span class="tag" style="background:#efe7fa;color:var(--s4)">4단계</span><b>모델 평가하기</b><textarea class="note" data-save="w5" placeholder="결과가 현실을 잘 나타내는지 어떻게 확인할까요? 현실과 다른 점은?"></textarea></div>
+    <div class="card" style="grid-column:1/-1"><span class="tag" style="background:#efe7fa;color:var(--s4)">4단계</span><b>모델 평가하기</b><textarea class="note" data-save="w5" placeholder="현실에서 직접 하는 것보다 좋은 점은? 현실과 다를 수 있는 점(한계)은?"></textarea></div>
   </div>
-  <details class="answer"><summary>예시 보기 — 비 오는 날 우산 속도 시뮬레이션</summary>
+  <details class="answer"><summary>예시 보기 — 비 오는 날 걷는 속도 시뮬레이션</summary>
     <p style="margin:4px 0"><b>1단계</b> 걷는 속도에 따라 비를 얼마나 맞는지 시뮬레이션으로 확인할 수 있을까?</p>
-    <p style="margin:4px 0"><b>2단계 자료</b> 빗방울의 낙하 속도(약 초당 수 m), 사람의 걷기·뛰기 속도(초당 약 1.4m, 3m)</p>
-    <p style="margin:4px 0"><b>2단계 객체·규칙</b> 객체: 사람(상자), 빗방울(작은 구 여러 개) / 규칙: 빗방울은 일정한 속도로 떨어지고, 사람은 입력한 속도로 이동하며, 사람에 닿은 빗방울 수를 센다.</p>
-    <p style="margin:4px 0"><b>3단계</b> 빗방울을 리스트로 만들고 while 반복문으로 위치를 갱신, if로 사람과의 충돌을 판별한다.</p>
-    <p style="margin:4px 0"><b>4단계</b> 속도를 바꿔 실행한 결과를 실제 경험과 비교한다. 바람의 영향은 무시했으므로 바람을 규칙에 추가할 수 있다.</p>
+    <p style="margin:4px 0"><b>2단계 자료</b> 빗방울이 떨어지는 속도, 사람이 걷고 뛰는 속도</p>
+    <p style="margin:4px 0"><b>2단계 객체·규칙·가정</b> 객체: 사람(상자), 빗방울(작은 구 여러 개) / 규칙: 빗방울은 일정한 속도로 떨어지고, 사람은 입력한 속도로 이동하며, 사람에 닿은 빗방울 수를 센다 / 가정: 바람은 생각하지 않는다.</p>
+    <p style="margin:4px 0"><b>3단계</b> 빗방울을 여러 개 만들고 while 반복문으로 위치를 바꾸며, if로 사람에 닿았는지 판단한다.</p>
+    <p style="margin:4px 0"><b>4단계</b> 속도를 바꾼 결과를 실제 경험과 비교한다. 실제로는 바람이 불기 때문에 결과가 다를 수 있다.</p>
+    <p class="muted" style="margin:6px 0 0">※ 이 예시는 진로와 연결되어 있지 않아요. 수행평가에서는 <b>내 진로와 어떻게 관련되는지</b>가 꼭 들어가야 해요.</p>
   </details>
 
   <h3>수행평가 전 스스로 점검</h3>
   <div class="card checklist">
-    <label><input type="checkbox" data-save="k1"> 시뮬레이션과 시뮬레이션 프로그램의 뜻, 3가지 역할을 설명할 수 있다.</label>
-    <label><input type="checkbox" data-save="k2"> 시뮬레이션 제작 4단계의 이름과 각 단계에서 하는 일을 말할 수 있다.</label>
-    <label><input type="checkbox" data-save="k3"> 모델 구성 요소(객체, 규칙)와 모델의 가정을 예를 들어 설명할 수 있다.</label>
-    <label><input type="checkbox" data-save="k4"> sphere, box, cylinder의 pos, size, radius, color, axis를 바꿀 수 있다.</label>
-    <label><input type="checkbox" data-save="k5"> rate(), while, if가 시뮬레이션에서 하는 역할을 설명할 수 있다.</label>
-    <label><input type="checkbox" data-save="k6"> 공 튀기기 코드에서 중력가속도와 튀어 오르는 정도를 바꾸고 결과를 해석할 수 있다.</label>
-    <label><input type="checkbox" data-save="k7"> 실행 결과를 현실과 비교하여 모델의 한계와 개선점을 쓸 수 있다.</label>
+    <label><input type="checkbox" data-save="k1"> 처음 보는 사례를 읽고 시뮬레이션의 3가지 역할 중 무엇인지 구별할 수 있다.</label>
+    <label><input type="checkbox" data-save="k2"> 사례 속 활동이 제작 4단계 중 어느 단계인지 구별할 수 있다.</label>
+    <label><input type="checkbox" data-save="k3"> 사례에서 객체, 규칙, 가정을 찾아낼 수 있다.</label>
+    <label><input type="checkbox" data-save="k4"> 현실과 다른 실행 결과를 보고 모델의 어디를 고쳐야 할지 판단할 수 있다.</label>
+    <label><input type="checkbox" data-save="k5"> vector(x, y, z)의 각 자리, radius, color가 무엇을 바꾸는지 설명할 수 있다.</label>
+    <label><input type="checkbox" data-save="k6"> 이동하는 값의 부호, rate(), while 조건이 움직임을 어떻게 바꾸는지 설명할 수 있다.</label>
+    <label><input type="checkbox" data-save="k7"> 공 튀기기 코드에서 중력 값과 튀는 정도 줄이 하는 일을 설명할 수 있다.</label>
   </div>
 
   <h3>glowscript.org에서 직접 해 보기 <span class="muted" style="font-weight:400">(선택)</span></h3>
@@ -811,9 +612,7 @@ window.addEventListener('message', async function (e) {
   try {
     prog = window.glowscript_compile(e.data.code, {lang: 'vpython', version: '3.2'});
   } catch (err) {
-    // 컴파일러가 알려 주는 줄 번호는 1만큼 크다 (GlowScript 오프라인 IDE와 같은 보정)
-    var msg = String(err), m = msg.match(/line(\s*)(\d+)/), n = m ? Number(m[2]) - 1 : null;
-    if (m) msg = msg.replace(m[0], 'line' + m[1] + n);
+    var msg = String(err), m = msg.match(/line(\s*)(\d+)/), n = m ? Number(m[2]) : null;
     send({type: 'error', phase: 'compile', msg: msg, line: n});
     return;
   }
